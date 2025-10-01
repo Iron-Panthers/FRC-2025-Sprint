@@ -1,5 +1,3 @@
 package frc.robot.subsystems.superstructure;
 
-public class SuperstructureController {
-    
-}
+public class SuperstructureController {}
