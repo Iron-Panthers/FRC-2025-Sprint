@@ -1,5 +1,5 @@
 package frc.robot.subsystems.superstructure.clawRollers;
 
-public class ClawRollers {
+public class clawRollers {
     
 }
