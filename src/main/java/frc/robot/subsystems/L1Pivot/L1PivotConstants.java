@@ -2,7 +2,6 @@ package frc.robot.subsystems.L1Pivot;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -15,10 +14,9 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
 public class L1PivotConstants {
   public static final L1PivotConfig L1_PIVOT_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new L1PivotConfig(CAN.at(8, "L1 Pivot"), CAN.at(28, "L1 Pivot Encoder"), -0.278, 1);
-        case SIM -> new L1PivotConfig(
-            CAN.at(8, "L1Pivot"), CAN.at(28, "L1 Pivot Encoder"), 0, 12 * 0.3750);
-        default -> new L1PivotConfig(0, 0, 0, 1);
+        case COMP -> new L1PivotConfig(CAN.at(8, "L1 Pivot"), 1);
+        case SIM -> new L1PivotConfig(CAN.at(8, "L1 Pivot"), 12 * 0.3750);
+        default -> new L1PivotConfig(0, 1);
       };
 
   public static final PIDGains GAINS =
@@ -35,7 +33,7 @@ public class L1PivotConstants {
         default -> new MotionMagicConfig(0, 0);
       };
 
-  public record L1PivotConfig(int motorID, int canCoderID, double canCoderOffset, double reduction) {}
+  public record L1PivotConfig(int motorID, double reduction) {}
 
   public record PIDGains(
       double kP, double kI, double kD, double kS, double kV, double kA, double kG) {}
@@ -45,9 +43,6 @@ public class L1PivotConstants {
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
 
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
-
-  public static final SensorDirectionValue CANCODER_DIRECTION =
-      SensorDirectionValue.Clockwise_Positive;
 
   public static final double POSITION_TARGET_EPSILON = 0.01;
   public static final double L1_PIVOT_LENGTH = 25; // inches

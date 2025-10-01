@@ -19,9 +19,6 @@ public class L1PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements 
             .withZeroingVolts(ZEROING_VOLTS)
             .withZeroingOffset(ZEROING_OFFSET)
             .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD)
-            .withCANCoderID(L1_PIVOT_CONFIG.canCoderID())
-            .withCANCoderOffset(L1_PIVOT_CONFIG.canCoderOffset())
-            .withCANCoderDirection(CANCODER_DIRECTION)
             .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
 
     setSlot0(
