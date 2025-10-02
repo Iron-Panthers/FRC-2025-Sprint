@@ -26,7 +26,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>
     ALGAE_INTAKE_REEF(15),
     CLIMB(13),
     SAFE_MIDWAY(11.5);
-    //CHANGE VALUES WHEN CAD FINISHES
+    // CHANGE VALUES WHEN CAD FINISHES
 
     private double position = 0;
 
@@ -51,8 +51,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>
 
   private double filteredSupplyCurrentAmps = 0;
 
-  private GenericSuperstructureIOInputsMotor2AutoLogged inputs2 =
-      new GenericSuperstructureIOInputsMotor2AutoLogged();
+  private GenericSuperstructureIOInputsMotor2AutoLogged inputs2 = new GenericSuperstructureIOInputsMotor2AutoLogged();
 
   private boolean zeroing = false;
 
@@ -75,19 +74,19 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>
     // for zeroing
     // calculate our new filtered supply current for the elevator
     filteredSupplyCurrentAmps = supplyCurrentFilter.calculate(getSupplyCurrentAmps());
+
+    // run characterization if we are zeroing
     if (zeroing) {
       superstructureIO.runCharacterization();
     }
+
+    // record our outputs
     Logger.recordOutput(
         "Superstructure/" + name + "/Filtered supply current amps", getFilteredSupplyCurrentAmps());
   }
 
   public double getFilteredSupplyCurrentAmps() {
     return filteredSupplyCurrentAmps;
-  }
-
-  public boolean aboveSafeHeightForPivot() {
-    return this.getPosition() > ElevatorConstants.MIN_SAFE_HEIGHT_FOR_PIVOT;
   }
 
   public void setZeroing(boolean zeroing) {
