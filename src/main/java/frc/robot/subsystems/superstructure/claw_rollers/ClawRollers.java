@@ -1,8 +1,9 @@
-package frc.robot.subsystems.superstructure.grabberRollers;
+package frc.robot.subsystems.superstructure.claw_rollers;
 
-import frc.robot.subsystems.rollers.GenericRollers;
+import frc.robot.lib.generic_subsystems.rollers.GenericRollers;
+import frc.robot.lib.generic_subsystems.rollers.GenericRollersIO;
 
-public class GrabberRollers extends GenericRollrs<Intake.Target> {
+public class ClawRollers extends GenericRollers<Target> {
   public enum Target implements GenericRollers.VoltageTarget {
     IDLE(0),
     INTAKE(4),
@@ -23,7 +24,7 @@ public class GrabberRollers extends GenericRollrs<Intake.Target> {
     }
   }
 
-  public GrabberRollers(GrabberRollersIO intakeIO) {
+  public ClawRollers(ClawRollersIO intakeIO) {
     super("Intake", intakeIO);
   }
 }
