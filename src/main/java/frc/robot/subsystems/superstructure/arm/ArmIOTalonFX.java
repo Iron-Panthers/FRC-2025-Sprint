@@ -9,14 +9,14 @@ public class ArmIOTalonFX extends GenericSuperstructureIOTalonFX implements ArmI
   public ArmIOTalonFX() {
     super(
         new GenericSuperstructureConfiguration()
-            .withID(PIVOT_CONFIG.motorID())
+            .withID(ARM_CONFIG.motorID())
             .withMotorDirection(MOTOR_DIRECTION)
             .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
-            .withReduction(PIVOT_CONFIG.reduction())
+            .withReduction(ARM_CONFIG.reduction())
             .withUpperVoltageLimit(UPPER_VOLT_LIMIT)
             .withLowerVoltageLimit(LOWER_VOLT_LIMIT)
-            .withCANCoderID(PIVOT_CONFIG.canCoderID())
-            .withCANCoderOffset(PIVOT_CONFIG.canCoderOffset())
+            .withCANCoderID(ARM_CONFIG.canCoderID())
+            .withCANCoderOffset(ARM_CONFIG.canCoderOffset())
             .withCANCoderDirection(CANCODER_DIRECTION));
 
     setSlot0(
@@ -33,6 +33,9 @@ public class ArmIOTalonFX extends GenericSuperstructureIOTalonFX implements ArmI
         GRAVITY_TYPE);
   }
 
+  /**
+   * Move move the arm to a position with the given degrees
+   */
   @Override
   public void runPosition(double position) {
     super.runPosition(position / 360d); // convert degrees to rotations

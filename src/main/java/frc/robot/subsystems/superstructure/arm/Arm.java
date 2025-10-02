@@ -8,25 +8,16 @@ import frc.robot.lib.generic_subsystems.superstructure.*;
 import frc.robot.utility.LoggableMechanism3d;
 import org.littletonrobotics.junction.Logger;
 
-public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements LoggableMechanism3d {
-  public enum PivotTarget implements GenericSuperstructure.PositionTarget {
-    // please change all of these values
-    TOP(-79),
+public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements LoggableMechanism3d {
+  public enum ArmTarget implements GenericSuperstructure.PositionTarget {
+    TOP(-79), // TODO: need to tune these values
     INTAKE(-96),
-    STOW(-96),
-    L1(-110),
-    L2(223),
-    L3(185),
-    // CLIMB(-115),
-    L4(-165),
-    ZERO(0),
-    // for the algae on L2
-    DESCORE_LOW(-15);
+    STOW(-96);
 
     private double position;
     private static final double EPSILON = ArmConstants.POSITION_TARGET_EPSILON;
 
-    private PivotTarget(double position) {
+    private ArmTarget(double position) {
       this.position = position;
     }
 
@@ -41,30 +32,38 @@ public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements Logga
   }
 
   public Arm(ArmIO io) {
-    super("Pivot", io);
-    setPositionTarget(PivotTarget.STOW);
+    super("Arm", io);
+    setPositionTarget(ArmTarget.STOW);
     setControlMode(ControlMode.STOP);
   }
 
+  /**
+   * The parent LoggableMechanism3d, typically a reference to the elevator
+   * subsystem
+   */
   public LoggableMechanism3d loggableMechanism3dParent = null;
 
   @Override
   public void periodic() {
     super.periodic();
     Logger.recordOutput(
-        "Superstructure/Pivot/PositionTargetRotations", getPositionTarget().getPosition() / 360d);
+        "Superstructure/Arm/PositionTargetRotations", getPositionTarget().getPosition() / 360d);
   }
 
   /**
-   * This function returns whether or not the subsystem has reached its position target
+   * This function returns whether or not the subsystem has reached its position
+   * target
    *
    * @return whether the subsystem has reached its position target
    */
   public boolean reachedTarget() {
-    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
-        <= super.getPositionTarget().getEpsilon();
+    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d)) <= super.getPositionTarget()
+        .getEpsilon();
   }
 
+  /**
+   * Returns the position of the arm in DEGREES
+   */
   public double getPosition() {
     return super.getPosition() * 360.0;
   }
@@ -92,7 +91,7 @@ public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements Logga
   @Override
   public Pose3d getDisplayPose3d() {
     return getParentPosition()
-        .plus(ArmConstants.ELEVATOR_TO_PIVOT_TRANSFORM)
+        .plus(ArmConstants.ELEVATOR_TO_ARM_TRANSFORM)
         .plus(
             new Transform3d(
                 Translation3d.kZero, new Rotation3d(0, Math.toRadians(getPosition() - 90), 0)));
