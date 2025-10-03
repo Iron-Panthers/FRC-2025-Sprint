@@ -1,10 +1,9 @@
 package frc.robot.subsystems.superstructure.claw_rollers;
 
 import frc.robot.lib.generic_subsystems.rollers.GenericRollers;
-import frc.robot.lib.generic_subsystems.rollers.GenericRollersIO;
 
-public class ClawRollers extends GenericRollers<Target> {
-  public enum Target implements GenericRollers.VoltageTarget {
+public class ClawRollers extends GenericRollers<ClawRollers.ClawRollersTarget> {
+  public enum ClawRollersTarget implements GenericRollers.VoltageTarget {
     IDLE(0),
     INTAKE(4),
     HOLD(0),
@@ -15,7 +14,7 @@ public class ClawRollers extends GenericRollers<Target> {
 
     private double volts;
 
-    private Target(double volts) {
+    private ClawRollersTarget(double volts) {
       this.volts = volts;
     }
 
@@ -24,7 +23,7 @@ public class ClawRollers extends GenericRollers<Target> {
     }
   }
 
-  public ClawRollers(ClawRollersIO intakeIO) {
-    super("Intake", intakeIO);
+  public ClawRollers(ClawRollersIO io) {
+    super("ClawRollers", io);
   }
 }

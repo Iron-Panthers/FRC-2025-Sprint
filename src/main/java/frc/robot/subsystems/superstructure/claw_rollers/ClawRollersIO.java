@@ -1,3 +1,5 @@
-package frc.robot.subsystems.superstructure.grabberRollers;
+package frc.robot.subsystems.superstructure.claw_rollers;
 
-public class GrabberRollersIO {}
+import frc.robot.lib.generic_subsystems.rollers.*;
+
+public interface ClawRollersIO extends GenericRollersIO {}
