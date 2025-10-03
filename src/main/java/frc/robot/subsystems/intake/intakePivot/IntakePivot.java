@@ -1,114 +1,112 @@
 package frc.robot.subsystems.intake.intakePivot;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructure;
-import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureIO;
 import frc.robot.utility.LoggableMechanism3d;
+import org.littletonrobotics.junction.Logger;
 
-public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTarget> implements LoggableMechanism3d {
-    public enum IntakePivotTarget implements GenericSuperstructure.PositionTarget {
-        TOP(-79),
-        INTAKE(-96),
-        STOW(-96),
-        L1(-110),
-        L2(-107),
-        SCORE_L3(-117),
-        SETUP_L3(-79),
-        CLIMB(-115),
-        ZERO_LOW(-95.2),
-        ZERO_HIGH(90),
-        SETUP_L4(144),
-        SCORE_L4(149),
-        DESCORE_HIGH(0),
-        INTAKE_SIDE(40),
-        SCORE_SIDE(100),
+public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTarget>
+    implements LoggableMechanism3d {
+  public enum IntakePivotTarget implements GenericSuperstructure.PositionTarget {
+    TOP(-79),
+    INTAKE(-96),
+    STOW(-96),
+    L1(-110),
+    L2(-107),
+    SCORE_L3(-117),
+    SETUP_L3(-79),
+    CLIMB(-115),
+    ZERO_LOW(-95.2),
+    ZERO_HIGH(90),
+    SETUP_L4(144),
+    SCORE_L4(149),
+    DESCORE_HIGH(0),
+    INTAKE_SIDE(40),
+    SCORE_SIDE(100),
 
-        // for the algae on L2
-        DESCORE_LOW(-15);
+    // for the algae on L2
+    DESCORE_LOW(-15);
 
-        private double position;
-        private static final double EPSILON = IntakePivotConstants.POSITION_TARGET_EPSILON;
+    private double position;
+    private static final double EPSILON = IntakePivotConstants.POSITION_TARGET_EPSILON;
 
-        private IntakePivotTarget(double position) {
-            this.position = position;
-        }
-
-        public double getPosition() {
-            return position;
-        }
-
-        @Override
-        public double getEpsilon() {
-            return EPSILON;
-        }
+    private IntakePivotTarget(double position) {
+      this.position = position;
     }
 
-    public IntakePivot(IntakePivotIO io) {
-        super("Intake Pivot", io);
-        setPositionTarget(IntakePivotTarget.STOW);
-        setControlMode(ControlMode.STOP);
-    }
-
-    public LoggableMechanism3d loggableMechanism3dParent = null;
-
-    @Override
-    public void periodic() {
-        super.periodic();
-        Logger.recordOutput(
-                "Superstructure/Intake Pivot/PositionTargetRotations", getPositionTarget().getPosition() / 360d);
-    }
-
-    /**
-     * This function returns whether or not the subsystem has reached its position
-     * target
-     *
-     * @return whether the subsystem has reached its position target
-     */
-    public boolean reachedTarget() {
-        return Math.abs(super.getPosition()
-                - (super.getPositionTarget().getPosition() / 360d)) <= super.getPositionTarget().getEpsilon();
-    }
-
-    /**
-     * Get the current position in degrees
-     * 
-     * @return the current position in degrees
-     */
     public double getPosition() {
-        return super.getPosition() * 360.0;
+      return position;
     }
 
     @Override
-    public Pose3d getParentPosition() {
-        if (loggableMechanism3dParent != null) {
-            return loggableMechanism3dParent.getDisplayPose3d();
-        }
-        return new Pose3d();
+    public double getEpsilon() {
+      return EPSILON;
     }
+  }
 
-    @Override
-    public void setParent(LoggableMechanism3d parent) {
-        if (parent == null) {
-            throw new IllegalArgumentException("Parent cannot be null");
-        }
-        if (parent == this) {
-            throw new IllegalArgumentException("Parent cannot be itself");
-        }
-        this.loggableMechanism3dParent = parent;
+  public IntakePivot(IntakePivotIO io) {
+    super("Intake Pivot", io);
+    setPositionTarget(IntakePivotTarget.STOW);
+    setControlMode(ControlMode.STOP);
+  }
+
+  public LoggableMechanism3d loggableMechanism3dParent = null;
+
+  @Override
+  public void periodic() {
+    super.periodic();
+    Logger.recordOutput(
+        "Superstructure/Intake Pivot/PositionTargetRotations",
+        getPositionTarget().getPosition() / 360d);
+  }
+
+  /**
+   * This function returns whether or not the subsystem has reached its position target
+   *
+   * @return whether the subsystem has reached its position target
+   */
+  public boolean reachedTarget() {
+    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
+        <= super.getPositionTarget().getEpsilon();
+  }
+
+  /**
+   * Get the current position in degrees
+   *
+   * @return the current position in degrees
+   */
+  public double getPosition() {
+    return super.getPosition() * 360.0;
+  }
+
+  @Override
+  public Pose3d getParentPosition() {
+    if (loggableMechanism3dParent != null) {
+      return loggableMechanism3dParent.getDisplayPose3d();
     }
+    return new Pose3d();
+  }
 
-    @Override
-    public Pose3d getDisplayPose3d() {
-        return getParentPosition()
-                .plus(IntakePivotConstants.BASE_TO_INTAKE_PIVOT_TRANSFORM)
-                .plus(
-                        new Transform3d(
-                                Translation3d.kZero, new Rotation3d(0, -Math.toRadians(getPosition() + 90), 0)));
+  @Override
+  public void setParent(LoggableMechanism3d parent) {
+    if (parent == null) {
+      throw new IllegalArgumentException("Parent cannot be null");
     }
+    if (parent == this) {
+      throw new IllegalArgumentException("Parent cannot be itself");
+    }
+    this.loggableMechanism3dParent = parent;
+  }
 
+  @Override
+  public Pose3d getDisplayPose3d() {
+    return getParentPosition()
+        .plus(IntakePivotConstants.BASE_TO_INTAKE_PIVOT_TRANSFORM)
+        .plus(
+            new Transform3d(
+                Translation3d.kZero, new Rotation3d(0, -Math.toRadians(getPosition() + 90), 0)));
+  }
 }
