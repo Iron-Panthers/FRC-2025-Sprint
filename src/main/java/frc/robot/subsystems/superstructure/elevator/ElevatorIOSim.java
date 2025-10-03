@@ -15,15 +15,16 @@ public class ElevatorIOSim extends GenericSuperstructureIOSim implements Elevato
     super(ElevatorConstants.ELEVATOR_CONFIG.motorID());
     this.reduction = ElevatorConstants.ELEVATOR_CONFIG.reduction();
 
-    elevatorSim = new ElevatorSim(
-        DCMotor.getKrakenX60Foc(2),
-        reduction,
-        ElevatorConstants.PHYSICAL_CONSTANTS.elevatorMassKg(),
-        ElevatorConstants.PHYSICAL_CONSTANTS.drumRadiusMeters(),
-        ElevatorConstants.PHYSICAL_CONSTANTS.minHeightMeters(),
-        ElevatorConstants.PHYSICAL_CONSTANTS.maxHeightMeters(),
-        ElevatorConstants.PHYSICAL_CONSTANTS.simulateGravity(),
-        0);
+    elevatorSim =
+        new ElevatorSim(
+            DCMotor.getKrakenX60Foc(2),
+            reduction,
+            ElevatorConstants.PHYSICAL_CONSTANTS.elevatorMassKg(),
+            ElevatorConstants.PHYSICAL_CONSTANTS.drumRadiusMeters(),
+            ElevatorConstants.PHYSICAL_CONSTANTS.minHeightMeters(),
+            ElevatorConstants.PHYSICAL_CONSTANTS.maxHeightMeters(),
+            ElevatorConstants.PHYSICAL_CONSTANTS.simulateGravity(),
+            0);
     setOffset();
     setSlot0(
         ElevatorConstants.GAINS.kP(),
@@ -53,14 +54,16 @@ public class ElevatorIOSim extends GenericSuperstructureIOSim implements Elevato
     // Convert position and velocity from meters to rotations for the
     // TalonFX sensor
     // Correct unit conversion: meters to rotations
-    double rotations = elevatorSim.getPositionMeters()
-        / (2 * Math.PI * ElevatorConstants.PHYSICAL_CONSTANTS.drumRadiusMeters())
-        * reduction;
+    double rotations =
+        elevatorSim.getPositionMeters()
+            / (2 * Math.PI * ElevatorConstants.PHYSICAL_CONSTANTS.drumRadiusMeters())
+            * reduction;
 
     // Correct unit conversion: meters/s to rotations/s
-    double velocityRPS = elevatorSim.getVelocityMetersPerSecond()
-        / (2 * Math.PI * ElevatorConstants.PHYSICAL_CONSTANTS.drumRadiusMeters())
-        * reduction;
+    double velocityRPS =
+        elevatorSim.getVelocityMetersPerSecond()
+            / (2 * Math.PI * ElevatorConstants.PHYSICAL_CONSTANTS.drumRadiusMeters())
+            * reduction;
 
     talon.getSimState().setRawRotorPosition(rotations);
     talon.getSimState().setRotorVelocity(velocityRPS);

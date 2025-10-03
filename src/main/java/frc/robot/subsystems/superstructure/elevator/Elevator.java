@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -7,6 +8,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.lib.generic_subsystems.superstructure.*;
+import frc.robot.utility.ElasticPID;
 import frc.robot.utility.LoggableMechanism3d;
 import org.littletonrobotics.junction.Logger;
 
@@ -51,9 +53,12 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>
 
   private double filteredSupplyCurrentAmps = 0;
 
-  private GenericSuperstructureIOInputsMotor2AutoLogged inputs2 = new GenericSuperstructureIOInputsMotor2AutoLogged();
+  private GenericSuperstructureIOInputsMotor2AutoLogged inputs2 =
+      new GenericSuperstructureIOInputsMotor2AutoLogged();
 
   private boolean zeroing = false;
+
+  ElasticPID elasticPID;
 
   public Elevator(ElevatorIO io) {
     super("Elevator", io);
@@ -62,6 +67,14 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>
 
     // setup the linear filter
     supplyCurrentFilter = LinearFilter.movingAverage(30);
+
+    elasticPID =
+        new ElasticPID(
+            io::setSlot0,
+            GravityTypeValue.Elevator_Static,
+            "Elevator",
+            ElevatorConstants.GAINS,
+            ElevatorConstants.MOTION_MAGIC_CONFIG);
   }
 
   @Override
@@ -83,6 +96,8 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>
     // record our outputs
     Logger.recordOutput(
         "Superstructure/" + name + "/Filtered supply current amps", getFilteredSupplyCurrentAmps());
+
+    elasticPID.periodic();
   }
 
   public double getFilteredSupplyCurrentAmps() {

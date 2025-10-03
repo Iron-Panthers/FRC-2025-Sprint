@@ -8,38 +8,35 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
+import frc.robot.utility.MotionMagicConfig;
+import frc.robot.utility.PIDGains;
 
 public class ElevatorConstants {
 
-  public static final ElevatorConfig ELEVATOR_CONFIG = switch (Constants.getRobotType()) {
-    case COMP -> new ElevatorConfig(
-        CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), (58.0 / 14.0) / 6);
-    case SIM -> new ElevatorConfig(
-        CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), (58.0 / 14.0));
-    default -> new ElevatorConfig(0, 0, 1); // FIXME
-  };
+  public static final ElevatorConfig ELEVATOR_CONFIG =
+      switch (Constants.getRobotType()) {
+        case COMP -> new ElevatorConfig(
+            CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), (58.0 / 14.0) / 6);
+        case SIM -> new ElevatorConfig(
+            CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), (58.0 / 14.0));
+        default -> new ElevatorConfig(0, 0, 1); // FIXME
+      };
 
-  public static final PIDGains GAINS = switch (Constants.getRobotType()) {
-    case COMP -> new PIDGains(2, 0, 0, 0, 0.08, 0.002, 0.35); // CHANGE VALUES WHEN CAD FINISHES
-    case SIM -> new PIDGains(2, 0, 0, 0, 0.03, 0.001, 2.63); // CHANGE VALUES WHEN CAD FINISHES
-    default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
-  };
+  public static final PIDGains GAINS =
+      switch (Constants.getRobotType()) {
+        case COMP -> new PIDGains(2, 0, 0, 0, 0.08, 0.002, 0.35); // CHANGE VALUES WHEN CAD FINISHES
+        case SIM -> new PIDGains(2, 0, 0, 0, 0.03, 0.001, 2.63); // CHANGE VALUES WHEN CAD FINISHES
+        default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
+      };
 
-  public static final MotionMagicConfig MOTION_MAGIC_CONFIG = switch (Constants.getRobotType()) {
-    case COMP -> new MotionMagicConfig(500, 100, 0);
-    case SIM -> new MotionMagicConfig(500, 100, 0);
-    default -> new MotionMagicConfig(0, 0, 0);
-  };
+  public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
+      switch (Constants.getRobotType()) {
+        case COMP -> new MotionMagicConfig(500, 100, 0);
+        case SIM -> new MotionMagicConfig(500, 100, 0);
+        default -> new MotionMagicConfig(0, 0, 0);
+      };
 
-  public record ElevatorConfig(int motorID, int motorID2, double reduction) {
-  }
-
-  public record PIDGains(
-      double kP, double kI, double kD, double kS, double kV, double kA, double kG) {
-  }
-
-  public record MotionMagicConfig(double acceleration, double cruiseVelocity, double jerk) {
-  }
+  public record ElevatorConfig(int motorID, int motorID2, double reduction) {}
 
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
 
@@ -73,18 +70,19 @@ public class ElevatorConstants {
       double drumRadiusMeters,
       double minHeightMeters,
       double maxHeightMeters,
-      boolean simulateGravity) {
-  }
+      boolean simulateGravity) {}
 
-  public static final ElevatorPhysicalConstants PHYSICAL_CONSTANTS = switch (Constants.getRobotType()) {
-    case SIM -> new ElevatorPhysicalConstants(4.0120245, 0.0239776, 0, 5, true);
-    case COMP -> new ElevatorPhysicalConstants(0, 0, 0, 0, false);
-  }; // CHANGE VALUES WHEN CAD FINISHES
+  public static final ElevatorPhysicalConstants PHYSICAL_CONSTANTS =
+      switch (Constants.getRobotType()) {
+        case SIM -> new ElevatorPhysicalConstants(4.0120245, 0.0239776, 0, 5, true);
+        case COMP -> new ElevatorPhysicalConstants(0, 0, 0, 0, false);
+      }; // CHANGE VALUES WHEN CAD FINISHES
 
-  public static final Transform3d ELEVATOR_BASE_3D_OFFSET = switch (Constants.getRobotType()) {
-    default -> new Transform3d(
-        new Translation3d(
-            Units.inchesToMeters(-3.0), Units.inchesToMeters(0), Units.inchesToMeters(2.875)),
-        new Rotation3d(0, 0, 0));
-  };
+  public static final Transform3d ELEVATOR_BASE_3D_OFFSET =
+      switch (Constants.getRobotType()) {
+        default -> new Transform3d(
+            new Translation3d(
+                Units.inchesToMeters(-3.0), Units.inchesToMeters(0), Units.inchesToMeters(2.875)),
+            new Rotation3d(0, 0, 0));
+      };
 }
