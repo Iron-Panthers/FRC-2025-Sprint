@@ -51,14 +51,13 @@ public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTa
   }
 
   /**
-   * This function returns whether or not the subsystem has reached its position
-   * target
+   * This function returns whether or not the subsystem has reached its position target
    *
    * @return whether the subsystem has reached its position target
    */
   public boolean reachedTarget() {
-    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d)) <= super.getPositionTarget()
-        .getEpsilon();
+    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
+        <= super.getPositionTarget().getEpsilon();
   }
 
   /**

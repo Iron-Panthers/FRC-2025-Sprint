@@ -14,9 +14,10 @@ public class IntakeRollersIOSim extends GenericRollersIOSim implements IntakeRol
 
   public IntakeRollersIOSim() {
     super(ID, CURRENT_LIMIT_AMPS, INVERTED, BRAKE, REDUCTION);
-    intakeRollersSim = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60Foc(1), MOI, REDUCTION),
-        DCMotor.getKrakenX60Foc(1));
+    intakeRollersSim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60Foc(1), MOI, REDUCTION),
+            DCMotor.getKrakenX60Foc(1));
   }
 
   @Override
@@ -33,10 +34,11 @@ public class IntakeRollersIOSim extends GenericRollersIOSim implements IntakeRol
     double rotations = 0; // can't really be simulated
 
     // Divides our angular velocity by our reduction
-    double velocityRPS = intakeRollersSim.getAngularVelocityRadPerSec() * REDUCTION; // TODO: look into why this is
-                                                                                     // multiplied by the reduction I
-                                                                                     // don't rly know what I was
-                                                                                     // smoking -- bruce
+    double velocityRPS =
+        intakeRollersSim.getAngularVelocityRadPerSec() * REDUCTION; // TODO: look into why this is
+    // multiplied by the reduction I
+    // don't rly know what I was
+    // smoking -- bruce
 
     talon.getSimState().setRawRotorPosition(rotations);
     talon.getSimState().setRotorVelocity(velocityRPS);

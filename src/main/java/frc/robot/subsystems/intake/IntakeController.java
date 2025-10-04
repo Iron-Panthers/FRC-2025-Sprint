@@ -2,7 +2,6 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intake.intakePivot.IntakePivot;
 import frc.robot.subsystems.intake.intakePivot.IntakePivot.IntakePivotTarget;
@@ -79,8 +78,8 @@ public class IntakeController extends SubsystemBase {
   /**
    * Checks if the intake pivot mechanism has reached its target position.
    *
-   * @return {@code true} if the intake pivot has reached its target position,
-   *         {@code false} otherwise.
+   * @return {@code true} if the intake pivot has reached its target position, {@code false}
+   *     otherwise.
    */
   public boolean intakeReachedTarget() {
     return intakePivot.reachedTarget();
@@ -98,23 +97,23 @@ public class IntakeController extends SubsystemBase {
    * Creates a command to set the target state of the intake system.
    *
    * @param target The desired {@link IntakeState} to set as the target state.
-   * @return A {@link Command} that sets the target state and monitors when the
-   *         intake reaches the target.
-   *
-   *         The command performs the following actions:
-   *         - Initializes by setting the target state of the intake system.
-   *         - Executes with no additional behavior during the command's active
-   *         phase.
-   *         - Cleans up with no specific actions upon command termination.
-   *         - Ends when the intake system reaches the specified target state.
+   * @return A {@link Command} that sets the target state and monitors when the intake reaches the
+   *     target.
+   *     <p>The command performs the following actions: - Initializes by setting the target state of
+   *     the intake system. - Executes with no additional behavior during the command's active
+   *     phase. - Cleans up with no specific actions upon command termination. - Ends when the
+   *     intake system reaches the specified target state.
    */
   public Command setTargetCommand(IntakeState target) {
-    return new FunctionalCommand(() -> {
-      this.targetState = target;
-    }, () -> {
-    }, (exited) -> {
-    }, () -> {
-      return intakeReachedTarget();
-    }, this);
+    return new FunctionalCommand(
+        () -> {
+          this.targetState = target;
+        },
+        () -> {},
+        (exited) -> {},
+        () -> {
+          return intakeReachedTarget();
+        },
+        this);
   }
 }
