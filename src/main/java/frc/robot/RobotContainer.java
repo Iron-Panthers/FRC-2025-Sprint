@@ -19,6 +19,8 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIO;
+import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIOSim;
+import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -60,7 +62,6 @@ public class RobotContainer {
   private IntakeRollers intakeRollers;
 
   public RobotContainer() {
-    intakeRollers = null;
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
@@ -75,6 +76,7 @@ public class RobotContainer {
           // VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -96,6 +98,21 @@ public class RobotContainer {
                   new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
+          intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
+        }
+        case PRACTICE -> {
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
+          // vision = new Vision(new VisionIOPhotonvision(4), new
+          // VisionIOPhotonvision(5));
+          rgb = new RGB(new RGBIOCANdle());
+          canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
         }
       }
     }

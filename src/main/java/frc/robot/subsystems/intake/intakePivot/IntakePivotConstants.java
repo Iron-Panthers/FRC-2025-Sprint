@@ -85,5 +85,6 @@ public class IntakePivotConstants {
       switch (Constants.getRobotType()) {
         case SIM -> new IntakePivotPhysicalConstants(0.02, 0.706747, -1000.0, 1000, true);
         case COMP -> new IntakePivotPhysicalConstants(0.1, 0, 0, 0, false);
+        default -> new IntakePivotPhysicalConstants(0.1, 0, 0, 0, false);
       };
 }

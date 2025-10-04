@@ -7,6 +7,7 @@ public class IntakeRollersConstants {
       switch (Constants.getRobotType()) {
         case COMP -> 26;
         case SIM -> 26;
+        case PRACTICE -> 0; // FIXME: This is where you put the id's for motors
         default -> 0;
       };
   public static final int CURRENT_LIMIT_AMPS =
