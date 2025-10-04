@@ -4,10 +4,11 @@ import frc.robot.lib.generic_subsystems.rollers.*;
 
 public class IntakeRollers extends GenericRollers<IntakeRollers.Target> {
   public enum Target implements GenericRollers.VoltageTarget {
-    IDLE(0),
-    INTAKE(4),
-    HOLD(0),
-    EJECT(-4);
+    IDLE(0), // for not moving
+    INTAKE(4), // for intaking the coral
+    HOLD(0), // for holding the coral
+    EJECT(-4), // for ejecting into L1
+    PASS(1); // for passing to the grabber
 
     private double volts;
 
@@ -21,6 +22,6 @@ public class IntakeRollers extends GenericRollers<IntakeRollers.Target> {
   }
 
   public IntakeRollers(IntakeRollersIO intakeRollersIO) {
-    super("IntakeRollers", intakeRollersIO);
+    super("Intake Rollers", intakeRollersIO);
   }
 }

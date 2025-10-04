@@ -11,11 +11,11 @@ import org.littletonrobotics.junction.Logger;
 public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTarget>
     implements LoggableMechanism3d {
   public enum IntakePivotTarget implements GenericSuperstructure.PositionTarget {
-    TOP(-79),
+    TOP(-79), // TODO: Set and document all of these values
     INTAKE(-96),
     STOW(-96),
     L1(-110),
-    PASS(-96); // FIXME: We have no idea what this value is
+    PASS(-96);
 
     private double position;
     private static final double EPSILON = IntakePivotConstants.POSITION_TARGET_EPSILON;
@@ -51,13 +51,14 @@ public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTa
   }
 
   /**
-   * This function returns whether or not the subsystem has reached its position target
+   * This function returns whether or not the subsystem has reached its position
+   * target
    *
    * @return whether the subsystem has reached its position target
    */
   public boolean reachedTarget() {
-    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
-        <= super.getPositionTarget().getEpsilon();
+    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d)) <= super.getPositionTarget()
+        .getEpsilon();
   }
 
   /**

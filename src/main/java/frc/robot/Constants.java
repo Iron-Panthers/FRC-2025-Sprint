@@ -17,8 +17,10 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
- * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
- * on a roboRIO. Change the value of "simMode" to switch between "sim" (physics sim) and "replay"
+ * This class defines the runtime mode used by AdvantageKit. The mode is always
+ * "real" when running
+ * on a roboRIO. Change the value of "simMode" to switch between "sim" (physics
+ * sim) and "replay"
  * (log replay from a file).
  */
 public final class Constants {
@@ -54,8 +56,11 @@ public final class Constants {
 
   /* */
   public enum RobotType {
+    /** For our competition robot */
     COMP,
+    /** For our simulator robot */
     SIM,
+    /** For our practice robot */
     PRACTICE;
   }
 }
