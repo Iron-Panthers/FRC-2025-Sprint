@@ -10,18 +10,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements LoggableMechanism3d {
   public enum ArmTarget implements GenericSuperstructure.PositionTarget {
-    // please change all of these values
-    TOP(-79),
+    TOP(-79), // TODO: need to tune these values
     INTAKE(-96),
-    STOW(-96),
-    L1(-110),
-    L2(223),
-    L3(185),
-    // CLIMB(-115),
-    L4(-165),
-    ZERO(0),
-    // for the algae on L2
-    DESCORE_LOW(-15);
+    STOW(-96);
 
     private double position;
     private static final double EPSILON = ArmConstants.POSITION_TARGET_EPSILON;
@@ -46,6 +37,10 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
     setControlMode(ControlMode.STOP);
   }
 
+  /**
+   * The parent LoggableMechanism3d, typically a reference to the elevator
+   * subsystem
+   */
   public LoggableMechanism3d loggableMechanism3dParent = null;
 
   @Override
@@ -56,15 +51,19 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
   }
 
   /**
-   * This function returns whether or not the subsystem has reached its position target
+   * This function returns whether or not the subsystem has reached its position
+   * target
    *
    * @return whether the subsystem has reached its position target
    */
   public boolean reachedTarget() {
-    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
-        <= super.getPositionTarget().getEpsilon();
+    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d)) <= super.getPositionTarget()
+        .getEpsilon();
   }
 
+  /**
+   * Returns the position of the arm in DEGREES
+   */
   public double getPosition() {
     return super.getPosition() * 360.0;
   }

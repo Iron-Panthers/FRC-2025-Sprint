@@ -18,42 +18,41 @@ public class ArmConstants {
         default -> new ArmConfig(0, 0, 0, 1);
       };
 
-  public static final PIDGains GAINS =
-      switch (Constants.getRobotType()) {
+    public static final PIDGains GAINS = switch (Constants.getRobotType()) {
         case COMP -> new PIDGains(0.1, 0, 0, 0, 10.8965, 0, 0.35);
         case SIM -> new PIDGains(50, 0, 0, 0, 8 / 0.8722, 0, 0.35);
         default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
-      };
+    };
 
-  public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
-      switch (Constants.getRobotType()) {
+    public static final MotionMagicConfig MOTION_MAGIC_CONFIG = switch (Constants.getRobotType()) {
         case COMP -> new MotionMagicConfig(7.5, 10); // 3, 10
         case SIM -> new MotionMagicConfig(7.5, 10); // 3, 10
         default -> new MotionMagicConfig(0, 0);
-      };
+    };
 
   public record ArmConfig(int motorID, int canCoderID, double canCoderOffset, double reduction) {}
 
-  public record PIDGains(
-      double kP, double kI, double kD, double kS, double kV, double kA, double kG) {}
+    public record PIDGains(
+            double kP, double kI, double kD, double kS, double kV, double kA, double kG) {
+    }
 
-  public record MotionMagicConfig(double acceleration, double cruiseVelocity) {}
+    public record MotionMagicConfig(double acceleration, double cruiseVelocity) {
+    }
 
-  public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
+    public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
 
-  public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
 
-  public static final SensorDirectionValue CANCODER_DIRECTION =
-      SensorDirectionValue.Clockwise_Positive;
+    public static final SensorDirectionValue CANCODER_DIRECTION = SensorDirectionValue.Clockwise_Positive;
 
-  public static final double POSITION_TARGET_EPSILON = 0.01;
+    public static final double POSITION_TARGET_EPSILON = 0.01;
 
-  // SOFT LIMITS NEED WORK
+    // SOFT LIMITS NEED WORK
 
-  // CURRENT LIMITS
-  public static final double UPPER_VOLT_LIMIT = 12;
-  public static final double LOWER_VOLT_LIMIT = -12;
-  public static final double SUPPLY_CURRENT_LIMIT = 30;
+    // CURRENT LIMITS
+    public static final double UPPER_VOLT_LIMIT = 12;
+    public static final double LOWER_VOLT_LIMIT = -12;
+    public static final double SUPPLY_CURRENT_LIMIT = 30;
 
   // ARM POSITION CONSTANTS
   public static final Transform3d
@@ -82,10 +81,10 @@ public class ArmConstants {
   public static final Transform3d ARM_TO_OUTTAKE_TRANSFORM =
       switch (Constants.getRobotType()) {
         default -> new Transform3d(
-            new Translation3d(
-                Units.inchesToMeters(22.445),
-                Units.inchesToMeters(0.0),
-                Units.inchesToMeters(1.742)),
-            new Rotation3d(0, 0, 0));
-      };
+                new Translation3d(
+                        Units.inchesToMeters(22.445),
+                        Units.inchesToMeters(0.0),
+                        Units.inchesToMeters(1.742)),
+                new Rotation3d(0, 0, 0));
+    };
 }

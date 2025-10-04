@@ -33,6 +33,9 @@ public class ArmIOTalonFX extends GenericSuperstructureIOTalonFX implements ArmI
         GRAVITY_TYPE);
   }
 
+  /**
+   * Move move the arm to a position with the given degrees
+   */
   @Override
   public void runPosition(double position) {
     super.runPosition(position / 360d); // convert degrees to rotations
