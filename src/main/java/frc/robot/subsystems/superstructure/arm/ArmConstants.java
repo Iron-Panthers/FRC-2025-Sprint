@@ -11,11 +11,11 @@ import frc.robot.Constants;
 import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
 
 public class ArmConstants {
-  public static final PivotConfig PIVOT_CONFIG =
+  public static final ArmConfig ARM_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new PivotConfig(CAN.at(8, "Pivot"), CAN.at(28, "Pivot Encoder"), 0, 1);
-        case SIM -> new PivotConfig(CAN.at(8, "Pivot"), CAN.at(28, "Pivot Encoder"), 0, 25.0 / 3);
-        default -> new PivotConfig(0, 0, 0, 1);
+        case COMP -> new ArmConfig(CAN.at(8, "Arm"), CAN.at(28, "Arm Encoder"), 0, 1);
+        case SIM -> new ArmConfig(CAN.at(8, "Arm"), CAN.at(28, "Arm Encoder"), 0, 25.0 / 3);
+        default -> new ArmConfig(0, 0, 0, 1);
       };
 
   public static final PIDGains GAINS =
@@ -32,7 +32,7 @@ public class ArmConstants {
         default -> new MotionMagicConfig(0, 0);
       };
 
-  public record PivotConfig(int motorID, int canCoderID, double canCoderOffset, double reduction) {}
+  public record ArmConfig(int motorID, int canCoderID, double canCoderOffset, double reduction) {}
 
   public record PIDGains(
       double kP, double kI, double kD, double kS, double kV, double kA, double kG) {}
@@ -55,9 +55,9 @@ public class ArmConstants {
   public static final double LOWER_VOLT_LIMIT = -12;
   public static final double SUPPLY_CURRENT_LIMIT = 30;
 
-  // PIVOT POSITION CONSTANTS
+  // ARM POSITION CONSTANTS
   public static final Transform3d
-      ELEVATOR_TO_PIVOT_TRANSFORM = // HACK: Currently no transform because testing
+      ELEVATOR_TO_ARM_TRANSFORM = // HACK: Currently no transform because testing
       switch (Constants.getRobotType()) {
             default -> new Transform3d(
                 new Translation3d(
@@ -66,20 +66,20 @@ public class ArmConstants {
           };
 
   // PHYSICAL CONSTANTS
-  public static record PivotPhysicalConstants(
+  public static record ArmPhysicalConstants(
       double momentOfInertia,
       double lengthMeters,
       double minAngleRads,
       double maxAngleRads,
       boolean simulateGravity) {}
 
-  public static final PivotPhysicalConstants PHYSICAL_CONSTANTS =
+  public static final ArmPhysicalConstants PHYSICAL_CONSTANTS =
       switch (Constants.getRobotType()) {
-        case SIM -> new PivotPhysicalConstants(0.066, 0.497, -1000.0, 1000, true);
-        case COMP -> new PivotPhysicalConstants(0.1, 0, 0, 0, false);
+        case SIM -> new ArmPhysicalConstants(0.066, 0.497, -1000.0, 1000, true);
+        case COMP -> new ArmPhysicalConstants(0.1, 0, 0, 0, false);
       };
 
-  public static final Transform3d PIVOT_TO_OUTTAKE_TRANSFORM =
+  public static final Transform3d ARM_TO_OUTTAKE_TRANSFORM =
       switch (Constants.getRobotType()) {
         default -> new Transform3d(
             new Translation3d(

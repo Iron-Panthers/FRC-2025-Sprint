@@ -8,8 +8,8 @@ import frc.robot.lib.generic_subsystems.superstructure.*;
 import frc.robot.utility.LoggableMechanism3d;
 import org.littletonrobotics.junction.Logger;
 
-public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements LoggableMechanism3d {
-  public enum PivotTarget implements GenericSuperstructure.PositionTarget {
+public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements LoggableMechanism3d {
+  public enum ArmTarget implements GenericSuperstructure.PositionTarget {
     // please change all of these values
     TOP(-79),
     INTAKE(-96),
@@ -26,7 +26,7 @@ public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements Logga
     private double position;
     private static final double EPSILON = ArmConstants.POSITION_TARGET_EPSILON;
 
-    private PivotTarget(double position) {
+    private ArmTarget(double position) {
       this.position = position;
     }
 
@@ -41,8 +41,8 @@ public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements Logga
   }
 
   public Arm(ArmIO io) {
-    super("Pivot", io);
-    setPositionTarget(PivotTarget.STOW);
+    super("Arm", io);
+    setPositionTarget(ArmTarget.STOW);
     setControlMode(ControlMode.STOP);
   }
 
@@ -52,7 +52,7 @@ public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements Logga
   public void periodic() {
     super.periodic();
     Logger.recordOutput(
-        "Superstructure/Pivot/PositionTargetRotations", getPositionTarget().getPosition() / 360d);
+        "Superstructure/Arm/PositionTargetRotations", getPositionTarget().getPosition() / 360d);
   }
 
   /**
@@ -92,7 +92,7 @@ public class Arm extends GenericSuperstructure<Arm.PivotTarget> implements Logga
   @Override
   public Pose3d getDisplayPose3d() {
     return getParentPosition()
-        .plus(ArmConstants.ELEVATOR_TO_PIVOT_TRANSFORM)
+        .plus(ArmConstants.ELEVATOR_TO_ARM_TRANSFORM)
         .plus(
             new Transform3d(
                 Translation3d.kZero, new Rotation3d(0, Math.toRadians(getPosition() - 90), 0)));

@@ -6,15 +6,15 @@ import frc.robot.lib.generic_subsystems.superstructure.*;
 
 public class ArmIOSim extends GenericSuperstructureIOSim implements ArmIO {
 
-  private final SingleJointedArmSim pivotSim;
+  private final SingleJointedArmSim armSim;
   private final double reduction;
 
   public ArmIOSim() {
-    super(ArmConstants.PIVOT_CONFIG.motorID());
+    super(ArmConstants.ARM_CONFIG.motorID());
 
-    this.reduction = ArmConstants.PIVOT_CONFIG.reduction();
+    this.reduction = ArmConstants.ARM_CONFIG.reduction();
 
-    pivotSim =
+    armSim =
         new SingleJointedArmSim(
             DCMotor.getKrakenX60Foc(1),
             reduction,
@@ -47,12 +47,12 @@ public class ArmIOSim extends GenericSuperstructureIOSim implements ArmIO {
     double appliedVoltage = talon.getSimState().getMotorVoltage();
 
     // Simulate physics
-    pivotSim.setInputVoltage(appliedVoltage);
-    pivotSim.update(0.02);
+    armSim.setInputVoltage(appliedVoltage);
+    armSim.update(0.02);
 
     // Convert position and velocity from meters to rotations for the TalonFX sensor
-    double rotations = pivotSim.getAngleRads() / (2 * Math.PI * reduction);
-    double velocityRPS = pivotSim.getVelocityRadPerSec() / (2 * Math.PI * reduction);
+    double rotations = armSim.getAngleRads() / (2 * Math.PI * reduction);
+    double velocityRPS = armSim.getVelocityRadPerSec() / (2 * Math.PI * reduction);
 
     talon.getSimState().setRawRotorPosition(rotations);
     talon.getSimState().setRotorVelocity(velocityRPS);
@@ -67,7 +67,7 @@ public class ArmIOSim extends GenericSuperstructureIOSim implements ArmIO {
 
   @Override
   public void setOffset() {
-    pivotSim.setState(0, 0);
+    armSim.setState(0, 0);
   }
 
   @Override

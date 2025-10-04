@@ -9,14 +9,14 @@ public class ArmIOTalonFX extends GenericSuperstructureIOTalonFX implements ArmI
   public ArmIOTalonFX() {
     super(
         new GenericSuperstructureConfiguration()
-            .withID(PIVOT_CONFIG.motorID())
+            .withID(ARM_CONFIG.motorID())
             .withMotorDirection(MOTOR_DIRECTION)
             .withSupplyCurrentLimit(SUPPLY_CURRENT_LIMIT)
-            .withReduction(PIVOT_CONFIG.reduction())
+            .withReduction(ARM_CONFIG.reduction())
             .withUpperVoltageLimit(UPPER_VOLT_LIMIT)
             .withLowerVoltageLimit(LOWER_VOLT_LIMIT)
-            .withCANCoderID(PIVOT_CONFIG.canCoderID())
-            .withCANCoderOffset(PIVOT_CONFIG.canCoderOffset())
+            .withCANCoderID(ARM_CONFIG.canCoderID())
+            .withCANCoderOffset(ARM_CONFIG.canCoderOffset())
             .withCANCoderDirection(CANCODER_DIRECTION));
 
     setSlot0(
