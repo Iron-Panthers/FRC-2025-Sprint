@@ -99,7 +99,17 @@ public class SuperstructureController extends SubsystemBase {
      *         and the physical constraints of the mechanism
      */
     public SuperstructurePose getTargetSuperstructurePose() {
-        return null;
+        // 1. Calculate the Min and Max heights for elevator based on pivot angle
+
+        // 2. Clamp the elevator target height between the min and max
+
+        // 3. Calculate the min and max angles for the arm based on the elevator height
+
+        // 4. Clamp the arm target angle between the min and max
+
+        // 5. Figure out what direction the arm should be allowed to move
+
+        return new SuperstructurePose(0, 0, null);
     }
 
 }
