@@ -18,6 +18,9 @@ import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.intake.IntakeControllers;
+import frc.robot.subsystems.intake.intakePivot.IntakePivot;
+import frc.robot.subsystems.intake.intakePivot.IntakePivotIOSim;
+import frc.robot.subsystems.intake.intakePivot.IntakePivotIOTalonFX;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIOSim;
@@ -60,7 +63,9 @@ public class RobotContainer {
   private Vision vision;
   private RGB rgb;
   private CANWatchdog canWatchdog;
-  private IntakeControllers intakeRollers;
+  private IntakeRollers intakeRollers;
+  private IntakePivot intakePivot;
+  private IntakeControllers intakeControllers;
 
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
@@ -77,7 +82,8 @@ public class RobotContainer {
           // VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
-          intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIOTalonFX()));
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -99,7 +105,8 @@ public class RobotContainer {
                   new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
-          intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIOSim()));
+          intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
+          intakePivot = new IntakePivot(new IntakePivotIOSim());
         }
         case PRACTICE -> {
           swerve =
@@ -113,9 +120,11 @@ public class RobotContainer {
           // VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
-          intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIOTalonFX()));
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
         }
       }
+      intakeControllers = new IntakeControllers(intakeRollers, intakePivot);
     }
 
     if (swerve == null) {
@@ -140,7 +149,7 @@ public class RobotContainer {
     }
 
     if (intakeRollers == null) {
-      intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIO() {}));
+      intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
     }
 
     nameCommands();
@@ -175,10 +184,9 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-
-    driverA.b().onTrue(intakeRollers.setTargetCommand(IntakeControllers.RollerState.POSITIVE));
-    driverA.y().onTrue(intakeRollers.setTargetCommand(IntakeControllers.RollerState.NEGATIVE));
-    driverA.x().onTrue(intakeRollers.setTargetCommand(IntakeControllers.RollerState.IDLE));
+    driverA.b().onTrue(intakeControllers.setTargetCommand(IntakeControllers.RollerState.INTAKE));
+    driverA.y().onTrue(intakeControllers.setTargetCommand(IntakeControllers.RollerState.EJECT));
+    driverA.x().onTrue(intakeControllers.setTargetCommand(IntakeControllers.RollerState.IDLE));
   }
 
   private void configureAutos() {

@@ -15,20 +15,7 @@ public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTa
     INTAKE(-96),
     STOW(-96),
     L1(-110),
-    L2(-107),
-    SCORE_L3(-117),
-    SETUP_L3(-79),
-    CLIMB(-115),
-    ZERO_LOW(-95.2),
-    ZERO_HIGH(90),
-    SETUP_L4(144),
-    SCORE_L4(149),
-    DESCORE_HIGH(0),
-    INTAKE_SIDE(40),
-    SCORE_SIDE(100),
-
-    // for the algae on L2
-    DESCORE_LOW(-15);
+    PASS(-96); // FIXME: We have no idea what this value is
 
     private double position;
     private static final double EPSILON = IntakePivotConstants.POSITION_TARGET_EPSILON;
