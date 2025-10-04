@@ -17,6 +17,8 @@ import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.intake.intakeRollers.IntakeRollers;
+import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIO;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -55,9 +57,10 @@ public class RobotContainer {
   private Vision vision;
   private RGB rgb;
   private CANWatchdog canWatchdog;
+  private IntakeRollers intakeRollers;
 
   public RobotContainer() {
-
+    intakeRollers = null;
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
@@ -118,6 +121,10 @@ public class RobotContainer {
       rgb = new RGB(new RGBIO() {});
     }
 
+    if (intakeRollers == null) {
+      intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
+    }
+
     nameCommands();
     configureAutos();
     configureBindings();
@@ -150,6 +157,21 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+
+    driverA
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () -> intakeRollers.setVoltageTarget(IntakeRollers.Target.POSITIVE)));
+    driverA
+        .y()
+        .onTrue(
+            new InstantCommand(
+                () -> intakeRollers.setVoltageTarget(IntakeRollers.Target.NEGATIVE)));
+    driverA
+        .x()
+        .onTrue(
+            new InstantCommand(() -> intakeRollers.setVoltageTarget(IntakeRollers.Target.IDLE)));
   }
 
   private void configureAutos() {
