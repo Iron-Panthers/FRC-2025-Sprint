@@ -12,16 +12,16 @@ import org.littletonrobotics.junction.Logger;
 public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarget> {
   public enum ClimbPivotTarget implements GenericSuperstructure.PositionTarget {
 
-    // "Bottom" is ready to ram into cage
+    /** "Bottom" is ready to ram into cage */
     BOTTOM(0.07),
 
-    // "Top" is apex of climb
+    /** "Top" is apex of climb */
     TOP(0.307),
 
-    // To get coral out
+    /** To get coral out */
     CLEAR(-0.15),
 
-    // When not climbing
+    /** When not climbing */
     STOW(0.25);
 
     private double position = 0;
@@ -41,16 +41,17 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
   }
 
   // induction sensor
-  private DigitalInput inductionSensor;
+  private DigitalInput inductionSensor; // FIXME: check with engi about sensor
 
-  // run tino the cage - sensor triggers - flash leds to tell driver - button
+  // run into the cage - sensor triggers - flash leds to tell driver - button
   // presses : reels it in
   // or out
   // CAN'T BACKOUT
   // set position for intake in a cage, a button to climb up or down
   public ClimbPivot(ClimbPivotIO io) {
     super("Climb Pivot", io);
-    inductionSensor = new DigitalInput(INDUCTION_PORT_NUMBER);
+    inductionSensor = new DigitalInput(INDUCTION_PORT_NUMBER); // TODO: figure out general sensor things -- maybe
+                                                               // dedicated subsystem
     setPositionTarget(ClimbPivotTarget.STOW);
     setControlMode(ControlMode.STOP);
   }
@@ -62,11 +63,13 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
 
   @Override
   public void periodic() {
-
     super.periodic();
-    Logger.recordOutput("Superstructure/Climb/Climb Pivot/Hit Cage?", hitCage());
-    Logger.recordOutput("Superstructure/Climb/Climb Pivot/Climb Pivot State", getPositionTarget());
-    SmartDashboard.putBoolean("Has Cage?", hitCage());
+
+    // send message to the LEDs
     RGBMessages.CLIMB.setIsExpired(!hitCage());
+
+    Logger.recordOutput("Climb/Climb Pivot/Has Hit Cage", hitCage());
+    Logger.recordOutput("Climb/Climb Pivot/Climb Pivot State", getPositionTarget());
+    SmartDashboard.putBoolean("Has Hit Cage", hitCage());
   }
 }

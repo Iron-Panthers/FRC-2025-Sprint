@@ -14,10 +14,16 @@ import org.littletonrobotics.junction.Logger;
 public class ClimbController extends SubsystemBase {
 
   public enum ClimbState {
+    /** Stowed state of the climb mech */
     IDLE,
+    /** State for intaking the cage */
     INTAKE,
+    /**
+     * Pose for flicking out the coral from the climb mech (if it is in the robot)
+     */
     CLEAR,
-    CLIMB; // The actual action of climbing
+    /** The actual action of climbing */
+    CLIMB;
   }
 
   private final ClimbRollers climbRollers;
@@ -38,47 +44,42 @@ public class ClimbController extends SubsystemBase {
     switch (targetState) {
       case IDLE -> {
         climbRollers.setVoltageTarget(ClimbRollers.Target.IDLE);
-        climbPivot.setPositionTarget(ClimbPivot.ClimbPivotTarget.STOW);
+        climbPivot.setPositionTarget(ClimbPivotTarget.STOW);
       }
       case INTAKE -> {
         climbRollers.setVoltageTarget(ClimbRollers.Target.INTAKE);
-        climbPivot.setPositionTarget(ClimbPivot.ClimbPivotTarget.STOW);
+        climbPivot.setPositionTarget(ClimbPivotTarget.STOW);
       }
       case CLEAR -> {
         climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
-        climbPivot.setPositionTarget(ClimbPivot.ClimbPivotTarget.CLEAR);
+        climbPivot.setPositionTarget(ClimbPivotTarget.CLEAR);
       }
       case CLIMB -> {
-        //need an if statement that checks if we are actually ready to climb
+        // TODO: need an if statement that checks if we are actually ready to climb
         climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
-        climbPivot.setPositionTarget(ClimbPivot.ClimbPivotTarget.TOP);
+        climbPivot.setPositionTarget(ClimbPivotTarget.TOP);
       }
     }
-    
-    climbPivot.periodic();
 
+    // periodics
+    climbPivot.periodic();
     climbRollers.periodic();
 
-    Logger.recordOutput("Rollers/TargetState", targetState);
+    Logger.recordOutput("Climb/TargetState", targetState);
   }
 
-  public Command setPositionTargetCommand(ClimbPivotTarget target) {
-    return new InstantCommand(
-        () -> {
-          climbPivot.setPositionTarget(target);
-        });
-  }
-
-   // Flick the climb to let coral fall out
-  public Command clearCoral() {
+  /** Flick the climb to let coral fall out */
+  public Command clearCoralCommand() {
     return new SequentialCommandGroup(
         // Wait until we get to the clear position
         new FunctionalCommand(
             () -> {
               climbPivot.setPositionTarget(ClimbPivotTarget.CLEAR);
             },
-            () -> {},
-            (e) -> {},
+            () -> {
+            },
+            (e) -> {
+            },
             climbPivot::reachedTarget),
 
         // Then just go back up to stow

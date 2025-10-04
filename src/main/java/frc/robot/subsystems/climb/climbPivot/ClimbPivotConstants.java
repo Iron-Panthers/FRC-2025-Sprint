@@ -9,43 +9,42 @@ import java.util.Optional;
 
 // TODO: Edit allllllllllllllllllllllllllllllllllllllllll of these constants (yet again) (I think)
 public class ClimbPivotConstants {
-  public static final ClimbPivotConfig CLIMB_PIVOT_CONFIG =
-      switch (Constants.getRobotType()) {
-        case COMP -> new ClimbPivotConfig(CAN.at(37, "Climb Pivot Motor"), 2.5, 45, 0.201);
-        case SIM -> new ClimbPivotConfig(37, 2.5, 45, 0.201);
-        default -> new ClimbPivotConfig(0, 1, 0, 0d);
-      };
+  public static final ClimbPivotConfig CLIMB_PIVOT_CONFIG = switch (Constants.getRobotType()) {
+    case COMP -> new ClimbPivotConfig(CAN.at(37, "Climb Pivot Motor"), 2.5, 45, 0.201);
+    case SIM -> new ClimbPivotConfig(37, 2.5, 45, 0.201);
+    default -> new ClimbPivotConfig(0, 1, 0, 0d);
+  };
 
-  public static final PIDGains GAINS =
-      switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(600, 0, 0, 0, 66.5, 5.714, 0);
-        case SIM -> new PIDGains(600, 0, 0, 0, 66.5, 5.714, 0);
-        default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
-      };
+  public static final PIDGains GAINS = switch (Constants.getRobotType()) {
+    case COMP -> new PIDGains(600, 0, 0, 0, 66.5, 5.714, 0);
+    case SIM -> new PIDGains(600, 0, 0, 0, 66.5, 5.714, 0);
+    default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
+  };
 
-  public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
-      switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(2, 1, 0);
-        case SIM -> new MotionMagicConfig(2, 1, 0);
-        default -> new MotionMagicConfig(0, 0, 0);
-      };
+  public static final MotionMagicConfig MOTION_MAGIC_CONFIG = switch (Constants.getRobotType()) {
+    case COMP -> new MotionMagicConfig(2, 1, 0);
+    case SIM -> new MotionMagicConfig(2, 1, 0);
+    default -> new MotionMagicConfig(0, 0, 0);
+  };
 
-  public record ClimbPivotConfig(int motorID, double reduction, int canCoderID, double canCoderOffset) {}
+  public record ClimbPivotConfig(int motorID, double reduction, int canCoderID, double canCoderOffset) {
+  }
 
   public record PIDGains(
-      double kP, double kI, double kD, double kS, double kV, double kA, double kG) {}
+      double kP, double kI, double kD, double kS, double kV, double kA, double kG) {
+  }
 
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
 
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
-  public static final SensorDirectionValue CANCODER_DIRECTION =
-      SensorDirectionValue.CounterClockwise_Positive;
+  public static final SensorDirectionValue CANCODER_DIRECTION = SensorDirectionValue.CounterClockwise_Positive;
 
   public static final double POSITION_TARGET_EPSILON = 0.03;
 
   public static final Optional<Double> SENSOR_DISCONTINUITY_POINT = Optional.of(0.7);
 
-  public record MotionMagicConfig(double acceleration, double cruiseVelocity, double jerk) {}
+  public record MotionMagicConfig(double acceleration, double cruiseVelocity, double jerk) {
+  }
 
   // SOFT LIMITS
   public static final double UPPER_EXTENSION_LIMIT = 121d; // top limit is 121 rotations
@@ -70,11 +69,11 @@ public class ClimbPivotConstants {
       double lengthMeters,
       double minAngleRads,
       double maxAngleRads,
-      boolean simulateGravity) {}
+      boolean simulateGravity) {
+  }
 
-  public static final ClimbPivotPhysicalConstants PHYSICAL_CONSTANTS =
-      switch (Constants.getRobotType()) {
-        case SIM -> new ClimbPivotPhysicalConstants(0.1, 0.5, -1000.0, 1000, false);
-        case COMP -> new ClimbPivotPhysicalConstants(0.1, 0, 0, 0, false);
-      };
+  public static final ClimbPivotPhysicalConstants PHYSICAL_CONSTANTS = switch (Constants.getRobotType()) {
+    case SIM -> new ClimbPivotPhysicalConstants(0.1, 0.5, -1000.0, 1000, false);
+    case COMP -> new ClimbPivotPhysicalConstants(0.1, 0, 0, 0, false);
+  };
 }
