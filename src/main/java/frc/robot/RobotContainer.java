@@ -17,6 +17,7 @@ import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.intake.IntakeControllers;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIOSim;
@@ -59,7 +60,7 @@ public class RobotContainer {
   private Vision vision;
   private RGB rgb;
   private CANWatchdog canWatchdog;
-  private IntakeRollers intakeRollers;
+  private IntakeControllers intakeRollers;
 
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
@@ -76,7 +77,7 @@ public class RobotContainer {
           // VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
-          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIOTalonFX()));
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -98,7 +99,7 @@ public class RobotContainer {
                   new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
-          intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
+          intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIOSim()));
         }
         case PRACTICE -> {
           swerve =
@@ -112,7 +113,7 @@ public class RobotContainer {
           // VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
-          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIOTalonFX()));
         }
       }
     }
@@ -139,7 +140,7 @@ public class RobotContainer {
     }
 
     if (intakeRollers == null) {
-      intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
+      intakeRollers = new IntakeControllers(new IntakeRollers(new IntakeRollersIO() {}));
     }
 
     nameCommands();
@@ -175,20 +176,9 @@ public class RobotContainer {
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
-    driverA
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () -> intakeRollers.setVoltageTarget(IntakeRollers.Target.POSITIVE)));
-    driverA
-        .y()
-        .onTrue(
-            new InstantCommand(
-                () -> intakeRollers.setVoltageTarget(IntakeRollers.Target.NEGATIVE)));
-    driverA
-        .x()
-        .onTrue(
-            new InstantCommand(() -> intakeRollers.setVoltageTarget(IntakeRollers.Target.IDLE)));
+    driverA.b().onTrue(intakeRollers.setTargetCommand(IntakeControllers.RollerState.POSITIVE));
+    driverA.y().onTrue(intakeRollers.setTargetCommand(IntakeControllers.RollerState.NEGATIVE));
+    driverA.x().onTrue(intakeRollers.setTargetCommand(IntakeControllers.RollerState.IDLE));
   }
 
   private void configureAutos() {
