@@ -37,10 +37,7 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
     setControlMode(ControlMode.STOP);
   }
 
-  /**
-   * The parent LoggableMechanism3d, typically a reference to the elevator
-   * subsystem
-   */
+  /** The parent LoggableMechanism3d, typically a reference to the elevator subsystem */
   public LoggableMechanism3d loggableMechanism3dParent = null;
 
   @Override
@@ -51,19 +48,16 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
   }
 
   /**
-   * This function returns whether or not the subsystem has reached its position
-   * target
+   * This function returns whether or not the subsystem has reached its position target
    *
    * @return whether the subsystem has reached its position target
    */
   public boolean reachedTarget() {
-    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d)) <= super.getPositionTarget()
-        .getEpsilon();
+    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
+        <= super.getPositionTarget().getEpsilon();
   }
 
-  /**
-   * Returns the position of the arm in DEGREES
-   */
+  /** Returns the position of the arm in DEGREES */
   public double getPosition() {
     return super.getPosition() * 360.0;
   }

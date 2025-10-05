@@ -1,13 +1,10 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.units.DimensionlessUnit;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -16,7 +13,6 @@ import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmConstants;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorConstants;
-
 import org.littletonrobotics.junction.Logger;
 
 public class SuperstructureController extends SubsystemBase {
@@ -64,16 +60,14 @@ public class SuperstructureController extends SubsystemBase {
     BOTH
   }
 
-  /**
-   * Record for the pose of the superstructure
-   */
+  /** Record for the pose of the superstructure */
   public class SuperstructurePose {
     public final Distance elevatorHeight;
     public final Angle armAngle;
     public final ArmDirection armDirection;
 
     /**
-     *Constructor for the superstructure pose
+     * Constructor for the superstructure pose
      *
      * @param elevatorHeight height of the elevator in meters
      * @param armAngle angle of the arm in degrees
@@ -90,10 +84,7 @@ public class SuperstructureController extends SubsystemBase {
       mech.getRoot("Superstructure", 25, 0)
           .append(new MechanismLigament2d("Elevator", 5, elevatorHeight.in(Units.Inches)))
           .append(
-              new MechanismLigament2d(
-                  "Arm",
-                  ArmConstants.ARM_LENGTH,
-                  armAngle.in(Units.Degrees)));
+              new MechanismLigament2d("Arm", ArmConstants.ARM_LENGTH, armAngle.in(Units.Degrees)));
       return mech;
     }
   }
@@ -109,16 +100,18 @@ public class SuperstructureController extends SubsystemBase {
    *     bottom of the elevator
    */
   record SuperstructureConstraints(
-      Distance minElevatorHeight, Distance maxElevatorHeight, Angle minArmAngle, Angle maxArmAngle) {}
+      Distance minElevatorHeight,
+      Distance maxElevatorHeight,
+      Angle minArmAngle,
+      Angle maxArmAngle) {}
   ;
 
-  /**
-   * The current target state of the superstructure
-   */
+  /** The current target state of the superstructure */
   private SuperstructureState currentState = SuperstructureState.STOW;
 
   /**
    * Get the current target state of the superstructure
+   *
    * @return The current target state of the superstructure
    */
   public SuperstructureState getCurrentState() {
@@ -127,6 +120,7 @@ public class SuperstructureController extends SubsystemBase {
 
   /**
    * Set the current target state of the superstructure
+   *
    * @param state
    */
   public void setCurrentState(SuperstructureState state) {
@@ -155,8 +149,7 @@ public class SuperstructureController extends SubsystemBase {
   @Override
   public void periodic() {
     // 1. run state logic
-    SuperstructurePose targetPose =
-        getTargetSuperstructurePose(); // gets the target pose for the superstructure
+    SuperstructurePose targetPose = getTargetSuperstructurePose();
     elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
     arm.setPositionTargetManual(targetPose.armAngle.in(Units.Degrees));
     // TODO: make sure the arm moves in the calculated direction
@@ -172,12 +165,12 @@ public class SuperstructureController extends SubsystemBase {
     Logger.recordOutput("Superstructure/TargetPose/ArmDirection", targetPose.armDirection);
   }
 
-
   /**
    * Get the current pose of the superstructure based on the readings from the subsystems
+   *
    * @return The current superstructure pose
    */
-  public SuperstructurePose getCurrentSuperstructurePose(){
+  public SuperstructurePose getCurrentSuperstructurePose() {
     Distance currentElevatorHeight = Units.Inches.of(elevator.getPosition());
     Angle currentArmAngle = Units.Degrees.of(arm.getPosition());
     ArmDirection currentArmDirection = ArmDirection.BOTH; // TODO: figure out a way to get this
@@ -195,18 +188,18 @@ public class SuperstructureController extends SubsystemBase {
     SuperstructureConstraints constraints = getSuperstructureConstraints();
 
     // 2. Clamp the elevator target height between the min and max
-    Distance targetElevatorHeight = clamp(
-        currentState.getTargetPose().elevatorHeight,
-        constraints.minElevatorHeight,
-        constraints.maxElevatorHeight
-    );
+    Distance targetElevatorHeight =
+        clamp(
+            currentState.getTargetPose().elevatorHeight,
+            constraints.minElevatorHeight,
+            constraints.maxElevatorHeight);
 
     // 3. Clamp the arm target angle between the min and max
-    Angle targetArmAngle = clamp(
-        currentState.getTargetPose().armAngle,
-        constraints.minArmAngle,
-        constraints.maxArmAngle
-    );
+    Angle targetArmAngle =
+        clamp(
+            currentState.getTargetPose().armAngle,
+            constraints.minArmAngle,
+            constraints.maxArmAngle);
 
     // 4. Figure out what direction the arm should be allowed to move
     ArmDirection targetArmDirection = currentState.getTargetPose().armDirection;
@@ -216,6 +209,7 @@ public class SuperstructureController extends SubsystemBase {
 
   /**
    * Clamp a measure between a min and max
+   *
    * @param <U> the unit used in the clamping
    * @param <M> the mesure type used in the clamping
    * @param val the value to clamp
@@ -225,17 +219,17 @@ public class SuperstructureController extends SubsystemBase {
    */
   public static <U extends Unit, M extends Measure<U>> M clamp(M val, M min, M max) {
     if (val.lt(min)) {
-        return min;
+      return min;
     } else if (val.gt(max)) {
-        return max;
+      return max;
     } else {
-        return val;
+      return val;
     }
   }
 
   /**
-   * Get the physical constraints of the superstructure
-   * Based on where the arm and elevator currently are 
+   * Get the physical constraints of the superstructure Based on where the arm and elevator
+   * currently are
    *
    * @return The physical constraints of the superstructure
    */
@@ -246,57 +240,70 @@ public class SuperstructureController extends SubsystemBase {
     Angle minArmAngle = armAngleConstraints.getFirst();
     Angle maxArmAngle = armAngleConstraints.getSecond();
 
-    return new SuperstructureConstraints(minElevatorHeight, maxElevatorHeight, minArmAngle, maxArmAngle);
+    return new SuperstructureConstraints(
+        minElevatorHeight, maxElevatorHeight, minArmAngle, maxArmAngle);
   }
-
 
   /**
    * Get the minimum height the elevator can be at based on the current position of the arm
+   *
    * @return The minimum height the elevator can be at
    */
   private Distance getMinElevatorHeight() {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
     Distance armHeightRelativeToElevator =
-                Units.Inches.of( // convert the arm length to inches
-                    ArmConstants.ARM_LENGTH
-                        * Math.sin(currentPose.armAngle.in(Units.Radians))); // vertical component
+        Units.Inches.of( // convert the arm length to inches
+            ArmConstants.ARM_LENGTH
+                * Math.sin(currentPose.armAngle.in(Units.Radians))); // vertical component
 
     if (armHeightRelativeToElevator.compareTo(Units.Inches.of(0)) > 0) {
       // arm is above the elevator
-      return Units.Inches.of(ElevatorConstants.MIN_HEIGHT); // return the min height of the mech because we know the arm is safe
+      return Units.Inches.of(
+          ElevatorConstants
+              .MIN_HEIGHT); // return the min height of the mech because we know the arm is safe
     }
 
     // arm is below the elevator
-    Distance minSafeHeight = Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION).plus(
-        armHeightRelativeToElevator.unaryMinus() // get the inverse of the arm height relative to the elevator
-    ); // add that to the min safe height for the mech and we get the min safe height for the elevator
+    Distance minSafeHeight =
+        Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
+            .plus(
+                armHeightRelativeToElevator
+                    .unaryMinus() // get the inverse of the arm height relative to the elevator
+                ); // add that to the min safe height for the mech and we get the min safe height
+    // for the elevator
 
     return minSafeHeight;
   }
 
   /**
-   * Get the minimum and maximum angles the arm can be at based on the current height of the elevator
+   * Get the minimum and maximum angles the arm can be at based on the current height of the
+   * elevator
+   *
    * @return A pair containing the minimum and maximum angles the arm can be at
    */
-  private Pair<Angle,Angle> getArmAngleConstraints() {
+  private Pair<Angle, Angle> getArmAngleConstraints() {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
 
-    // We are essentially making a right triangle with three sides: the height on the elevator the arm has left, the length of the arm, and a horizontal distance we don't care about
-    Distance heightOnElevator = currentPose.elevatorHeight.minus(Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION));
+    // We are essentially making a right triangle with three sides: the height on the elevator the
+    // arm has left, the length of the arm, and a horizontal distance we don't care about
+    Distance heightOnElevator =
+        currentPose.elevatorHeight.minus(
+            Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION));
     Distance armLength = Units.Inches.of(ArmConstants.ARM_LENGTH);
 
     // case: if our elevator is already high enough that we don't really care what happens
     if (heightOnElevator.gt(armLength)) {
       // we have more height to play with then we have arm length, so we just return the full range
-      return new Pair<Angle,Angle>(Units.Degrees.of(0), Units.Degrees.of(360));
+      return new Pair<Angle, Angle>(Units.Degrees.of(0), Units.Degrees.of(360));
     }
 
     // KEEP IN MIND THIS ONLY WORKS IF THE 0/360 POINT IS AT THE BOTTOM OF THE ELEVATOR
-    // we then take the arccos of the ratio of these two previous values to get the angle that the arm can form
+    // we then take the arccos of the ratio of these two previous values to get the angle that the
+    // arm can form
     double angleRad = Math.acos(heightOnElevator.div(armLength).in(Units.Value));
     Angle minAngle = Units.Radians.of(angleRad);
     Angle maxAngle = Units.Radians.of(2 * Math.PI - angleRad);
 
-    return new Pair<Angle,Angle>(minAngle, maxAngle);
+    return new Pair<Angle, Angle>(minAngle, maxAngle);
   }
 }
