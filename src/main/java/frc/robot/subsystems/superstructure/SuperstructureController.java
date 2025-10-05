@@ -8,6 +8,8 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmConstants;
@@ -63,13 +65,37 @@ public class SuperstructureController extends SubsystemBase {
 
   /**
    * Record for the pose of the superstructure
-   *
-   * @param elevatorHeight height of the elevator in meters
-   * @param armAngle angle of the arm in degrees
-   * @param armDirection direction the arm should move when going to a position
    */
-  record SuperstructurePose(Distance elevatorHeight, Angle armAngle, ArmDirection armDirection) {}
-  ;
+  public class SuperstructurePose {
+    public final Distance elevatorHeight;
+    public final Angle armAngle;
+    public final ArmDirection armDirection;
+
+    /**
+     *Constructor for the superstructure pose
+     *
+     * @param elevatorHeight height of the elevator in meters
+     * @param armAngle angle of the arm in degrees
+     * @param armDirection direction the arm should move when going to a position
+     */
+    public SuperstructurePose(Distance elevatorHeight, Angle armAngle, ArmDirection armDirection) {
+      this.elevatorHeight = elevatorHeight;
+      this.armAngle = armAngle;
+      this.armDirection = armDirection;
+    }
+
+    public Mechanism2d getAsMechanism2d() {
+      Mechanism2d mech = new Mechanism2d(50, 50);
+      mech.getRoot("Superstructure", 25, 0)
+          .append(new MechanismLigament2d("Elevator", 5, elevatorHeight.in(Units.Inches)))
+          .append(
+              new MechanismLigament2d(
+                  "Arm",
+                  ArmConstants.ARM_LENGTH,
+                  armAngle.in(Units.Degrees)));
+      return mech;
+    }
+  }
 
   /**
    * Record for the physical constraints of the superstructure
