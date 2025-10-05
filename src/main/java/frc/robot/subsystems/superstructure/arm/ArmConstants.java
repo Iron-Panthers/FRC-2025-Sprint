@@ -87,4 +87,6 @@ public class ArmConstants {
                         Units.inchesToMeters(1.742)),
                 new Rotation3d(0, 0, 0));
     };
+
+  public static final double ARM_LENGTH = 20; // inches
 }

@@ -49,6 +49,9 @@ public class ElevatorConstants {
   // SOFT LIMITS
   public static final double UPPER_EXTENSION_LIMIT = 32.5;
 
+  public static final double MIN_SAFE_HEIGHT_FOR_ARM_ROTATION = 10;
+  public static final double MIN_HEIGHT = 0;
+
   // CURRENT LIMITS
   public static final double UPPER_VOLT_LIMIT = 10;
 
