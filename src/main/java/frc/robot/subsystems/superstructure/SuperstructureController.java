@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
@@ -14,6 +15,8 @@ import frc.robot.subsystems.superstructure.arm.ArmConstants;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorConstants;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 
 public class SuperstructureController extends SubsystemBase {
 
@@ -79,12 +82,12 @@ public class SuperstructureController extends SubsystemBase {
       this.armDirection = armDirection;
     }
 
-    public Mechanism2d getAsMechanism2d() {
-      Mechanism2d mech = new Mechanism2d(50, 50);
+    public LoggedMechanism2d getAsMechanism2d() {
+      LoggedMechanism2d mech = new LoggedMechanism2d(50, 50);
       mech.getRoot("Superstructure", 25, 0)
-          .append(new MechanismLigament2d("Elevator", 5, elevatorHeight.in(Units.Inches)))
+          .append(new LoggedMechanismLigament2d("Elevator", elevatorHeight.in(Units.Inches), 90))
           .append(
-              new MechanismLigament2d("Arm", ArmConstants.ARM_LENGTH, armAngle.in(Units.Degrees)));
+              new LoggedMechanismLigament2d("Arm", ArmConstants.ARM_LENGTH, armAngle.in(Units.Degrees)));
       return mech;
     }
   }
@@ -150,6 +153,7 @@ public class SuperstructureController extends SubsystemBase {
   public void periodic() {
     // 1. run state logic
     SuperstructurePose targetPose = getTargetSuperstructurePose();
+    SuperstructurePose currentPose = getCurrentSuperstructurePose();
     elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
     arm.setPositionTargetManual(targetPose.armAngle.in(Units.Degrees));
     // TODO: make sure the arm moves in the calculated direction
@@ -160,9 +164,16 @@ public class SuperstructureController extends SubsystemBase {
 
     // 3. log outputs
     Logger.recordOutput("Superstructure/CurrentState", currentState);
+
+    Logger.recordOutput("Superstructure/TargetPose/Mechanism2d", targetPose.getAsMechanism2d());
     Logger.recordOutput("Superstructure/TargetPose/ElevatorHeight", targetPose.elevatorHeight);
     Logger.recordOutput("Superstructure/TargetPose/ArmAngle", targetPose.armAngle);
     Logger.recordOutput("Superstructure/TargetPose/ArmDirection", targetPose.armDirection);
+
+    Logger.recordOutput("Superstructure/CurrentPose/Mechanism2d", currentPose.getAsMechanism2d());
+    Logger.recordOutput("Superstructure/CurrentPose/ElevatorHeight", currentPose.elevatorHeight);
+    Logger.recordOutput("Superstructure/CurrentPose/ArmAngle", currentPose.armAngle);
+    Logger.recordOutput("Superstructure/CurrentPose/ArmDirection", currentPose.armDirection);
   }
 
   /**
