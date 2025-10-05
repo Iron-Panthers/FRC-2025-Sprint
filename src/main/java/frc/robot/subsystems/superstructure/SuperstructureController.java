@@ -124,15 +124,15 @@ public class SuperstructureController extends SubsystemBase {
   ;
 
   /** The current target state of the superstructure */
-  private SuperstructureState currentState = SuperstructureState.STOW;
+  private SuperstructureState superstructureState = SuperstructureState.STOW;
 
   /**
    * Get the current target state of the superstructure
    *
    * @return The current target state of the superstructure
    */
-  public SuperstructureState getCurrentState() {
-    return currentState;
+  public SuperstructureState getSuperstructureState() {
+    return superstructureState;
   }
 
   /**
@@ -140,8 +140,8 @@ public class SuperstructureController extends SubsystemBase {
    *
    * @param state
    */
-  public void setCurrentState(SuperstructureState state) {
-    this.currentState = state;
+  public void setSuperstructureState(SuperstructureState state) {
+    this.superstructureState = state;
   }
 
   // subsystems to control
@@ -160,7 +160,7 @@ public class SuperstructureController extends SubsystemBase {
     this.arm = arm;
 
     // set the initial target state
-    setCurrentState(SuperstructureState.STOW);
+    setSuperstructureState(SuperstructureState.STOW);
   }
 
   @Override
@@ -177,7 +177,7 @@ public class SuperstructureController extends SubsystemBase {
     arm.periodic();
 
     // 3. log outputs
-    Logger.recordOutput("Superstructure/CurrentState", currentState);
+    Logger.recordOutput("Superstructure/SuperstructureState", superstructureState);
 
     Logger.recordOutput("Superstructure/TargetPose/Mechanism2d", targetPose.getAsMechanism2d());
     Logger.recordOutput("Superstructure/TargetPose/ElevatorHeight", targetPose.elevatorHeight);
@@ -215,19 +215,19 @@ public class SuperstructureController extends SubsystemBase {
     // 2. Clamp the elevator target height between the min and max
     Distance targetElevatorHeight =
         clamp(
-            currentState.getTargetPose().elevatorHeight,
+            superstructureState.getTargetPose().elevatorHeight,
             constraints.minElevatorHeight,
             constraints.maxElevatorHeight);
 
     // 3. Clamp the arm target angle between the min and max
     Angle targetArmAngle =
         clamp(
-            currentState.getTargetPose().armAngle,
+            superstructureState.getTargetPose().armAngle,
             constraints.minArmAngle,
             constraints.maxArmAngle);
 
     // 4. Figure out what direction the arm should be allowed to move
-    ArmDirection targetArmDirection = currentState.getTargetPose().armDirection;
+    ArmDirection targetArmDirection = superstructureState.getTargetPose().armDirection;
 
     return new SuperstructurePose(targetElevatorHeight, targetArmAngle, targetArmDirection);
   }
