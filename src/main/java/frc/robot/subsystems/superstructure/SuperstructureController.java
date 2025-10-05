@@ -242,7 +242,7 @@ public class SuperstructureController extends SubsystemBase {
   public SuperstructureConstraints getSuperstructureConstraints() {
     Distance minElevatorHeight = getMinElevatorHeight();
     Distance maxElevatorHeight = Units.Inches.of(ElevatorConstants.UPPER_EXTENSION_LIMIT);
-    Pair<Angle, Angle> armAngleConstraints = getArmAngleConstraints(minElevatorHeight);
+    Pair<Angle, Angle> armAngleConstraints = getArmAngleConstraints();
     Angle minArmAngle = armAngleConstraints.getFirst();
     Angle maxArmAngle = armAngleConstraints.getSecond();
 
