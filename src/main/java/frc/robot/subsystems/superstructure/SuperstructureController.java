@@ -1,6 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.units.DimensionlessUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
@@ -275,10 +276,27 @@ public class SuperstructureController extends SubsystemBase {
 
   /**
    * Get the minimum and maximum angles the arm can be at based on the current height of the elevator
-   * @param elevatorHeight The current height of the elevator
    * @return A pair containing the minimum and maximum angles the arm can be at
    */
-  private Pair<Angle,Angle> getArmAngleConstraints(Distance elevatorHeight) {
-    return new Pair<Angle,Angle>(Units.Degrees.of(0), Units.Degrees.of(180));
+  private Pair<Angle,Angle> getArmAngleConstraints() {
+    SuperstructurePose currentPose = getCurrentSuperstructurePose();
+
+    // We are essentially making a right triangle with three sides: the height on the elevator the arm has left, the length of the arm, and a horizontal distance we don't care about
+    Distance heightOnElevator = currentPose.elevatorHeight.minus(Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION));
+    Distance armLength = Units.Inches.of(ArmConstants.ARM_LENGTH);
+
+    // case: if our elevator is already high enough that we don't really care what happens
+    if (heightOnElevator.gt(armLength)) {
+      // we have more height to play with then we have arm length, so we just return the full range
+      return new Pair<Angle,Angle>(Units.Degrees.of(0), Units.Degrees.of(360));
+    }
+
+    // KEEP IN MIND THIS ONLY WORKS IF THE 0/360 POINT IS AT THE BOTTOM OF THE ELEVATOR
+    // we then take the arccos of the ratio of these two previous values to get the angle that the arm can form
+    double angleRad = Math.acos(heightOnElevator.div(armLength).in(Units.Value));
+    Angle minAngle = Units.Radians.of(angleRad);
+    Angle maxAngle = Units.Radians.of(2 * Math.PI - angleRad);
+
+    return new Pair<Angle,Angle>(minAngle, maxAngle);
   }
 }
