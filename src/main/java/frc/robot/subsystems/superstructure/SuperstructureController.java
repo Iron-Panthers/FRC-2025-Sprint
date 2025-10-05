@@ -14,13 +14,30 @@ public class SuperstructureController extends SubsystemBase {
      * superstructure (Arm and Elevator)
      */
     public enum SuperstructureState {
-        STOW,
-        L1,
-        L2,
-        L3,
-        L4,
-        ALGAE_INTAKE,
-        BARGE // TODO ADD MORE STATES AND DOCUMENT THEM
+        STOW(null),
+        L1(null),
+        L2(null),
+        L3(null),
+        L4(null),
+        ALGAE_INTAKE(null),
+        BARGE(null); // TODO ADD MORE STATES AND DOCUMENT THEM
+
+        private final SuperstructurePose targetPose;
+
+        /**
+         * Gets the target pose for the superstructure state
+         * The arm direction part of the target pose tells future logic weather it
+         * matters (CLOCKWISE, COUNTERCLOCKWISE) or doesn't (BOTH)
+         * 
+         * @return the target pose for this superstructure state
+         */
+        public SuperstructurePose getTargetPose() {
+            return targetPose;
+        }
+
+        private SuperstructureState(SuperstructurePose targetPose) {
+            this.targetPose = targetPose;
+        }
     }
 
     /**
@@ -31,17 +48,37 @@ public class SuperstructureController extends SubsystemBase {
         CLOCKWISE,
         /** Counter Clockwise when looking at the mechanism from the intake side */
         COUNTERCLOCKWISE,
-        /** The Arm can move in either direction and chooses the most optimal path */
+        /**
+         * The Arm can move in either direction and chooses the most optimal path
+         * Basically hands off control to future logic
+         */
         BOTH
     }
 
     /**
      * Record for the pose of the superstructure
-     * elevatorHeight: height of the elevator in meters
-     * armAngle: angle of the arm in degrees
-     * armDirection: direction the arm should move when going to a position
+     * 
+     * @param elevatorHeight height of the elevator in meters
+     * @param armAngle       angle of the arm in degrees
+     * @param armDirection   direction the arm should move when going to a position
      */
     record SuperstructurePose(double elevatorHeight, double armAngle, ArmDirection armDirection) {
+    };
+
+    /**
+     * Record for the physical constraints of the superstructure
+     * 
+     * @param minElevatorHeight minimum height of the elevator in meters
+     * @param maxElevatorHeight maximum height of the elevator in meters
+     * @param minArmAngle       minimum angle of the arm in degrees -- centered
+     *                          around 0/360
+     *                          being bottom of the elevator
+     * @param maxArmAngle       maximum angle of the arm in degrees -- centered
+     *                          around 0/360
+     *                          being the bottom of the elevator
+     */
+    record SuperstructureConstraints(double minElevatorHeight, double maxElevatorHeight,
+            double minArmAngle, double maxArmAngle) {
     };
 
     private SuperstructureState currentState = SuperstructureState.STOW;
@@ -60,8 +97,8 @@ public class SuperstructureController extends SubsystemBase {
     /**
      * Constructor for the superstructure controller
      * 
-     * @param elevator
-     * @param arm
+     * @param elevator the elevator subsystem to control
+     * @param arm      the arm subsystem to control
      */
     public SuperstructureController(Elevator elevator, Arm arm) {
         // setup the subsystems
@@ -99,17 +136,21 @@ public class SuperstructureController extends SubsystemBase {
      *         and the physical constraints of the mechanism
      */
     public SuperstructurePose getTargetSuperstructurePose() {
-        // 1. Calculate the Min and Max heights for elevator based on pivot angle
+        // 1. Calculate the Min and Max heights and angles for the elevator and pivot
+        SuperstructureConstraints constraints = getSuperstructureConstraints();
 
         // 2. Clamp the elevator target height between the min and max
+        double targetElevatorHeight = currentState.getTargetPose().elevatorHeight;
 
-        // 3. Calculate the min and max angles for the arm based on the elevator height
+        // 3. Clamp the arm target angle between the min and max
 
-        // 4. Clamp the arm target angle between the min and max
-
-        // 5. Figure out what direction the arm should be allowed to move
+        // 4. Figure out what direction the arm should be allowed to move
 
         return new SuperstructurePose(0, 0, null);
+    }
+
+    public SuperstructureConstraints getSuperstructureConstraints() {
+        return new SuperstructureConstraints(0, 1, 0, 180);
     }
 
 }
