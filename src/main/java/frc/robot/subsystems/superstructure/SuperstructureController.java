@@ -2,6 +2,8 @@ package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -166,10 +168,18 @@ public class SuperstructureController extends SubsystemBase {
     SuperstructureConstraints constraints = getSuperstructureConstraints();
 
     // 2. Clamp the elevator target height between the min and max
-    Distance targetElevatorHeight = currentState.getTargetPose().elevatorHeight;
+    Distance targetElevatorHeight = clamp(
+        currentState.getTargetPose().elevatorHeight,
+        constraints.minElevatorHeight,
+        constraints.maxElevatorHeight
+    );
 
     // 3. Clamp the arm target angle between the min and max
-    Angle targetArmAngle = currentState.getTargetPose().armAngle;
+    Angle targetArmAngle = clamp(
+        currentState.getTargetPose().armAngle,
+        constraints.minArmAngle,
+        constraints.maxArmAngle
+    );
 
     // 4. Figure out what direction the arm should be allowed to move
     ArmDirection targetArmDirection = currentState.getTargetPose().armDirection;
@@ -177,7 +187,24 @@ public class SuperstructureController extends SubsystemBase {
     return new SuperstructurePose(targetElevatorHeight, targetArmAngle, targetArmDirection);
   }
 
-
+  /**
+   * Clamp a measure between a min and max
+   * @param <U> the unit used in the clamping
+   * @param <M> the mesure type used in the clamping
+   * @param val the value to clamp
+   * @param min the minimum value
+   * @param max the maximum value
+   * @return the clamped value
+   */
+  public static <U extends Unit, M extends Measure<U>> M clamp(M val, M min, M max) {
+    if (val.lt(min)) {
+        return min;
+    } else if (val.gt(max)) {
+        return max;
+    } else {
+        return val;
+    }
+  }
 
   /**
    * Get the physical constraints of the superstructure
