@@ -12,8 +12,11 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmConstants;
+import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorConstants;
+import frc.robot.subsystems.superstructure.elevator.Elevator.ElevatorTarget;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -25,13 +28,13 @@ public class SuperstructureController extends SubsystemBase {
    * or configuration of the superstructure (Arm and Elevator)
    */
   public enum SuperstructureState {
-    STOW(null),
-    L1(null),
-    L2(null),
-    L3(null),
-    L4(null),
-    ALGAE_INTAKE(null),
-    BARGE(null); // TODO ADD MORE STATES AND DOCUMENT THEM
+    STOW(SuperstructurePose.fromTargetStates(ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
+    L1(SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.TOP, ArmDirection.BOTH)),
+    L2(SuperstructurePose.fromTargetStates(ElevatorTarget.L2, ArmTarget.L2, ArmDirection.BOTH)),
+    L3(SuperstructurePose.fromTargetStates(ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
+    L4(SuperstructurePose.fromTargetStates(ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
+    ALGAE_INTAKE(SuperstructurePose.fromTargetStates(ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
+    BARGE(SuperstructurePose.fromTargetStates(ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)); // TODO ADD MORE STATES AND DOCUMENT THEM
 
     private final SuperstructurePose targetPose;
 
@@ -63,8 +66,8 @@ public class SuperstructureController extends SubsystemBase {
     BOTH
   }
 
-  /** Record for the pose of the superstructure */
-  public class SuperstructurePose {
+  /** Class for storing pose information from the superstructure */
+  public static class SuperstructurePose {
     public final Distance elevatorHeight;
     public final Angle armAngle;
     public final ArmDirection armDirection;
@@ -89,6 +92,17 @@ public class SuperstructureController extends SubsystemBase {
           .append(
               new LoggedMechanismLigament2d("Arm", ArmConstants.ARM_LENGTH, armAngle.in(Units.Degrees)));
       return mech;
+    }
+
+    /**
+     * Constructs a SuperstructurePose from Elevator and Arm targets
+     * @param elevatorTarget
+     * @param armTarget
+     * @param armDirection
+     * @return
+     */
+    public static SuperstructurePose fromTargetStates(ElevatorTarget elevatorTarget, ArmTarget armTarget, ArmDirection armDirection) {
+      return new SuperstructurePose(Units.Inches.of(elevatorTarget.getPosition()), Units.Degrees.of(armTarget.getPosition()), armDirection);
     }
   }
 

@@ -10,9 +10,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements LoggableMechanism3d {
   public enum ArmTarget implements GenericSuperstructure.PositionTarget {
-    TOP(-79), // TODO: need to tune these values
-    INTAKE(-96),
-    STOW(-96);
+    TOP(90),
+    PICKUP(-90),
+    L2(0);
 
     private double position;
     private static final double EPSILON = ArmConstants.POSITION_TARGET_EPSILON;
