@@ -33,7 +33,7 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
 
   public Arm(ArmIO io) {
     super("Arm", io);
-    setPositionTarget(ArmTarget.STOW);
+    setPositionTarget(ArmTarget.TOP);
     setControlMode(ControlMode.STOP);
   }
 
