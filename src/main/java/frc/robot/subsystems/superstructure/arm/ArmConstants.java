@@ -75,7 +75,7 @@ public class ArmConstants {
 
   public static final ArmPhysicalConstants PHYSICAL_CONSTANTS =
       switch (Constants.getRobotType()) {
-        case SIM -> new ArmPhysicalConstants(0.066, 0.497, -1000.0, 1000, true);
+        case SIM -> new ArmPhysicalConstants(0.03, 0.497, -1000.0, 1000, true);
         case COMP -> new ArmPhysicalConstants(0.1, 0, 0, 0, false);
       };
 
