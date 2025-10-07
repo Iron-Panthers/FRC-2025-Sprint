@@ -4,10 +4,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
 import frc.robot.lib.generic_subsystems.superstructure.*;
-import frc.robot.subsystems.superstructure.SuperstructureController.ArmDirection;
 import frc.robot.utility.LoggableMechanism3d;
 import org.littletonrobotics.junction.Logger;
 

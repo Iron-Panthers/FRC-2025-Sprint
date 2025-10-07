@@ -6,7 +6,6 @@ import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
@@ -30,10 +29,9 @@ public class SuperstructureController extends SubsystemBase {
             ElevatorTarget.L2, ArmTarget.PICKUP, ArmDirection.BOTH)),
     L1_RIGHT(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.BOTTOM, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+            ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     L1_LEFT(
-        SuperstructurePose.fromTargetStates(
-            ElevatorTarget.BOTTOM, ArmTarget.LEFT, ArmDirection.BOTH));
+        SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.LEFT, ArmDirection.BOTH));
     // TODO: add more states and document them here
 
     private final SuperstructurePose targetPose;
@@ -164,35 +162,50 @@ public class SuperstructureController extends SubsystemBase {
    * @param armDirection the direction the arm should move when going to the position
    * @return the relative angle to give to the motor controller
    */
-  public double absoluteToRelativeTarget(Angle absoluteAngle, SuperstructurePose currentPose, ArmDirection armDirection) {
-    double currentAngle = currentPose.armAngle.in(Units.Degrees);
-    double absolutePosition = currentAngle % (360.0);
-    double deltaAngle = normalizeAngle(absoluteAngle.in(Units.Degrees) - absolutePosition);
-    double clockwise = absolutePosition + deltaAngle;
-    double counterClockwise = absolutePosition + deltaAngle - 360.0;
+  public double absoluteToRelativeTarget(
+      Angle absoluteAngle, SuperstructurePose currentPose, ArmDirection armDirection) {
 
-    double finalTarget =
-        switch (armDirection) {
-          case CLOCKWISE -> clockwise;
-          case COUNTERCLOCKWISE -> counterClockwise;
-          case BOTH -> (Math.abs(deltaAngle) < Math.abs(deltaAngle - 360.0))
-              ? clockwise
-              : counterClockwise;
-        };
-    return finalTarget;
-  }
+    // Get current raw encoder position (can be any value)
+    double currentRawPosition = currentPose.armAngle.in(Units.Degrees);
+    Logger.recordOutput("Superstructure/DebugAbToRelFn/Current Raw Position", currentRawPosition);
 
-  /**
-   * Normalizes between -360 and 360
-   *
-   * @param angle
-   * @return
-   */
-  public double normalizeAngle(double angle) {
-    double sign = Math.signum(angle);
-    angle = Math.abs(angle);
-    angle = angle % 360.0;
-    return angle * sign;
+    // Get the current absolute angle (0-360)
+    double currentAbsoluteAngle = ((currentRawPosition % 360.0) + 360.0) % 360.0;
+    Logger.recordOutput(
+        "Superstructure/DebugAbToRelFn/Current Absolute Angle", currentAbsoluteAngle);
+
+    // Get the target absolute angle (0-360)
+    double targetAbsoluteAngle = absoluteAngle.in(Units.Degrees);
+    Logger.recordOutput("Superstructure/DebugAbToRelFn/Target Absolute Angle", targetAbsoluteAngle);
+
+    // Calculate the shortest angular distance
+    double deltaAngle = targetAbsoluteAngle - currentAbsoluteAngle;
+    Logger.recordOutput("Superstructure/DebugAbToRelFn/Delta Angle", deltaAngle);
+
+    // Normalize delta to [-180, 180] range
+    while (deltaAngle > 180.0) {
+      deltaAngle -= 360.0;
+    }
+    while (deltaAngle <= -180.0) {
+      deltaAngle += 360.0;
+    }
+    Logger.recordOutput("Superstructure/DebugAbToRelFn/Normalized Delta Angle", deltaAngle);
+
+    // Calculate the two possible targets
+    double clockwiseTarget = currentRawPosition + deltaAngle;
+    Logger.recordOutput("Superstructure/DebugAbToRelFn/Clockwise Target", clockwiseTarget);
+
+    double counterClockwiseTarget =
+        currentRawPosition + deltaAngle + (deltaAngle > 0 ? -360.0 : 360.0);
+    Logger.recordOutput(
+        "Superstructure/DebugAbToRelFn/CounterClockwise Target", counterClockwiseTarget);
+
+    // Choose target based on direction preference
+    return switch (armDirection) {
+      case CLOCKWISE -> deltaAngle >= 0 ? clockwiseTarget : counterClockwiseTarget;
+      case COUNTERCLOCKWISE -> deltaAngle <= 0 ? clockwiseTarget : counterClockwiseTarget;
+      case BOTH -> clockwiseTarget; // Use the shortest path (deltaAngle is already normalized)
+    };
   }
 
   // subsystems to control
@@ -221,7 +234,8 @@ public class SuperstructureController extends SubsystemBase {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
     SuperstructureConstraints constraints = getSuperstructureConstraints();
     elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
-    arm.setPositionTargetManual(absoluteToRelativeTarget(targetPose.armAngle, currentPose, targetPose.armDirection));
+    arm.setPositionTargetManual(
+        absoluteToRelativeTarget(targetPose.armAngle, currentPose, targetPose.armDirection));
 
     // 2. update subsystem periodics
     elevator.periodic();
