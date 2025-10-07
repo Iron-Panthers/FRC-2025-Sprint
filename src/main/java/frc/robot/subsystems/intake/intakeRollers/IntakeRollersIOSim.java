@@ -35,7 +35,7 @@ public class IntakeRollersIOSim extends GenericRollersIOSim implements IntakeRol
 
     // Divides our angular velocity by our reduction
     double velocityRPS =
-        intakeRollersSim.getAngularVelocityRadPerSec() * REDUCTION; // TODO: look into why this is
+        intakeRollersSim.getAngularVelocityRadPerSec() / REDUCTION; // TODO: look into why this is
     // multiplied by the reduction I
     // don't rly know what I was
     // smoking -- bruce

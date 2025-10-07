@@ -28,8 +28,8 @@ public class IntakeRollersConstants {
       };
   public static final double REDUCTION =
       switch (Constants.getRobotType()) {
-        case COMP -> 1;
-        case SIM -> 1;
+        case COMP -> 5;
+        case SIM -> 5;
         default -> 1;
       };
 
