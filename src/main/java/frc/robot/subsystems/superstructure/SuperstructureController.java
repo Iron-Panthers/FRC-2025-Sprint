@@ -20,7 +20,8 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 public class SuperstructureController extends SubsystemBase {
 
   /**
-   * Enum for the different states of the superstructure each state represents a different position
+   * Enum for the different states of the superstructure each state represents a
+   * different position
    * or configuration of the superstructure (Arm and Elevator)
    */
   public enum SuperstructureState {
@@ -37,8 +38,10 @@ public class SuperstructureController extends SubsystemBase {
     private final SuperstructurePose targetPose;
 
     /**
-     * Gets the target pose for the superstructure state The arm direction part of the target pose
-     * tells future logic weather it matters (CLOCKWISE, COUNTERCLOCKWISE) or doesn't (BOTH)
+     * Gets the target pose for the superstructure state The arm direction part of
+     * the target pose
+     * tells future logic weather it matters (CLOCKWISE, COUNTERCLOCKWISE) or
+     * doesn't (BOTH)
      *
      * @return the target pose for this superstructure state
      */
@@ -58,7 +61,8 @@ public class SuperstructureController extends SubsystemBase {
     /** Counter Clockwise when looking at the mechanism from the intake side */
     COUNTERCLOCKWISE,
     /**
-     * The Arm can move in either direction and chooses the most optimal path Basically hands off
+     * The Arm can move in either direction and chooses the most optimal path
+     * Basically hands off
      * control to future logic
      */
     BOTH
@@ -69,7 +73,8 @@ public class SuperstructureController extends SubsystemBase {
     /** Height of the elevator in meters */
     public final Distance elevatorHeight;
     /**
-     * Angle of the arm relative to the horizon (horizontal right when looking from intake side is 0
+     * Angle of the arm relative to the horizon (horizontal right when looking from
+     * intake side is 0
      * degrees)
      */
     public final Angle armAngle;
@@ -80,8 +85,8 @@ public class SuperstructureController extends SubsystemBase {
      * Constructor for the superstructure pose
      *
      * @param elevatorHeight height of the elevator in meters
-     * @param armAngle angle of the arm in degrees
-     * @param armDirection direction the arm should move when going to a position
+     * @param armAngle       angle of the arm in degrees
+     * @param armDirection   direction the arm should move when going to a position
      */
     public SuperstructurePose(Distance elevatorHeight, Angle armAngle, ArmDirection armDirection) {
       this.elevatorHeight = elevatorHeight;
@@ -121,17 +126,19 @@ public class SuperstructureController extends SubsystemBase {
    *
    * @param minElevatorHeight minimum height of the elevator in meters
    * @param maxElevatorHeight maximum height of the elevator in meters
-   * @param minArmAngle minimum angle of the arm in degrees -- centered around 0/360 being directly
-   *     right when looking from the intake side
-   * @param maxArmAngle maximum angle of the arm in degrees -- centered around 0/360 being directly
-   *     right when looking from the intake side
+   * @param minArmAngle       minimum angle of the arm in degrees -- centered
+   *                          around 0/360 being directly
+   *                          right when looking from the intake side
+   * @param maxArmAngle       maximum angle of the arm in degrees -- centered
+   *                          around 0/360 being directly
+   *                          right when looking from the intake side
    */
   record SuperstructureConstraints(
       Distance minElevatorHeight,
       Distance maxElevatorHeight,
       Angle minArmAngle,
-      Angle maxArmAngle) {}
-  ;
+      Angle maxArmAngle) {
+  };
 
   /** The current target state of the superstructure */
   private SuperstructureState superstructureState = SuperstructureState.STOW;
@@ -155,11 +162,14 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Gets the relative angle to give to the motor controller to reach the given absolute angle
+   * Gets the relative angle to give to the motor controller to reach the given
+   * absolute angle
    *
-   * @param absoluteAngle (0-360 degrees) centered at directly right when looking from the intake
-   *     side
-   * @param armDirection the direction the arm should move when going to the position
+   * @param absoluteAngle (0-360 degrees) centered at directly right when looking
+   *                      from the intake
+   *                      side
+   * @param armDirection  the direction the arm should move when going to the
+   *                      position
    * @return the relative angle to give to the motor controller
    */
   public double absoluteToRelativeTarget(
@@ -167,20 +177,48 @@ public class SuperstructureController extends SubsystemBase {
 
     // Get current raw encoder position (can be any value)
     double currentRawPosition = currentPose.armAngle.in(Units.Degrees);
-    Logger.recordOutput("Superstructure/DebugAbToRelFn/Current Raw Position", currentRawPosition);
 
     // Get the current absolute angle (0-360)
-    double currentAbsoluteAngle = ((currentRawPosition % 360.0) + 360.0) % 360.0;
-    Logger.recordOutput(
-        "Superstructure/DebugAbToRelFn/Current Absolute Angle", currentAbsoluteAngle);
+    double currentAbsoluteAngle = normalizeAngle(currentRawPosition);
 
     // Get the target absolute angle (0-360)
     double targetAbsoluteAngle = absoluteAngle.in(Units.Degrees);
-    Logger.recordOutput("Superstructure/DebugAbToRelFn/Target Absolute Angle", targetAbsoluteAngle);
 
-    // Calculate the shortest angular distance
-    double deltaAngle = targetAbsoluteAngle - currentAbsoluteAngle;
-    Logger.recordOutput("Superstructure/DebugAbToRelFn/Delta Angle", deltaAngle);
+    // Normalize delta to [-180, 180] range
+    double deltaAngle = calculateShortestDeltaAngle(targetAbsoluteAngle, currentAbsoluteAngle);
+
+    // Calculate the two possible targets
+    double clockwiseTarget = currentRawPosition + deltaAngle;
+
+    double counterClockwiseTarget = currentRawPosition + deltaAngle + (deltaAngle > 0 ? -360.0 : 360.0);
+
+    // Choose target based on direction preference
+    return switch (armDirection) {
+      case CLOCKWISE -> deltaAngle >= 0 ? clockwiseTarget : counterClockwiseTarget;
+      case COUNTERCLOCKWISE -> deltaAngle <= 0 ? clockwiseTarget : counterClockwiseTarget;
+      case BOTH -> clockwiseTarget; // Use the shortest path (deltaAngle is already normalized)
+    };
+  }
+
+  /**
+   * Normalizes an angle to be between 0-360 degrees
+   * 
+   * @param angle The angle to normalize
+   * @return The normalized angle between 0-360 degrees
+   */
+  private double normalizeAngle(double angle) {
+    return ((angle % 360.0) + 360.0) % 360.0;
+  }
+
+  /**
+   * Calculates the shortest delta between two angles
+   * 
+   * @param target  Target angle (0-360)
+   * @param current Current angle (0-360)
+   * @return Delta angle in range [-180, 180]
+   */
+  private double calculateShortestDeltaAngle(double target, double current) {
+    double deltaAngle = target - current;
 
     // Normalize delta to [-180, 180] range
     while (deltaAngle > 180.0) {
@@ -189,23 +227,8 @@ public class SuperstructureController extends SubsystemBase {
     while (deltaAngle <= -180.0) {
       deltaAngle += 360.0;
     }
-    Logger.recordOutput("Superstructure/DebugAbToRelFn/Normalized Delta Angle", deltaAngle);
 
-    // Calculate the two possible targets
-    double clockwiseTarget = currentRawPosition + deltaAngle;
-    Logger.recordOutput("Superstructure/DebugAbToRelFn/Clockwise Target", clockwiseTarget);
-
-    double counterClockwiseTarget =
-        currentRawPosition + deltaAngle + (deltaAngle > 0 ? -360.0 : 360.0);
-    Logger.recordOutput(
-        "Superstructure/DebugAbToRelFn/CounterClockwise Target", counterClockwiseTarget);
-
-    // Choose target based on direction preference
-    return switch (armDirection) {
-      case CLOCKWISE -> deltaAngle >= 0 ? clockwiseTarget : counterClockwiseTarget;
-      case COUNTERCLOCKWISE -> deltaAngle <= 0 ? clockwiseTarget : counterClockwiseTarget;
-      case BOTH -> clockwiseTarget; // Use the shortest path (deltaAngle is already normalized)
-    };
+    return deltaAngle;
   }
 
   // subsystems to control
@@ -216,7 +239,7 @@ public class SuperstructureController extends SubsystemBase {
    * Constructor for the superstructure controller
    *
    * @param elevator the elevator subsystem to control
-   * @param arm the arm subsystem to control
+   * @param arm      the arm subsystem to control
    */
   public SuperstructureController(Elevator elevator, Arm arm) {
     // setup the subsystems
@@ -229,21 +252,47 @@ public class SuperstructureController extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // 1. run state logic
+    // Run state logic and update targets
+    updateTargets();
+
+    // Update subsystem periodics
+    updateSubsystemPeriodics();
+
+    // Log data
+    logData();
+  }
+
+  /**
+   * Updates targets for subsystems based on current state and constraints
+   */
+  private void updateTargets() {
     SuperstructurePose targetPose = getTargetSuperstructurePose();
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
-    SuperstructureConstraints constraints = getSuperstructureConstraints();
     elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
     arm.setPositionTargetManual(
         absoluteToRelativeTarget(targetPose.armAngle, currentPose, targetPose.armDirection));
+  }
 
-    // 2. update subsystem periodics
+  /**
+   * Updates subsystem periodic methods
+   */
+  private void updateSubsystemPeriodics() {
     elevator.periodic();
     arm.periodic();
+  }
 
-    // 3. log outputs
+  /**
+   * Logs relevant data about the superstructure
+   */
+  private void logData() {
+    SuperstructurePose targetPose = getTargetSuperstructurePose();
+    SuperstructurePose currentPose = getCurrentSuperstructurePose();
+    SuperstructureConstraints constraints = getSuperstructureConstraints();
+
+    // Log state
     Logger.recordOutput("Superstructure/SuperstructureState", superstructureState);
 
+    // Log target pose data
     Logger.recordOutput("Superstructure/TargetPose/Mechanism2d", targetPose.getAsMechanism2d());
     Logger.recordOutput(
         "Superstructure/TargetPose/ElevatorHeight", targetPose.elevatorHeight.in(Units.Inches));
@@ -251,6 +300,7 @@ public class SuperstructureController extends SubsystemBase {
         "Superstructure/TargetPose/ArmAngle", targetPose.armAngle.in(Units.Degrees));
     Logger.recordOutput("Superstructure/TargetPose/ArmDirection", targetPose.armDirection);
 
+    // Log current pose data
     Logger.recordOutput("Superstructure/CurrentPose/Mechanism2d", currentPose.getAsMechanism2d());
     Logger.recordOutput(
         "Superstructure/CurrentPose/ElevatorHeight", currentPose.elevatorHeight.in(Units.Inches));
@@ -258,6 +308,7 @@ public class SuperstructureController extends SubsystemBase {
         "Superstructure/CurrentPose/ArmAngle", currentPose.armAngle.in(Units.Degrees));
     Logger.recordOutput("Superstructure/CurrentPose/ArmDirection", currentPose.armDirection);
 
+    // Log constraints
     Logger.recordOutput(
         "Superstructure/Constraints/Max Elevator", constraints.maxElevatorHeight.in(Units.Inches));
     Logger.recordOutput(
@@ -269,7 +320,8 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Get the current pose of the superstructure based on the readings from the subsystems
+   * Get the current pose of the superstructure based on the readings from the
+   * subsystems
    *
    * @return The current superstructure pose
    */
@@ -283,26 +335,25 @@ public class SuperstructureController extends SubsystemBase {
   /**
    * Get the target pose for the current target state
    *
-   * @return The modified superstructure target pose based on the current state and the physical
-   *     constraints of the mechanism
+   * @return The modified superstructure target pose based on the current state
+   *         and the physical
+   *         constraints of the mechanism
    */
   public SuperstructurePose getTargetSuperstructurePose() {
     // 1. Calculate the Min and Max heights and angles for the elevator and pivot
     SuperstructureConstraints constraints = getSuperstructureConstraints();
 
     // 2. Clamp the elevator target height between the min and max
-    Distance targetElevatorHeight =
-        clamp(
-            superstructureState.getTargetPose().elevatorHeight,
-            constraints.minElevatorHeight,
-            constraints.maxElevatorHeight);
+    Distance targetElevatorHeight = clamp(
+        superstructureState.getTargetPose().elevatorHeight,
+        constraints.minElevatorHeight,
+        constraints.maxElevatorHeight);
 
     // 3. Clamp the arm target angle between the min and max
-    Angle targetArmAngle =
-        clamp(
-            superstructureState.getTargetPose().armAngle,
-            constraints.minArmAngle,
-            constraints.maxArmAngle);
+    Angle targetArmAngle = clamp(
+        superstructureState.getTargetPose().armAngle,
+        constraints.minArmAngle,
+        constraints.maxArmAngle);
 
     // 4. Figure out what direction the arm should be allowed to move
     ArmDirection targetArmDirection = superstructureState.getTargetPose().armDirection;
@@ -331,7 +382,8 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Get the physical constraints of the superstructure Based on where the arm and elevator
+   * Get the physical constraints of the superstructure Based on where the arm and
+   * elevator
    * currently are
    *
    * @return The physical constraints of the superstructure
@@ -348,39 +400,38 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Get the minimum height the elevator can be at based on the current position of the arm
+   * Get the minimum height the elevator can be at based on the current position
+   * of the arm
    *
    * @return The minimum height the elevator can be at
    */
   private Distance getMinElevatorHeight() {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
 
-    Distance armHeightRelativeToElevator =
-        Units.Inches.of( // convert the arm length to inches
-            ArmConstants.ARM_LENGTH
-                * Math.sin(currentPose.armAngle.in(Units.Radians))); // vertical component
+    Distance armHeightRelativeToElevator = Units.Inches.of( // convert the arm length to inches
+        ArmConstants.ARM_LENGTH
+            * Math.sin(currentPose.armAngle.in(Units.Radians))); // vertical component
 
     if (armHeightRelativeToElevator.compareTo(Units.Inches.of(0)) > 0) {
       // arm is above the elevator
       return Units.Inches.of(
-          ElevatorConstants
-              .MIN_HEIGHT); // return the min height of the mech because we know the arm is safe
+          ElevatorConstants.MIN_HEIGHT); // return the min height of the mech because we know the arm is safe
     }
 
     // arm is below the elevator
-    Distance minSafeHeight =
-        Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
-            .plus(
-                armHeightRelativeToElevator
-                    .unaryMinus() // get the inverse of the arm height relative to the elevator
-                ); // add that to the min safe height for the mech and we get the min safe height
+    Distance minSafeHeight = Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
+        .plus(
+            armHeightRelativeToElevator
+                .unaryMinus() // get the inverse of the arm height relative to the elevator
+        ); // add that to the min safe height for the mech and we get the min safe height
     // for the elevator
 
     return minSafeHeight;
   }
 
   /**
-   * Get the minimum and maximum angles the arm can be at based on the current height of the
+   * Get the minimum and maximum angles the arm can be at based on the current
+   * height of the
    * elevator
    *
    * @return A pair containing the minimum and maximum angles the arm can be at
@@ -388,36 +439,41 @@ public class SuperstructureController extends SubsystemBase {
   private Pair<Angle, Angle> getArmAngleConstraints() {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
 
-    // We are essentially making a right triangle with three sides: the height on
-    // the elevator the
-    // arm has left, the length of the arm, and a horizontal distance we don't care
-    // about
-    Distance heightOnElevator =
-        currentPose.elevatorHeight.minus(
-            Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION));
+    // Calculate available height above minimum safe height
+    Distance heightOnElevator = calculateAvailableElevatorHeight(currentPose);
     Distance armLength = Units.Inches.of(ArmConstants.ARM_LENGTH);
 
-    // case: if our elevator is already high enough that we don't really care what
-    // happens
+    // If elevator is high enough, allow full range of motion
     if (heightOnElevator.gt(armLength)) {
-      // we have more height to play with then we have arm length, so we just return
-      // the full range
-      return new Pair<Angle, Angle>(Units.Degrees.of(-90), Units.Degrees.of(270));
+      return new Pair<>(Units.Degrees.of(-90), Units.Degrees.of(270));
     }
 
-    // KEEP IN MIND THIS ONLY WORKS IF THE 0/360 POINT IS AT THE BOTTOM OF THE
-    // ELEVATOR
-    // we then take the arccos of the ratio of these two previous values to get the
-    // angle that the
-    // arm can form
+    // Calculate angle constraints based on available height
+    return calculateAngleConstraints(heightOnElevator, armLength);
+  }
+
+  /**
+   * Calculates the available height on the elevator for arm movement
+   */
+  private Distance calculateAvailableElevatorHeight(SuperstructurePose pose) {
+    return pose.elevatorHeight.minus(
+        Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION));
+  }
+
+  /**
+   * Calculates angle constraints based on available height and arm length
+   */
+  private Pair<Angle, Angle> calculateAngleConstraints(Distance heightOnElevator, Distance armLength) {
+    // Calculate the minimum angle using arccos
     double angleRad = Math.acos(heightOnElevator.div(armLength).in(Units.Value));
+
     Angle minAngle = Units.Radians.of(angleRad);
     Angle maxAngle = Units.Radians.of(2 * Math.PI - angleRad);
 
-    // convert then from bottom relative to right relative
+    // Convert from bottom-relative to right-relative coordinates
     minAngle = minAngle.minus(Units.Degrees.of(90));
     maxAngle = maxAngle.minus(Units.Degrees.of(90));
 
-    return new Pair<Angle, Angle>(minAngle, maxAngle);
+    return new Pair<>(minAngle, maxAngle);
   }
 }
