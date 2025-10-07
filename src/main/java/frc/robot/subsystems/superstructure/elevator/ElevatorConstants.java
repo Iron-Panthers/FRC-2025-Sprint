@@ -24,8 +24,8 @@ public class ElevatorConstants {
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(2, 0, 0, 0, 0.08, 0.002, 0.35); // CHANGE VALUES WHEN CAD FINISHES
-        case SIM -> new PIDGains(2, 0, 0, 0, 0.03, 0.001, 2.63); // CHANGE VALUES WHEN CAD FINISHES
+        case COMP -> new PIDGains(2, 0, 0, 0, 0.08, 0.002, 0.15); // CHANGE VALUES WHEN CAD FINISHES
+        case SIM -> new PIDGains(2, 0, 0, 0, 0.03, 0.001, 0.30); // CHANGE VALUES WHEN CAD FINISHES
         default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
       };
 

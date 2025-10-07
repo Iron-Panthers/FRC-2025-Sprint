@@ -12,7 +12,7 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
   public enum ArmTarget implements GenericSuperstructure.PositionTarget {
     TOP(90),
     PICKUP(-90),
-    L2(0);
+    STRAIGHT(0);
 
     private double position;
     private static final double EPSILON = ArmConstants.POSITION_TARGET_EPSILON;

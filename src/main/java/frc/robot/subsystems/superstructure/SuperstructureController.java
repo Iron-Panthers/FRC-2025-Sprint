@@ -27,8 +27,10 @@ public class SuperstructureController extends SubsystemBase {
     STOW(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    L1(SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.TOP, ArmDirection.BOTH)),
-    L2(SuperstructurePose.fromTargetStates(ElevatorTarget.L2, ArmTarget.L2, ArmDirection.BOTH)),
+    L1(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    L2(SuperstructurePose.fromTargetStates(ElevatorTarget.L2, ArmTarget.PICKUP, ArmDirection.BOTH)),
     L3(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
@@ -105,7 +107,7 @@ public class SuperstructureController extends SubsystemBase {
           .append(new LoggedMechanismLigament2d("Elevator", elevatorHeight.in(Units.Inches), 90))
           .append(
               new LoggedMechanismLigament2d(
-                  "Arm", ArmConstants.ARM_LENGTH, armAngle.in(Units.Degrees) + 90));
+                  "Arm", ArmConstants.ARM_LENGTH, armAngle.in(Units.Degrees) - 90));
       return mech;
     }
 
@@ -188,6 +190,7 @@ public class SuperstructureController extends SubsystemBase {
     // 1. run state logic
     SuperstructurePose targetPose = getTargetSuperstructurePose();
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
+    SuperstructureConstraints constraints = getSuperstructureConstraints();
     elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
     arm.setPositionTargetManual(targetPose.armAngle.in(Units.Degrees));
     // TODO: make sure the arm moves in the calculated direction
@@ -212,6 +215,15 @@ public class SuperstructureController extends SubsystemBase {
     Logger.recordOutput(
         "Superstructure/CurrentPose/ArmAngle", currentPose.armAngle.in(Units.Degrees));
     Logger.recordOutput("Superstructure/CurrentPose/ArmDirection", currentPose.armDirection);
+
+    Logger.recordOutput(
+        "Superstructure/Constraints/Max Elevator", constraints.maxElevatorHeight.in(Units.Inches));
+    Logger.recordOutput(
+        "Superstructure/Constraints/Min Elevator", constraints.minElevatorHeight.in(Units.Inches));
+    Logger.recordOutput(
+        "Superstructure/Constraints/Max Arm", constraints.maxArmAngle.in(Units.Degrees));
+    Logger.recordOutput(
+        "Superstructure/Constraints/Min Arm", constraints.minArmAngle.in(Units.Degrees));
   }
 
   /**
@@ -301,14 +313,10 @@ public class SuperstructureController extends SubsystemBase {
   private Distance getMinElevatorHeight() {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
 
-    // get the angle of the arm relative to the bottom of the elevator instead of
-    // the right
-    Angle armAngleBottomRelative = currentPose.armAngle.plus(Units.Degrees.of(90));
-
     Distance armHeightRelativeToElevator =
         Units.Inches.of( // convert the arm length to inches
             ArmConstants.ARM_LENGTH
-                * Math.sin(armAngleBottomRelative.in(Units.Radians))); // vertical component
+                * Math.sin(currentPose.armAngle.in(Units.Radians))); // vertical component
 
     if (armHeightRelativeToElevator.compareTo(Units.Inches.of(0)) > 0) {
       // arm is above the elevator
