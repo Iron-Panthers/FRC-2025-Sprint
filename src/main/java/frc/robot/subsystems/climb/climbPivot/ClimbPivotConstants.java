@@ -73,7 +73,7 @@ public class ClimbPivotConstants {
   }
 
   public static final ClimbPivotPhysicalConstants PHYSICAL_CONSTANTS = switch (Constants.getRobotType()) {
-    case SIM -> new ClimbPivotPhysicalConstants(0.1, 0.5, -1000.0, 1000, false);
-    case COMP -> new ClimbPivotPhysicalConstants(0.1, 0, 0, 0, false);
+    case SIM -> new ClimbPivotPhysicalConstants(0.006, 0.487, 0, 1.57, false);
+    case COMP -> new ClimbPivotPhysicalConstants(0.006, 0.487, 0, 1.57, false);
   };
 }
