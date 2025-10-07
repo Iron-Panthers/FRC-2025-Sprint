@@ -183,12 +183,19 @@ public class RobotContainer {
         .a()
         .onTrue(
             new InstantCommand(
-                () -> superstructureController.setSuperstructureState(SuperstructureState.L1)));
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
     driverB
         .b()
         .onTrue(
             new InstantCommand(
-                () -> superstructureController.setSuperstructureState(SuperstructureState.L2)));
+                () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+    driverB
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
   }
 
   private void configureAutos() {

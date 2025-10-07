@@ -18,7 +18,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>
   public enum ElevatorTarget implements GenericSuperstructure.PositionTarget {
     BOTTOM(0.6),
     L1(11),
-    L2(30),
+    L2(40),
     L3(5),
     L4(32.5),
     ALGAE_SCORE_PROCESSOR(5),

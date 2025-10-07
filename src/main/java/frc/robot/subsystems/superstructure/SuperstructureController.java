@@ -26,25 +26,14 @@ public class SuperstructureController extends SubsystemBase {
   public enum SuperstructureState {
     STOW(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    L1(
+            ElevatorTarget.L2, ArmTarget.PICKUP, ArmDirection.BOTH)),
+    L1_RIGHT(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
-    L2(SuperstructurePose.fromTargetStates(ElevatorTarget.L2, ArmTarget.PICKUP, ArmDirection.BOTH)),
-    L3(
+            ElevatorTarget.BOTTOM, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    L1_LEFT(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    L4(
-        SuperstructurePose.fromTargetStates(
-            ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    ALGAE_INTAKE(
-        SuperstructurePose.fromTargetStates(
-            ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    BARGE(
-        SuperstructurePose.fromTargetStates(
-            ElevatorTarget.BOTTOM,
-            ArmTarget.TOP,
-            ArmDirection.BOTH)); // TODO ADD MORE STATES AND DOCUMENT THEM
+            ElevatorTarget.BOTTOM, ArmTarget.LEFT, ArmDirection.BOTH));
+    // TODO: add more states and document them here
 
     private final SuperstructurePose targetPose;
 
@@ -192,7 +181,7 @@ public class SuperstructureController extends SubsystemBase {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
     SuperstructureConstraints constraints = getSuperstructureConstraints();
     elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
-    arm.setPositionTargetManual(targetPose.armAngle.in(Units.Degrees));
+    arm.setAbsoluteTargetAngleManual(targetPose.armAngle);
     // TODO: make sure the arm moves in the calculated direction
 
     // 2. update subsystem periodics
