@@ -6,6 +6,7 @@ import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
@@ -155,6 +156,45 @@ public class SuperstructureController extends SubsystemBase {
     this.superstructureState = state;
   }
 
+  /**
+   * Gets the relative angle to give to the motor controller to reach the given absolute angle
+   *
+   * @param absoluteAngle (0-360 degrees) centered at directly right when looking from the intake
+   *     side
+   * @param armDirection the direction the arm should move when going to the position
+   * @return the relative angle to give to the motor controller
+   */
+  public double absoluteToRelativeTarget(Angle absoluteAngle, SuperstructurePose currentPose, ArmDirection armDirection) {
+    double currentAngle = currentPose.armAngle.in(Units.Degrees);
+    double absolutePosition = currentAngle % (360.0);
+    double deltaAngle = normalizeAngle(absoluteAngle.in(Units.Degrees) - absolutePosition);
+    double clockwise = absolutePosition + deltaAngle;
+    double counterClockwise = absolutePosition + deltaAngle - 360.0;
+
+    double finalTarget =
+        switch (armDirection) {
+          case CLOCKWISE -> clockwise;
+          case COUNTERCLOCKWISE -> counterClockwise;
+          case BOTH -> (Math.abs(deltaAngle) < Math.abs(deltaAngle - 360.0))
+              ? clockwise
+              : counterClockwise;
+        };
+    return finalTarget;
+  }
+
+  /**
+   * Normalizes between -360 and 360
+   *
+   * @param angle
+   * @return
+   */
+  public double normalizeAngle(double angle) {
+    double sign = Math.signum(angle);
+    angle = Math.abs(angle);
+    angle = angle % 360.0;
+    return angle * sign;
+  }
+
   // subsystems to control
   private Elevator elevator;
   private Arm arm;
@@ -181,8 +221,7 @@ public class SuperstructureController extends SubsystemBase {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
     SuperstructureConstraints constraints = getSuperstructureConstraints();
     elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
-    arm.setAbsoluteTargetAngleManual(targetPose.armAngle);
-    // TODO: make sure the arm moves in the calculated direction
+    arm.setPositionTargetManual(absoluteToRelativeTarget(targetPose.armAngle, currentPose, targetPose.armDirection));
 
     // 2. update subsystem periodics
     elevator.periodic();
