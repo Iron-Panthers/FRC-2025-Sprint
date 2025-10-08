@@ -1,6 +1,6 @@
-package frc.robot.subsystems.superstructure.claw_rollers;
+package frc.robot.subsystems.claw;
 
-import static frc.robot.subsystems.superstructure.claw_rollers.ClawRollersConstants.*;
+import static frc.robot.subsystems.claw.ClawRollersConstants.*;
 
 import frc.robot.lib.generic_subsystems.rollers.*;
 
