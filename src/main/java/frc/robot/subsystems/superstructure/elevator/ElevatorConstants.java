@@ -15,18 +15,16 @@ public class ElevatorConstants {
 
   public static final ElevatorConfig ELEVATOR_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new ElevatorConfig(
-            CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), (58.0 / 14.0) / 6);
-        case SIM -> new ElevatorConfig(
-            CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), (58.0 / 14.0));
-        default -> new ElevatorConfig(0, 0, 1); // FIXME
+        case COMP -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
+        case SIM -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
+        default -> new ElevatorConfig(0, 0, 1.6875); // FIXME
       };
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(2, 0, 0, 0, 0.08, 0.002, 0.15); // CHANGE VALUES WHEN CAD FINISHES
-        case SIM -> new PIDGains(2, 0, 0, 0, 0.03, 0.001, 0.30); // CHANGE VALUES WHEN CAD FINISHES
-        default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
+        case COMP -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
+        case SIM  -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
+        default   -> new PIDGains(1.5, 0, 0, 0, 0, 0, 0);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
@@ -77,8 +75,8 @@ public class ElevatorConstants {
 
   public static final ElevatorPhysicalConstants PHYSICAL_CONSTANTS =
       switch (Constants.getRobotType()) {
-        case SIM -> new ElevatorPhysicalConstants(4.0120245, 0.0239776, 0, 5, true);
-        case COMP -> new ElevatorPhysicalConstants(0, 0, 0, 0, false);
+        case SIM -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 5, true);
+        case COMP -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 0, false);
       }; // CHANGE VALUES WHEN CAD FINISHES
 
   public static final Transform3d ELEVATOR_BASE_3D_OFFSET =
