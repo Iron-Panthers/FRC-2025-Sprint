@@ -14,16 +14,16 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
 public class L1PivotConstants {
   public static final L1PivotConfig L1_PIVOT_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new L1PivotConfig(CAN.at(8, "L1 Pivot"), 1);
-        case SIM -> new L1PivotConfig(CAN.at(8, "L1 Pivot"), 12 * 0.3750);
-        default -> new L1PivotConfig(0, 1);
+        case COMP -> new L1PivotConfig(CAN.at(8, "L1 Pivot"), 3.75);
+        case SIM -> new L1PivotConfig(CAN.at(8, "L1 Pivot"), 3.75);
+        default -> new L1PivotConfig(0, 3.75);
       };
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(40, 0, 0, 0, 3.6144, 0.1807, 0.53);
-        case SIM -> new PIDGains(40, 0, 0, 0, 3.6144, 0.1807, 0.53);
-        default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
+        case COMP -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
+        case SIM  -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
+        default   -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
@@ -45,7 +45,7 @@ public class L1PivotConstants {
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
 
   public static final double POSITION_TARGET_EPSILON = 0.01;
-  public static final double L1_PIVOT_LENGTH = 25; // inches
+  public static final double L1_PIVOT_LENGTH = 13.138; // inches
 
   // SOFT LIMITS
   public static final double UPPER_EXTENSION_LIMIT = 0.465;
@@ -82,17 +82,7 @@ public class L1PivotConstants {
 
   public static final L1PivotPhysicalConstants PHYSICAL_CONSTANTS =
       switch (Constants.getRobotType()) {
-        case SIM -> new L1PivotPhysicalConstants(0.02, 0.706747, -1000.0, 1000, true);
-        case COMP -> new L1PivotPhysicalConstants(0.1, 0, 0, 0, false);
-      };
-
-  public static final Transform3d L1_PIVOT_TO_OUTTAKE_TRANSFORM =
-      switch (Constants.getRobotType()) {
-        default -> new Transform3d(
-            new Translation3d(
-                Units.inchesToMeters(22.445),
-                Units.inchesToMeters(0.0),
-                Units.inchesToMeters(1.742)),
-            new Rotation3d(0, 0, 0));
+        case SIM -> new L1PivotPhysicalConstants(0.0109810104, 0.332194, -1000.0, 1000, false);
+        case COMP -> new L1PivotPhysicalConstants(0.0109810104, 0.332194, 0, 0, false);
       };
 }
