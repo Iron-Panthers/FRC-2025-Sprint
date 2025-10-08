@@ -26,6 +26,7 @@ public class IntakeController extends SubsystemBase {
   }
 
   private IntakeState targetState = IntakeState.IDLE;
+  private IntakeRollers.Target IntakeRollersState = IntakeRollers.Target.IDLE;
 
   private final IntakeRollers intakeRollers;
   private final IntakePivot intakePivot;
@@ -46,7 +47,9 @@ public class IntakeController extends SubsystemBase {
         intakePivot.setPositionTarget(IntakePivotTarget.TOP);
       }
       case INTAKE -> {
-        intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
+        if(intakeRollers.getSupplyCurrentAmps()>40){ //TODO: get right value
+          setTargetState(IntakeState.HOLD);
+        }
         intakePivot.setPositionTarget(IntakePivotTarget.INTAKE);
       }
       case EJECT -> { // TODO: Figure out more robust eject logic
