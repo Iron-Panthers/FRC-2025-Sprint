@@ -17,6 +17,9 @@ import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.objectDetection.ObjectDetection;
+import frc.robot.subsystems.objectDetection.ObjectDetectionIOLimelight;
+import frc.robot.subsystems.objectDetection.ObjectDetectionIOSim;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -55,6 +58,7 @@ public class RobotContainer {
   private Vision vision;
   private RGB rgb;
   private CANWatchdog canWatchdog;
+  private ObjectDetection objectDetection;
 
   private SwerveDriveSimulation driveSimulation = null;
 
@@ -73,6 +77,7 @@ public class RobotContainer {
           //   vision = new Vision(new VisionIOPhotonvision(4), new VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
+          objectDetection = new ObjectDetection(new ObjectDetectionIOLimelight());
         }
         case SIM -> {
           driveSimulation =
@@ -96,6 +101,7 @@ public class RobotContainer {
                   new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
+          objectDetection = new ObjectDetection(new ObjectDetectionIOSim());
         }
       }
     }
@@ -119,6 +125,10 @@ public class RobotContainer {
 
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
+    }
+
+    if (objectDetection == null) {
+      objectDetection = new ObjectDetection(new ObjectDetectionIOLimelight());
     }
 
     nameCommands();
@@ -153,6 +163,16 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverB
+        .leftTrigger()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    swerve.setTargetHeading(
+                        RobotState.getInstance()
+                            .getEstimatedPose()
+                            .getRotation()
+                            .plus(objectDetection.getRotation()))));
   }
 
   private void configureAutos() {
