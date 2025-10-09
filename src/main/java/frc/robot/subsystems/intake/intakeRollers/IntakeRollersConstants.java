@@ -21,7 +21,7 @@ public class IntakeRollersConstants {
         case COMP -> true;
         case SIM -> true;
         case PRACTICE -> true;
-        default -> false;
+        default -> true;
       };
   public static final boolean BRAKE =
       switch (Constants.getRobotType()) {

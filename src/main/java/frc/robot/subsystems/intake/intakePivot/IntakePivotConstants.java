@@ -14,9 +14,11 @@ public class IntakePivotConstants {
   public static final IntakePivotConfig INTAKE_PIVOT_CONFIG =
       switch (Constants.getRobotType()) {
         case COMP -> new IntakePivotConfig(
-            CAN.at(8, "Intake Pivot"), CAN.at(28, "Intake Pivot Encoder"), -0.278, 1);
+            //Reduction between sensor and mechansim
+            CAN.at(8, "Intake Pivot"), CAN.at(28, "Intake Pivot Encoder"), -0.278, 1); 
         case SIM -> new IntakePivotConfig(
-            CAN.at(8, "Intake Pivot"), CAN.at(28, "Intake Pivot Encoder"), 0, 12 * 0.3750);
+            //Reduction between motor and mechansim
+            CAN.at(8, "Intake Pivot"), 0, 0, 12 * 0.3750);
         default -> new IntakePivotConfig(0, 0, 0, 1);
       };
 
