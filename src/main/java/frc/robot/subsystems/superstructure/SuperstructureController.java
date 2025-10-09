@@ -188,15 +188,15 @@ public class SuperstructureController extends SubsystemBase {
     double deltaAngle = calculateShortestDeltaAngle(targetAbsoluteAngle, currentAbsoluteAngle);
 
     // Calculate the two possible targets
-    double clockwiseTarget = currentRawPosition + deltaAngle;
+    double closestAngle = currentRawPosition + deltaAngle;
 
-    double counterClockwiseTarget = currentRawPosition + deltaAngle + (deltaAngle > 0 ? -360.0 : 360.0);
+    double farthestAngle = currentRawPosition + deltaAngle + (deltaAngle > 0 ? -360.0 : 360.0);
 
     // Choose target based on direction preference
     return switch (armDirection) {
-      case CLOCKWISE -> deltaAngle >= 0 ? counterClockwiseTarget : clockwiseTarget;
-      case COUNTERCLOCKWISE -> deltaAngle <= 0 ? counterClockwiseTarget : clockwiseTarget;
-      case BOTH -> clockwiseTarget; // Use the shortest path (deltaAngle is already normalized)
+      case CLOCKWISE -> deltaAngle >= 0 ? farthestAngle : closestAngle;
+      case COUNTERCLOCKWISE -> deltaAngle <= 0 ? farthestAngle : closestAngle;
+      case BOTH -> closestAngle; // Use the shortest path
     };
   }
 
@@ -350,7 +350,7 @@ public class SuperstructureController extends SubsystemBase {
         constraints.minElevatorHeight,
         constraints.maxElevatorHeight);
 
-    Logger.recordOutput(
+    Logger.recordOutput( // FIXME: Temporary logging for debugging in this function
         "Superstructure/DebugTargetPose/Target arm position",
         superstructureState.getTargetPose().armAngle.in(Units.Degrees));
     Logger.recordOutput(
@@ -372,7 +372,7 @@ public class SuperstructureController extends SubsystemBase {
         "Superstructure/DebugTargetPose/Shortest delta angle to target",
         shortestDeltaAngleToTarget);
     if (targetArmDirection == ArmDirection.BOTH) {
-      // se what direction is the most optimal direction and set our direction based
+      // see what direction is the most optimal direction and set our direction based
       // on that
       targetArmDirection = (shortestDeltaAngleToTarget >= 0)
           ? ArmDirection.COUNTERCLOCKWISE
@@ -385,8 +385,9 @@ public class SuperstructureController extends SubsystemBase {
     // want to go clockwise we go to the nearest mod of the target angle in the
     // positive direction)
     Angle modifiedTargetAngle = superstructureState.getTargetPose().armAngle;
-    if (targetArmDirection == ArmDirection.CLOCKWISE) { // if we are going clockwise, take the shortest delta angle and
-      // make it negative and add it to the current angle
+    if (targetArmDirection == ArmDirection.CLOCKWISE) {
+      // if we are going clockwise, take the shortest delta angle and make it negative
+      // and add it to the current angle
       double deltaAngle = (shortestDeltaAngleToTarget <= 0)
           ? shortestDeltaAngleToTarget
           : shortestDeltaAngleToTarget - 360.0;
@@ -395,10 +396,9 @@ public class SuperstructureController extends SubsystemBase {
       Logger.recordOutput(
           "Superstructure/DebugTargetPose/Modified target angle",
           modifiedTargetAngle.in(Units.Degrees));
-    } else if (targetArmDirection == ArmDirection.COUNTERCLOCKWISE) { // if we are going counterclockwise, take the
-      // shortest delta angle and
-      // make it positive and add it to the current
-      // angle
+    } else if (targetArmDirection == ArmDirection.COUNTERCLOCKWISE) {
+      // if we are going counterclockwise, take the shortest delta angle and
+      // make it positive and add it to the current angle
       double deltaAngle = (shortestDeltaAngleToTarget >= 0)
           ? shortestDeltaAngleToTarget
           : shortestDeltaAngleToTarget + 360.0;
@@ -409,7 +409,7 @@ public class SuperstructureController extends SubsystemBase {
           modifiedTargetAngle.in(Units.Degrees));
     }
 
-    // 3. Clamp the arm target angle between the min and max
+    // 5. Clamp the arm target angle between the min and max
     Angle targetArmAngle = clamp(modifiedTargetAngle, constraints.minArmAngle, constraints.maxArmAngle);
 
     return new SuperstructurePose(targetElevatorHeight, targetArmAngle, targetArmDirection);
