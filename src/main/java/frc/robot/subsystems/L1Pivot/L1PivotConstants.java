@@ -22,15 +22,15 @@ public class L1PivotConstants {
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
         case COMP -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
-        case SIM  -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
-        default   -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
+        case SIM -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
+        default -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(7.5, 10); // 3, 10
-        case SIM -> new MotionMagicConfig(7.5, 10); // 3, 10
-        default -> new MotionMagicConfig(0, 0);
+        case SIM -> new MotionMagicConfig(7.5, 10);
+        case COMP -> new MotionMagicConfig(7.5, 10);
+        default -> new MotionMagicConfig(7.5, 10);
       };
 
   public record L1PivotConfig(int motorID, double reduction) {}

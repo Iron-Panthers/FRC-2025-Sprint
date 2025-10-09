@@ -55,7 +55,7 @@ public class L1Pivot extends GenericSuperstructure<L1Pivot.L1PivotTarget>
     return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
         <= super.getPositionTarget().getEpsilon();
   }
-
+  // TODO: Convert from double to WPILib units! (every where else too)
   public double getPosition() {
     return super.getPosition() * 360.0;
   }
