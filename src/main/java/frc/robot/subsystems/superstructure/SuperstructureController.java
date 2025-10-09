@@ -182,7 +182,7 @@ public class SuperstructureController extends SubsystemBase {
     double currentAbsoluteAngle = normalizeAngle(currentRawPosition);
 
     // Get the target absolute angle (0-360)
-    double targetAbsoluteAngle = absoluteAngle.in(Units.Degrees);
+    double targetAbsoluteAngle = normalizeAngle(absoluteAngle.in(Units.Degrees));
 
     // Normalize delta to [-180, 180] range
     double deltaAngle = calculateShortestDeltaAngle(targetAbsoluteAngle, currentAbsoluteAngle);
@@ -194,15 +194,15 @@ public class SuperstructureController extends SubsystemBase {
 
     // Choose target based on direction preference
     return switch (armDirection) {
-      case CLOCKWISE -> deltaAngle >= 0 ? clockwiseTarget : counterClockwiseTarget;
-      case COUNTERCLOCKWISE -> deltaAngle <= 0 ? clockwiseTarget : counterClockwiseTarget;
+      case CLOCKWISE -> deltaAngle >= 0 ? counterClockwiseTarget : clockwiseTarget;
+      case COUNTERCLOCKWISE -> deltaAngle <= 0 ? counterClockwiseTarget : clockwiseTarget;
       case BOTH -> clockwiseTarget; // Use the shortest path (deltaAngle is already normalized)
     };
   }
 
   /**
    * Normalizes an angle to be between 0-360 degrees
-   * 
+   *
    * @param angle The angle to normalize
    * @return The normalized angle between 0-360 degrees
    */
@@ -212,19 +212,23 @@ public class SuperstructureController extends SubsystemBase {
 
   /**
    * Calculates the shortest delta between two angles
-   * 
+   *
    * @param target  Target angle (0-360)
    * @param current Current angle (0-360)
    * @return Delta angle in range [-180, 180]
    */
   private double calculateShortestDeltaAngle(double target, double current) {
+    // Normalize both angles to [0, 360) range first
+    target = normalizeAngle(target);
+    current = normalizeAngle(current);
+
+    // Calculate the direct difference
     double deltaAngle = target - current;
 
-    // Normalize delta to [-180, 180] range
-    while (deltaAngle > 180.0) {
+    // Normalize to [-180, 180] range for shortest path
+    if (deltaAngle > 180.0) {
       deltaAngle -= 360.0;
-    }
-    while (deltaAngle <= -180.0) {
+    } else if (deltaAngle < -180.0) {
       deltaAngle += 360.0;
     }
 
@@ -262,9 +266,7 @@ public class SuperstructureController extends SubsystemBase {
     logData();
   }
 
-  /**
-   * Updates targets for subsystems based on current state and constraints
-   */
+  /** Updates targets for subsystems based on current state and constraints */
   private void updateTargets() {
     SuperstructurePose targetPose = getTargetSuperstructurePose();
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
@@ -273,17 +275,13 @@ public class SuperstructureController extends SubsystemBase {
         absoluteToRelativeTarget(targetPose.armAngle, currentPose, targetPose.armDirection));
   }
 
-  /**
-   * Updates subsystem periodic methods
-   */
+  /** Updates subsystem periodic methods */
   private void updateSubsystemPeriodics() {
     elevator.periodic();
     arm.periodic();
   }
 
-  /**
-   * Logs relevant data about the superstructure
-   */
+  /** Logs relevant data about the superstructure */
   private void logData() {
     SuperstructurePose targetPose = getTargetSuperstructurePose();
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
@@ -340,6 +338,9 @@ public class SuperstructureController extends SubsystemBase {
    *         constraints of the mechanism
    */
   public SuperstructurePose getTargetSuperstructurePose() {
+    // Get the prerequisite info for these calculations
+    SuperstructurePose currentPose = getCurrentSuperstructurePose();
+
     // 1. Calculate the Min and Max heights and angles for the elevator and pivot
     SuperstructureConstraints constraints = getSuperstructureConstraints();
 
@@ -349,14 +350,67 @@ public class SuperstructureController extends SubsystemBase {
         constraints.minElevatorHeight,
         constraints.maxElevatorHeight);
 
-    // 3. Clamp the arm target angle between the min and max
-    Angle targetArmAngle = clamp(
-        superstructureState.getTargetPose().armAngle,
-        constraints.minArmAngle,
-        constraints.maxArmAngle);
+    Logger.recordOutput(
+        "Superstructure/DebugTargetPose/Target arm position",
+        superstructureState.getTargetPose().armAngle.in(Units.Degrees));
+    Logger.recordOutput(
+        "Superstructure/DebugTargetPose/Current arm position",
+        currentPose.armAngle.in(Units.Degrees));
+    Logger.recordOutput(
+        "Superstructure/DebugTargetPose/Normalized target arm position",
+        normalizeAngle(superstructureState.getTargetPose().armAngle.in(Units.Degrees)));
+    Logger.recordOutput(
+        "Superstructure/DebugTargetPose/Normalized current arm position",
+        normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
 
-    // 4. Figure out what direction the arm should be allowed to move
+    // 3. Figure out what direction the arm should be allowed to move
     ArmDirection targetArmDirection = superstructureState.getTargetPose().armDirection;
+    double shortestDeltaAngleToTarget = calculateShortestDeltaAngle(
+        normalizeAngle(superstructureState.getTargetPose().armAngle.in(Units.Degrees)),
+        normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
+    Logger.recordOutput(
+        "Superstructure/DebugTargetPose/Shortest delta angle to target",
+        shortestDeltaAngleToTarget);
+    if (targetArmDirection == ArmDirection.BOTH) {
+      // se what direction is the most optimal direction and set our direction based
+      // on that
+      targetArmDirection = (shortestDeltaAngleToTarget >= 0)
+          ? ArmDirection.COUNTERCLOCKWISE
+          : ArmDirection.CLOCKWISE;
+    }
+    Logger.recordOutput(
+        "Superstructure/DebugTargetPose/Arm direction", targetArmDirection.toString());
+
+    // 4. Modify the target arm pose based on the direction we want to go (if we
+    // want to go clockwise we go to the nearest mod of the target angle in the
+    // positive direction)
+    Angle modifiedTargetAngle = superstructureState.getTargetPose().armAngle;
+    if (targetArmDirection == ArmDirection.CLOCKWISE) { // if we are going clockwise, take the shortest delta angle and
+      // make it negative and add it to the current angle
+      double deltaAngle = (shortestDeltaAngleToTarget <= 0)
+          ? shortestDeltaAngleToTarget
+          : shortestDeltaAngleToTarget - 360.0;
+      Logger.recordOutput("Superstructure/DebugTargetPose/Calculated delta angle", deltaAngle);
+      modifiedTargetAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)) + deltaAngle);
+      Logger.recordOutput(
+          "Superstructure/DebugTargetPose/Modified target angle",
+          modifiedTargetAngle.in(Units.Degrees));
+    } else if (targetArmDirection == ArmDirection.COUNTERCLOCKWISE) { // if we are going counterclockwise, take the
+      // shortest delta angle and
+      // make it positive and add it to the current
+      // angle
+      double deltaAngle = (shortestDeltaAngleToTarget >= 0)
+          ? shortestDeltaAngleToTarget
+          : shortestDeltaAngleToTarget + 360.0;
+      Logger.recordOutput("Superstructure/DebugTargetPose/Calculated delta angle", deltaAngle);
+      modifiedTargetAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)) + deltaAngle);
+      Logger.recordOutput(
+          "Superstructure/DebugTargetPose/Modified target angle",
+          modifiedTargetAngle.in(Units.Degrees));
+    }
+
+    // 3. Clamp the arm target angle between the min and max
+    Angle targetArmAngle = clamp(modifiedTargetAngle, constraints.minArmAngle, constraints.maxArmAngle);
 
     return new SuperstructurePose(targetElevatorHeight, targetArmAngle, targetArmDirection);
   }
@@ -452,18 +506,15 @@ public class SuperstructureController extends SubsystemBase {
     return calculateAngleConstraints(heightOnElevator, armLength);
   }
 
-  /**
-   * Calculates the available height on the elevator for arm movement
-   */
+  /** Calculates the available height on the elevator for arm movement */
   private Distance calculateAvailableElevatorHeight(SuperstructurePose pose) {
     return pose.elevatorHeight.minus(
         Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION));
   }
 
-  /**
-   * Calculates angle constraints based on available height and arm length
-   */
-  private Pair<Angle, Angle> calculateAngleConstraints(Distance heightOnElevator, Distance armLength) {
+  /** Calculates angle constraints based on available height and arm length */
+  private Pair<Angle, Angle> calculateAngleConstraints(
+      Distance heightOnElevator, Distance armLength) {
     // Calculate the minimum angle using arccos
     double angleRad = Math.acos(heightOnElevator.div(armLength).in(Units.Value));
 

@@ -22,9 +22,10 @@ public class ElevatorConstants {
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
-        case SIM  -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
-        default   -> new PIDGains(1.5, 0, 0, 0, 0, 0, 0);
+        case COMP -> new PIDGains(
+            1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
+        case SIM -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
+        default -> new PIDGains(1.5, 0, 0, 0, 0, 0, 0);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
