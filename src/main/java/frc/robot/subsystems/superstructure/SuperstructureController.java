@@ -343,6 +343,9 @@ public class SuperstructureController extends SubsystemBase {
 
     // 1. Calculate the Min and Max heights and angles for the elevator and pivot
     SuperstructureConstraints constraints = getSuperstructureConstraints();
+    Angle armMinimumAngle = Units.Degrees.of(normalizeAngle(constraints.minArmAngle.in(Units.Degrees)));
+    Angle armMaximumAngle = Units.Degrees.of(normalizeAngle(constraints.maxArmAngle.in(Units.Degrees)));
+    Angle currentNormalizedAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
 
     // 2. Clamp the elevator target height between the min and max
     Distance targetElevatorHeight = clamp(
@@ -409,25 +412,20 @@ public class SuperstructureController extends SubsystemBase {
           "Superstructure/DebugTargetPose/Modified target angle",
           modifiedTargetAngle.in(Units.Degrees));
     }
-    // 5. modify the min and max angle so they are right below or right above the
-    // current arm angle
-    Angle armMinimumAngle = Units.Degrees.of(normalizeAngle(constraints.minArmAngle.in(Units.Degrees)));
-    Angle armMaximumAngle = Units.Degrees.of(normalizeAngle(constraints.maxArmAngle.in(Units.Degrees)));
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/ChangingMinMax/before min",
-        armMinimumAngle.in(Units.Degrees));
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/ChangingMinMax/before max",
-        armMaximumAngle.in(Units.Degrees));
-    Angle currentNormalizedAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
+
+    // 5. fix the case where our current angle is between the
+    // min and max angle but just in the wrong way (e.g. min = 350, max = 10,
+    // current = 0)
     if (armMinimumAngle.gt(currentNormalizedAngle) && armMaximumAngle.lt(currentNormalizedAngle)) {
-      // if both the min and max are on the wrong side of the current angle, we need
-      // to move to the closest one
       modifiedTargetAngle = (Math.abs(armMinimumAngle.minus(currentNormalizedAngle).in(Units.Degrees)) < (Math
           .abs(currentNormalizedAngle.minus(armMaximumAngle).in(Units.Degrees))))
               ? armMinimumAngle
               : armMaximumAngle;
     }
+
+    // 6. Make sure that the min and max angles are actually less than and greater
+    // than
+    // the current angle
     if (armMinimumAngle.gt(currentNormalizedAngle)) {
       // make sure the minimum angle is less than the current angle
       armMinimumAngle = armMinimumAngle.minus(Units.Degrees.of(360.0));
@@ -443,7 +441,7 @@ public class SuperstructureController extends SubsystemBase {
         "Superstructure/DebugTargetPose/ChangingMinMax/after max",
         armMaximumAngle.in(Units.Degrees));
 
-    // 6. Clamp the arm target angle between the min and max
+    // 7. Clamp the arm target angle between the min and max
     Angle targetArmAngle = clamp(modifiedTargetAngle, armMinimumAngle, armMaximumAngle);
 
     return new SuperstructurePose(targetElevatorHeight, targetArmAngle, targetArmDirection);
