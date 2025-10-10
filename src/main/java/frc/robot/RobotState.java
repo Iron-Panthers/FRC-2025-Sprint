@@ -235,7 +235,7 @@ public class RobotState {
     for (int i = closestIndex; i < approachPoses.length; i++) {
       double angle = -Math.PI / 3 * i;
       double x = (offset + 1.285) * Math.cos(angle) + origin.getX();
-      double y = (offset + 1.285) * Math.tan(angle) * Math.cos(angle) + origin.getY();
+      double y = (offset + 1.285) * Math.sin(angle) + origin.getY();
       ApproachPose reefPose = new ApproachPose(new Pose2d(x, y, new Rotation2d()));
       double newDistance =
           getEstimatedPose()

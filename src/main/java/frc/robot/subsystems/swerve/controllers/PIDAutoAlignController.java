@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.robot.Constants;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class PIDAutoAlignController {
 
@@ -53,6 +54,7 @@ public class PIDAutoAlignController {
     double translMagTargPos =
         Math.hypot(targetPosition.getX(), targetPosition.getY()) - magStartPos;
     double magVel = magController.calculate(translMagCurrPos, translMagTargPos);
+    Logger.recordOutput("SWERVE/PIDAutoalign/MagVel", magVel);
     yVel = Math.abs(magVel * Math.sin(angle)) * (dy < 0 ? -1 : 1);
     xVel = Math.abs(magVel * Math.cos(angle)) * (dx < 0 ? -1 : 1);
   }
@@ -60,6 +62,8 @@ public class PIDAutoAlignController {
   // update the values
   public ChassisSpeeds update() {
     calculateLinearMovement();
+    Logger.recordOutput("SWERVE/PIDAutoalign/XVel", xVel);
+    Logger.recordOutput("SWERVE/PIDAutoalign/yVel", yVel);
     return ChassisSpeeds.fromFieldRelativeSpeeds(-xVel, -yVel, 0, yawSupplier.get());
   }
   // log your data in advantage kit
