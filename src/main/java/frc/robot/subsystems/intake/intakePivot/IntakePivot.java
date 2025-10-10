@@ -11,8 +11,8 @@ import org.littletonrobotics.junction.Logger;
 public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTarget>
     implements LoggableMechanism3d {
   public enum IntakePivotTarget implements GenericSuperstructure.PositionTarget {
-    TOP(-79), // TODO: Set and document all of these values
-    INTAKE(-96),
+    INTAKE(
+        -96), // TODO: Get real values or something uh i forgot what the todo was before deleting it
     STOW(-96),
     L1(-110),
     PASS(-96);
@@ -46,7 +46,7 @@ public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTa
   public void periodic() {
     super.periodic();
     Logger.recordOutput(
-        "Superstructure/Intake Pivot/PositionTargetRotations",
+        "Intake/IntakePivot/PositionTargetRotations", // TODO: add naming convention to notion doc
         getPositionTarget().getPosition() / 360d);
   }
 

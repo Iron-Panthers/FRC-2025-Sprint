@@ -43,11 +43,15 @@ public class IntakeController extends SubsystemBase {
     switch (targetState) {
       case IDLE -> {
         intakeRollers.setVoltageTarget(IntakeRollers.Target.IDLE);
-        intakePivot.setPositionTarget(IntakePivotTarget.TOP);
+        intakePivot.setPositionTarget(IntakePivotTarget.STOW);
       }
       case INTAKE -> {
-        intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
-        intakePivot.setPositionTarget(IntakePivotTarget.INTAKE);
+        if (intakeRollers.getSupplyCurrentAmps() > 41) { // TODO: get right value
+          setTargetState(IntakeState.HOLD);
+        } else {
+          intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
+          intakePivot.setPositionTarget(IntakePivotTarget.INTAKE);
+        }
       }
       case EJECT -> { // TODO: Figure out more robust eject logic
         intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);

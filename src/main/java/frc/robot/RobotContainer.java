@@ -107,7 +107,7 @@ public class RobotContainer {
           SimulatedArena.getInstance().resetFieldForAuto();
 
           intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
-          // intakePivot = new IntakePivot(new IntakePivotIOSim());
+          intakePivot = new IntakePivot(new IntakePivotIOSim());
         }
         case PRACTICE -> {
           swerve =
