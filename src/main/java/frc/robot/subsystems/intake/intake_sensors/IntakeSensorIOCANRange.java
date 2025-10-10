@@ -22,13 +22,11 @@ public class IntakeSensorIOCANRange implements IntakeSensorsIO {
     // find the distance and if an object is being detected
     distance = canRange.getDistance();
     isDetected = canRange.getIsDetected();
-    
-    //FIXME: do we really need this?
+
+    // FIXME: do we really need this?
     canRange.optimizeBusUtilization();
   }
 
   @Override
-  public void updateInputs(IntakeSensorsIOInputs inputs) {
-    
-  }
+  public void updateInputs(IntakeSensorsIOInputs inputs) {}
 }

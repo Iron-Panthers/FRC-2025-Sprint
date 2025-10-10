@@ -20,6 +20,7 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.intakePivot.IntakePivot;
 import frc.robot.subsystems.intake.intakePivot.IntakePivotIO;
+import frc.robot.subsystems.intake.intakePivot.IntakePivotIOSim;
 import frc.robot.subsystems.intake.intakePivot.IntakePivotIOTalonFX;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIO;
