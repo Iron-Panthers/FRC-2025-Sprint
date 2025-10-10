@@ -463,6 +463,18 @@ public class SuperstructureController extends SubsystemBase {
     // 7. Clamp the arm target angle between the min and max
     Angle targetArmAngle = clamp(modifiedTargetAngle, armMinimumAngle, armMaximumAngle);
 
+    // 8. Figure out what final arm direction to go in to get to that target
+    double finalDeltaAngle = calculateShortestDeltaAngle(
+        targetArmAngle.in(Units.Degrees),
+        currentPose.armAngle.in(Units.Degrees));
+    if (finalDeltaAngle > 0) {
+      targetArmDirection = ArmDirection.COUNTERCLOCKWISE;
+    } else if (finalDeltaAngle < 0) {
+      targetArmDirection = ArmDirection.CLOCKWISE;
+    } else {
+      targetArmDirection = ArmDirection.BOTH; // we are already at the target
+    }
+
     return new SuperstructurePose(targetElevatorHeight, targetArmAngle, targetArmDirection);
   }
 
