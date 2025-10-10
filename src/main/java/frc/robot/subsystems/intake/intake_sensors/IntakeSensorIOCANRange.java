@@ -1,10 +1,10 @@
-package frc.robot.subsystems.intake.intakeSensors;
+package frc.robot.subsystems.intake.intake_sensors;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.hardware.CANrange;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.subsystems.intake.intakeSensors.IntakeSensorsIO.IntakeSensorsIOInputs;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsIO.IntakeSensorsIOInputs;
 
 public class IntakeSensorIOCANRange implements IntakeSensorsIO {
 
@@ -22,13 +22,11 @@ public class IntakeSensorIOCANRange implements IntakeSensorsIO {
     // find the distance and if an object is being detected
     distance = canRange.getDistance();
     isDetected = canRange.getIsDetected();
-    
-    //FIXME: do we really need this?
+
+    // FIXME: do we really need this?
     canRange.optimizeBusUtilization();
   }
 
   @Override
-  public void updateInputs(IntakeSensorsIOInputs inputs) {
-    
-  }
+  public void updateInputs(IntakeSensorsIOInputs inputs) {}
 }

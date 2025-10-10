@@ -18,13 +18,14 @@ import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.intake.IntakeController;
-import frc.robot.subsystems.intake.intakePivot.IntakePivot;
-import frc.robot.subsystems.intake.intakePivot.IntakePivotIO;
-import frc.robot.subsystems.intake.intakePivot.IntakePivotIOTalonFX;
-import frc.robot.subsystems.intake.intakeRollers.IntakeRollers;
-import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIO;
-import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIOSim;
-import frc.robot.subsystems.intake.intakeRollers.IntakeRollersIOTalonFX;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOSim;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOTalonFX;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -270,9 +271,11 @@ public class RobotContainer {
   }
 
   public void updateSimulation() {
+
     if (Constants.getRobotMode() != Constants.Mode.SIM) return;
 
     SimulatedArena.getInstance().simulationPeriodic();
+
     Logger.recordOutput(
         "FieldSimulation/RobotPosition",
         RobotSimState.getInstance().getDriveSimulation().getSimulatedDriveTrainPose());
