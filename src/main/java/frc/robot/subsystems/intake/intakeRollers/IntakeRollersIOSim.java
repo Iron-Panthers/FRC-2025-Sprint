@@ -34,8 +34,7 @@ public class IntakeRollersIOSim extends GenericRollersIOSim implements IntakeRol
     double rotations = 0; // can't really be simulated
 
     // Divides our angular velocity by our reduction
-    double velocityRPS =
-        intakeRollersSim.getAngularVelocityRadPerSec() / REDUCTION;
+    double velocityRPS = intakeRollersSim.getAngularVelocityRadPerSec() / REDUCTION;
     // FIXME: Doesn't work when reduction is 1
 
     talon.getSimState().setRawRotorPosition(rotations);
