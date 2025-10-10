@@ -95,12 +95,15 @@ public class SuperstructureController extends SubsystemBase {
     }
 
     public LoggedMechanism2d getAsMechanism2d() {
-      LoggedMechanism2d mech = new LoggedMechanism2d(50, 50);
-      mech.getRoot("Superstructure", 25, 0)
-          .append(new LoggedMechanismLigament2d("Elevator", elevatorHeight.in(Units.Inches), 90))
+      LoggedMechanism2d mech = new LoggedMechanism2d(
+          Units.Inches.of(50).in(Units.Meters), Units.Inches.of(50).in(Units.Meters));
+      mech.getRoot("Superstructure", Units.Inches.of(25).in(Units.Meters), 0)
+          .append(new LoggedMechanismLigament2d("Elevator", elevatorHeight.in(Units.Meters), 90))
           .append(
               new LoggedMechanismLigament2d(
-                  "Arm", ArmConstants.ARM_LENGTH, armAngle.in(Units.Degrees) - 90));
+                  "Arm",
+                  Units.Inches.of(ArmConstants.ARM_LENGTH).in(Units.Meters),
+                  armAngle.in(Units.Degrees) - 90));
       return mech;
     }
 
@@ -359,10 +362,11 @@ public class SuperstructureController extends SubsystemBase {
     double bottomToTargetDelta = calculateShortestDeltaAngle(
         normalizeAngle(superstructureState.getTargetPose().armAngle.in(Units.Degrees)), 270.0);
     if (Math.abs(currentToTargetDelta) > Math.abs(bottomToTargetDelta)
-        && currentToTargetDelta * bottomToTargetDelta > 0) {
+        && currentToTargetDelta * bottomToTargetDelta >= 0) {
       targetElevatorHeight = Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
-          .plus(Units.Inches.of(ArmConstants.ARM_LENGTH)).plus(Units.Inches.of(1.0)); // TODO: make this extra buffer
-                                                                                      // into an actual constant
+          .plus(Units.Inches.of(ArmConstants.ARM_LENGTH));
+      // .plus(Units.Inches.of(1.0)); // TODO: make this extra buffer
+      // // into an actual constant
     }
 
     Logger.recordOutput( // FIXME: Temporary logging for debugging in this function
@@ -427,7 +431,8 @@ public class SuperstructureController extends SubsystemBase {
     // fix the case in which the min angle and max angle give close to 360 degrees
     // of rotation (i.e. are very close to each other)
     if (Math.abs(
-        normalizeAngle(armMaximumAngle.in(Units.Degrees)) - normalizeAngle(armMinimumAngle.in(Units.Degrees))) < 1.0) {
+        normalizeAngle(armMaximumAngle.in(Units.Degrees))
+            - normalizeAngle(armMinimumAngle.in(Units.Degrees))) < 1.0) {
       armMinimumAngle = Units.Degrees.of(-360); // basically just make them not impede any movement
       armMaximumAngle = Units.Degrees.of(360);
     }
@@ -465,8 +470,7 @@ public class SuperstructureController extends SubsystemBase {
 
     // 8. Figure out what final arm direction to go in to get to that target
     double finalDeltaAngle = calculateShortestDeltaAngle(
-        targetArmAngle.in(Units.Degrees),
-        currentPose.armAngle.in(Units.Degrees));
+        targetArmAngle.in(Units.Degrees), currentPose.armAngle.in(Units.Degrees));
     if (finalDeltaAngle > 0) {
       targetArmDirection = ArmDirection.COUNTERCLOCKWISE;
     } else if (finalDeltaAngle < 0) {
