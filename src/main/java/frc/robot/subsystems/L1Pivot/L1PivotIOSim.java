@@ -1,6 +1,7 @@
 package frc.robot.subsystems.L1Pivot;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureIOSim;
@@ -14,10 +15,10 @@ public class L1PivotIOSim extends GenericSuperstructureIOSim implements L1PivotI
     super(L1PivotConstants.L1_PIVOT_CONFIG.motorID());
 
     this.reduction = L1PivotConstants.L1_PIVOT_CONFIG.reduction();
-
+    // this is a talonfx44
     l1PivotSim =
         new SingleJointedArmSim(
-            DCMotor.getKrakenX60Foc(1),
+            new DCMotor(24, 4.05, 275, 1.4, Units.rotationsPerMinuteToRadiansPerSecond(7530), 1),
             reduction,
             L1PivotConstants.PHYSICAL_CONSTANTS.momentOfInertia(),
             L1PivotConstants.PHYSICAL_CONSTANTS.lengthMeters(),

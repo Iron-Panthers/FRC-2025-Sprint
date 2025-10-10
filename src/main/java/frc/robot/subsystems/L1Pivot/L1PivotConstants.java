@@ -22,7 +22,7 @@ public class L1PivotConstants {
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
         case COMP -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
-        case SIM -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
+        case SIM -> new PIDGains(5, 0, 0, 0, 0.47, 0.02, 0.26);
         default -> new PIDGains(10, 0, 0, 0, 0.47, 0.02, 0.26);
       };
 
