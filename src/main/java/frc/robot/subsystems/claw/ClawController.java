@@ -55,7 +55,7 @@ public class ClawController extends SubsystemBase {
       clawRollers.setVoltageTarget(ClawRollersTarget.HOLD);
     }
 
-    ClawRollers.periodic();
+    clawRollers.periodic();
 
     Logger.recordOutput("clawRollers/targetState", targetState);
   }

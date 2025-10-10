@@ -17,12 +17,14 @@ import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.claw.ClawRollers;
+import frc.robot.subsystems.claw.ClawRollers.ClawRollersTarget;
+import frc.robot.subsystems.claw.ClawRollersIO;
+import frc.robot.subsystems.claw.ClawRollersIOSim;
+import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
-import frc.robot.subsystems.superstructure.claw_rollers.ClawRollers;
-import frc.robot.subsystems.superstructure.claw_rollers.ClawRollers.ClawRollersTarget;
-import frc.robot.subsystems.superstructure.claw_rollers.ClawRollersIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -96,9 +98,8 @@ public class RobotContainer {
                   new VisionIOPhotonvisionSim(4, driveSimulation::getSimulatedDriveTrainPose),
                   new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
 
+          clawRollers = new ClawRollers(new ClawRollersIOSim());
           SimulatedArena.getInstance().resetFieldForAuto();
-
-          clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
         }
       }
     }
@@ -122,6 +123,9 @@ public class RobotContainer {
 
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
+    }
+    if (clawRollers == null) {
+      clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
 
     nameCommands();
