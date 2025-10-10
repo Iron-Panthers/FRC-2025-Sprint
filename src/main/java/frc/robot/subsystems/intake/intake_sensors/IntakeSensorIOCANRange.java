@@ -1,10 +1,10 @@
-package frc.robot.subsystems.intake.intakeSensors;
+package frc.robot.subsystems.intake.intake_sensors;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.hardware.CANrange;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.subsystems.intake.intakeSensors.IntakeSensorsIO.IntakeSensorsIOInputs;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsIO.IntakeSensorsIOInputs;
 
 public class IntakeSensorIOCANRange implements IntakeSensorsIO {
 

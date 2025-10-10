@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake.intakeSensors;
+package frc.robot.subsystems.intake.intake_sensors;
 
 public class IntakeSensors {
 
