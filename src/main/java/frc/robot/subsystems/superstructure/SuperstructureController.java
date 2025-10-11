@@ -209,7 +209,7 @@ public class SuperstructureController extends SubsystemBase {
    * @param angle The angle to normalize
    * @return The normalized angle between 0-360 degrees
    */
-  private double normalizeAngle(double angle) {
+  private static double normalizeAngle(double angle) {
     return ((angle % 360.0) + 360.0) % 360.0;
   }
 
@@ -220,7 +220,7 @@ public class SuperstructureController extends SubsystemBase {
    * @param current Current angle (0-360)
    * @return Delta angle in range [-180, 180]
    */
-  private double calculateShortestDeltaAngle(double target, double current) {
+  private static double calculateShortestDeltaAngle(double target, double current) {
     // Normalize both angles to [0, 360) range first
     target = normalizeAngle(target);
     current = normalizeAngle(current);
@@ -346,9 +346,9 @@ public class SuperstructureController extends SubsystemBase {
 
     // 1. Calculate the Min and Max heights and angles for the elevator and pivot
     SuperstructureConstraints constraints = getSuperstructureConstraints();
-    Angle armMinimumAngle = Units.Degrees.of(normalizeAngle(constraints.minArmAngle.in(Units.Degrees)));
-    Angle armMaximumAngle = Units.Degrees.of(normalizeAngle(constraints.maxArmAngle.in(Units.Degrees)));
-    Angle currentNormalizedAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
+    Angle normalizedCurrentArmAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
+    Angle normalizedTargetArmAngle = Units.Degrees
+        .of(normalizeAngle(superstructureState.targetPose.armAngle.in(Units.Degrees)));
 
     // 2. Clamp the elevator target height between the min and max
     Distance targetElevatorHeight = clamp(
@@ -356,40 +356,11 @@ public class SuperstructureController extends SubsystemBase {
         constraints.minElevatorHeight,
         constraints.maxElevatorHeight);
 
-    double currentToTargetDelta = calculateShortestDeltaAngle(
-        normalizeAngle(superstructureState.getTargetPose().armAngle.in(Units.Degrees)),
-        currentNormalizedAngle.in(Units.Degrees));
-    double bottomToTargetDelta = calculateShortestDeltaAngle(
-        normalizeAngle(superstructureState.getTargetPose().armAngle.in(Units.Degrees)), 270.0);
-    if (Math.abs(currentToTargetDelta) > Math.abs(bottomToTargetDelta)
-        && currentToTargetDelta * bottomToTargetDelta >= 0) {
-      targetElevatorHeight = Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
-          .plus(Units.Inches.of(ArmConstants.ARM_LENGTH));
-      // .plus(Units.Inches.of(1.0)); // TODO: make this extra buffer
-      // // into an actual constant
-    }
-
-    Logger.recordOutput( // FIXME: Temporary logging for debugging in this function
-        "Superstructure/DebugTargetPose/Target arm position",
-        superstructureState.getTargetPose().armAngle.in(Units.Degrees));
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/Current arm position",
-        currentPose.armAngle.in(Units.Degrees));
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/Normalized target arm position",
-        normalizeAngle(superstructureState.getTargetPose().armAngle.in(Units.Degrees)));
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/Normalized current arm position",
-        normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
-
     // 3. Figure out what direction the arm should be allowed to move
     ArmDirection targetArmDirection = superstructureState.getTargetPose().armDirection;
     double shortestDeltaAngleToTarget = calculateShortestDeltaAngle(
-        normalizeAngle(superstructureState.getTargetPose().armAngle.in(Units.Degrees)),
-        normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/Shortest delta angle to target",
-        shortestDeltaAngleToTarget);
+        normalizedTargetArmAngle.in(Units.Degrees),
+        normalizedCurrentArmAngle.in(Units.Degrees));
     if (targetArmDirection == ArmDirection.BOTH) {
       // see what direction is the most optimal direction and set our direction based
       // on that
@@ -397,89 +368,122 @@ public class SuperstructureController extends SubsystemBase {
           ? ArmDirection.COUNTERCLOCKWISE
           : ArmDirection.CLOCKWISE;
     }
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/Arm direction", targetArmDirection.toString());
 
-    // 4. Modify the target arm pose based on the direction we want to go (if we
+    // 4. Figure out if we need to change the elevator height to allow for
+    // pivot rotation
+    if (armGoesThroughBottom(
+        normalizedCurrentArmAngle, normalizedTargetArmAngle, targetArmDirection)) {
+      targetElevatorHeight = Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
+          .plus(Units.Inches.of(ArmConstants.ARM_LENGTH))
+          .plus(Units.Inches.of(2.0)); // TODO: make the 2.0 an actual
+      // constant value
+    }
+
+    // 5. Smart clamp our arm target angle using constraints and target arm
+    // direction
+    Angle targetArmAngle = smartClampArmTargetAngle(
+        normalizedCurrentArmAngle, normalizedTargetArmAngle, targetArmDirection, constraints);
+
+    // 6. Figure out what final arm direction to go in to get to that target
+    double finalDeltaAngle = calculateShortestDeltaAngle(
+        targetArmAngle.in(Units.Degrees), normalizedCurrentArmAngle.in(Units.Degrees));
+    ArmDirection finalArmDirection;
+    if (finalDeltaAngle > 0) {
+      finalArmDirection = ArmDirection.COUNTERCLOCKWISE;
+    } else if (finalDeltaAngle < 0) {
+      finalArmDirection = ArmDirection.CLOCKWISE;
+    } else {
+      finalArmDirection = ArmDirection.BOTH; // we are already at the target
+    }
+
+    return new SuperstructurePose(targetElevatorHeight, targetArmAngle, finalArmDirection);
+  }
+
+  /**
+   * Uses angle logic and the direction we want our arm to move in to clamp the
+   * target angle between
+   * our min and max angles
+   *
+   * @param currentAngle       the angle that our superstructure is currently at
+   * @param targetAngle
+   * @param targetArmDirection
+   * @param constraints
+   * @return
+   */
+  public static Angle smartClampArmTargetAngle(
+      Angle currentAngle,
+      Angle targetAngle,
+      ArmDirection targetArmDirection,
+      SuperstructureConstraints constraints) {
+
+    // creating some variables that will get used later
+    Angle normalizedCurrentAngle = Units.Degrees.of(normalizeAngle(currentAngle.in(Units.Degrees)));
+    Angle normalizedTargetAngle = Units.Degrees.of(normalizeAngle(targetAngle.in(Units.Degrees)));
+    double shortestDeltaAngleToTarget = calculateShortestDeltaAngle(
+        normalizeAngle(targetAngle.in(Units.Degrees)),
+        normalizeAngle(normalizedCurrentAngle.in(Units.Degrees)));
+    Angle armMinimumAngle = Units.Degrees.of(normalizeAngle(constraints.minArmAngle.in(Units.Degrees)));
+    Angle armMaximumAngle = Units.Degrees.of(normalizeAngle(constraints.maxArmAngle.in(Units.Degrees)));
+
+    // 1. Modify the target arm pose based on the direction we want to go (if we
     // want to go clockwise we go to the nearest mod of the target angle in the
     // positive direction)
-    Angle modifiedTargetAngle = superstructureState.getTargetPose().armAngle;
+    Angle modifiedTargetAngle = normalizedTargetAngle;
     if (targetArmDirection == ArmDirection.CLOCKWISE) {
       // if we are going clockwise, take the shortest delta angle and make it negative
       // and add it to the current angle
       double deltaAngle = (shortestDeltaAngleToTarget <= 0)
           ? shortestDeltaAngleToTarget
           : shortestDeltaAngleToTarget - 360.0;
-      Logger.recordOutput("Superstructure/DebugTargetPose/Calculated delta angle", deltaAngle);
-      modifiedTargetAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)) + deltaAngle);
-      Logger.recordOutput(
-          "Superstructure/DebugTargetPose/Modified target angle",
-          modifiedTargetAngle.in(Units.Degrees));
+      modifiedTargetAngle = Units.Degrees.of(normalizedCurrentAngle.in(Units.Degrees) + deltaAngle);
     } else if (targetArmDirection == ArmDirection.COUNTERCLOCKWISE) {
       // if we are going counterclockwise, take the shortest delta angle and
       // make it positive and add it to the current angle
       double deltaAngle = (shortestDeltaAngleToTarget >= 0)
           ? shortestDeltaAngleToTarget
           : shortestDeltaAngleToTarget + 360.0;
-      Logger.recordOutput("Superstructure/DebugTargetPose/Calculated delta angle", deltaAngle);
-      modifiedTargetAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)) + deltaAngle);
-      Logger.recordOutput(
-          "Superstructure/DebugTargetPose/Modified target angle",
-          modifiedTargetAngle.in(Units.Degrees));
+      modifiedTargetAngle = Units.Degrees.of(normalizedCurrentAngle.in(Units.Degrees) + deltaAngle);
     }
 
-    // fix the case in which the min angle and max angle give close to 360 degrees
-    // of rotation (i.e. are very close to each other)
+    // EDGE CASE 1: if our min and max angles give us almost a full revolution we
+    // should just return our modified target angle
     if (Math.abs(
-        normalizeAngle(armMaximumAngle.in(Units.Degrees))
-            - normalizeAngle(armMinimumAngle.in(Units.Degrees))) < 1.0) {
-      armMinimumAngle = Units.Degrees.of(-360); // basically just make them not impede any movement
-      armMaximumAngle = Units.Degrees.of(360);
+        calculateShortestDeltaAngle(
+            armMaximumAngle.in(Units.Degrees), armMinimumAngle.in(Units.Degrees))) < 1.0) {
+      return modifiedTargetAngle;
     }
 
-    // 5. fix the case where our current angle is between the
-    // min and max angle but just in the wrong way (e.g. min = 350, max = 10,
-    // current = 0)
-    if (armMinimumAngle.gt(currentNormalizedAngle) && armMaximumAngle.lt(currentNormalizedAngle)) {
-      modifiedTargetAngle = (Math.abs(armMinimumAngle.minus(currentNormalizedAngle).in(Units.Degrees)) < (Math
-          .abs(currentNormalizedAngle.minus(armMaximumAngle).in(Units.Degrees))))
+    // EDGE CASE 2: if our arm is between our min and max on the bottom (ei. the arm
+    // is at like 270 and the min is 280 and the max is 290) we should just make our
+    // target position the closest min or max angle
+    if (armMinimumAngle.gt(normalizedCurrentAngle) && armMaximumAngle.lt(normalizedCurrentAngle)) {
+      Angle closestConstrainingAngle = (Math.abs(armMinimumAngle.minus(normalizedCurrentAngle)
+          .in(Units.Degrees)) < (Math.abs(normalizedCurrentAngle.minus(armMaximumAngle).in(Units.Degrees))))
               ? armMinimumAngle
               : armMaximumAngle; // TODO: add some logging error here
+      if (armGoesThroughBottom(normalizedCurrentAngle, modifiedTargetAngle, targetArmDirection)) {
+        return closestConstrainingAngle; // if we would go through the bottom, we should go to our
+        // closest constraining
+        // angle
+      } else {
+        return modifiedTargetAngle; // if we aren't going through the bottom, have at it and go to
+        // our target angle
+      }
     }
 
-    // 6. Make sure that the min and max angles are actually less than and greater
-    // than
-    // the current angle
-    if (armMinimumAngle.gt(currentNormalizedAngle)) {
+    // 2. Make sure that the min and max angles are actually less than and greater
+    // than the current angle
+    if (armMinimumAngle.gt(normalizedCurrentAngle)) {
       // make sure the minimum angle is less than the current angle
       armMinimumAngle = armMinimumAngle.minus(Units.Degrees.of(360.0));
     }
-    if (armMaximumAngle.lt(currentNormalizedAngle)) {
+    if (armMaximumAngle.lt(normalizedCurrentAngle)) {
       // make sure the maximum angle is greater than the current angle
       armMaximumAngle = armMaximumAngle.plus(Units.Degrees.of(360.0));
     }
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/ChangingMinMax/after min",
-        armMinimumAngle.in(Units.Degrees));
-    Logger.recordOutput(
-        "Superstructure/DebugTargetPose/ChangingMinMax/after max",
-        armMaximumAngle.in(Units.Degrees));
 
-    // 7. Clamp the arm target angle between the min and max
-    Angle targetArmAngle = clamp(modifiedTargetAngle, armMinimumAngle, armMaximumAngle);
-
-    // 8. Figure out what final arm direction to go in to get to that target
-    double finalDeltaAngle = calculateShortestDeltaAngle(
-        targetArmAngle.in(Units.Degrees), currentPose.armAngle.in(Units.Degrees));
-    if (finalDeltaAngle > 0) {
-      targetArmDirection = ArmDirection.COUNTERCLOCKWISE;
-    } else if (finalDeltaAngle < 0) {
-      targetArmDirection = ArmDirection.CLOCKWISE;
-    } else {
-      targetArmDirection = ArmDirection.BOTH; // we are already at the target
-    }
-
-    return new SuperstructurePose(targetElevatorHeight, targetArmAngle, targetArmDirection);
+    // 3. Clamp the arm target angle between the min and max and return that value
+    return clamp(modifiedTargetAngle, armMinimumAngle, armMaximumAngle);
   }
 
   /**
@@ -499,6 +503,42 @@ public class SuperstructureController extends SubsystemBase {
       return max;
     } else {
       return val;
+    }
+  }
+
+  /**
+   * Determine if the arm will go through the bottom (270 degrees) when moving
+   * from the current
+   * state to the target state in the given arm direction
+   *
+   * @param current
+   * @param target
+   * @param armDirection if set to BOTH the function will assume it will take the
+   *                     most optimized
+   *                     path
+   * @return weather or not the mechanism will go through 270 on the route between
+   *         the current and
+   *         the target
+   */
+  public static boolean armGoesThroughBottom(
+      Angle current, Angle target, ArmDirection armDirection) {
+    double currentToTargetDelta = calculateShortestDeltaAngle(
+        normalizeAngle(target.in(Units.Degrees)), normalizeAngle(current.in(Units.Degrees)));
+    double bottomToTargetDelta = calculateShortestDeltaAngle(normalizeAngle(target.in(Units.Degrees)), 270.0);
+
+    boolean armGoesThroughBottomOnOptimizedPath = (Math.abs(currentToTargetDelta) > Math.abs(bottomToTargetDelta)
+        && currentToTargetDelta * bottomToTargetDelta >= 0);
+
+    // figure out if were trying to go through the optimized path or not
+    ArmDirection optimizedDirection = (currentToTargetDelta >= 0) ? ArmDirection.COUNTERCLOCKWISE
+        : ArmDirection.CLOCKWISE;
+
+    boolean armGoingThroughOptimizedPath = (armDirection == ArmDirection.BOTH || armDirection == optimizedDirection);
+
+    if (armGoingThroughOptimizedPath) {
+      return armGoesThroughBottomOnOptimizedPath;
+    } else {
+      return !armGoesThroughBottomOnOptimizedPath;
     }
   }
 
