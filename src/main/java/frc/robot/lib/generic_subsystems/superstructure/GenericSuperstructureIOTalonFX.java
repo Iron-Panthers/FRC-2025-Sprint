@@ -106,10 +106,9 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
 
   @Override
   public void updateInputs(GenericSuperstructureIOInputs inputs) {
-    inputs.connected =
-        BaseStatusSignal.refreshAll(
-                positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
-            .isOK();
+    inputs.connected = BaseStatusSignal.refreshAll(
+        positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
+        .isOK();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.velocityRotPerSec = velocityRPS.getValueAsDouble();
     inputs.appliedVolts = appliedVolts.getValueAsDouble();

@@ -29,6 +29,14 @@ import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
+import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
+import frc.robot.subsystems.superstructure.arm.Arm;
+import frc.robot.subsystems.superstructure.arm.ArmIO;
+import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -67,6 +75,10 @@ public class RobotContainer {
   private IntakeRollers intakeRollers;
   private IntakePivot intakePivot;
   private IntakeController intakeController;
+
+  private SuperstructureController superstructureController;
+  private Arm arm;
+  private Elevator elevator;
 
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
@@ -128,6 +140,7 @@ public class RobotContainer {
       }
     }
 
+    // Swerve
     if (swerve == null) {
       swerve =
           new Drive(
@@ -137,14 +150,18 @@ public class RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {});
     }
+
+    // Vision
     if (vision == null) {
       vision = new Vision(new VisionIO() {}, new VisionIO() {});
     }
 
+    // CAN Watchdog
     if (canWatchdog == null) {
       canWatchdog = new CANWatchdog(new CANWatchdogIO() {}, rgb);
     }
 
+    // RGB
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
     }
