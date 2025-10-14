@@ -11,11 +11,11 @@ import org.littletonrobotics.junction.Logger;
 public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTarget>
     implements LoggableMechanism3d {
   public enum IntakePivotTarget implements GenericSuperstructure.PositionTarget {
-    INTAKE(
-        -96), // TODO: Get real values or something uh i forgot what the todo was before deleting it
-    STOW(-96),
-    L1(-110),
-    PASS(-96);
+    INTAKE(0), // TODO: Get real values or something uh i forgot what the todo was before
+    // deleting it
+    STOW(90),
+    L1(90),
+    PASS(90);
 
     private double position;
     private static final double EPSILON = IntakePivotConstants.POSITION_TARGET_EPSILON;

@@ -15,7 +15,8 @@ public class IntakePivotConstants {
       switch (Constants.getRobotType()) {
         case COMP -> new IntakePivotConfig(
             // Reduction between sensor and mechansim
-            CAN.at(8, "Intake Pivot"), CAN.at(28, "Intake Pivot Encoder"), -0.278, 1);
+            CAN.at(30, "Intake Pivot"), CAN.at(31, "Intake Pivot Encoder"), -0.23, 2.25); // (36/16
+          // is the reduction for the encoder)
         case SIM -> new IntakePivotConfig(
             // Reduction between motor and mechansim
             CAN.at(8, "Intake Pivot"), 0, 0, 12 * 0.3750);
@@ -24,15 +25,15 @@ public class IntakePivotConstants {
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(40, 0, 0, 0, 3.6144, 0.1807, 0.53);
+        case COMP -> new PIDGains(60, 0, 0, 0, 2.265488, 0.1, 0.4);
         case SIM -> new PIDGains(40, 0, 0, 0, 3.6144, 0.1807, 0.53);
         default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(7.5, 10); // 3, 10
-        case SIM -> new MotionMagicConfig(7.5, 10); // 3, 10
+        case COMP -> new MotionMagicConfig(6, 10);
+        case SIM -> new MotionMagicConfig(7.5, 10);
         default -> new MotionMagicConfig(0, 0);
       };
 
@@ -46,20 +47,17 @@ public class IntakePivotConstants {
 
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
 
-  public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
+  public static final InvertedValue MOTOR_DIRECTION = InvertedValue.Clockwise_Positive;
 
   public static final SensorDirectionValue CANCODER_DIRECTION =
-      SensorDirectionValue.Clockwise_Positive;
+      SensorDirectionValue.CounterClockwise_Positive;
 
   public static final double POSITION_TARGET_EPSILON = 0.01;
   public static final double INTAKE_PIVOT_LENGTH = 25; // inches
 
-  // SOFT LIMITS
-  public static final double UPPER_EXTENSION_LIMIT = 0.465;
-
   // CURRENT LIMITS
-  public static final double UPPER_VOLT_LIMIT = 4;
-  public static final double LOWER_VOLT_LIMIT = -6;
+  public static final double UPPER_VOLT_LIMIT = 16;
+  public static final double LOWER_VOLT_LIMIT = -16;
   public static final double SUPPLY_CURRENT_LIMIT = 30;
 
   // ZEROING CONSTANTS

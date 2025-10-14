@@ -20,8 +20,7 @@ public class IntakePivotIOTalonFX extends GenericSuperstructureIOTalonFX impleme
             .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD)
             .withCANCoderID(INTAKE_PIVOT_CONFIG.canCoderID())
             .withCANCoderOffset(INTAKE_PIVOT_CONFIG.canCoderOffset())
-            .withCANCoderDirection(CANCODER_DIRECTION)
-            .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
+            .withCANCoderDirection(CANCODER_DIRECTION));
 
     setSlot0(
         GAINS.kP(),
