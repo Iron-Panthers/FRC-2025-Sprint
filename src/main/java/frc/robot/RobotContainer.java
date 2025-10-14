@@ -17,6 +17,14 @@ import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.climb.ClimbController;
+import frc.robot.subsystems.climb.ClimbController.ClimbState;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivot;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivotIO;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivotIOSim;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollers;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollersIO;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollersIOSim;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -38,12 +46,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -59,17 +64,22 @@ public class RobotContainer {
   private RGB rgb;
   private CANWatchdog canWatchdog;
 
+  private ClimbController climbController;
+  private ClimbPivot climbPivot;
+  private ClimbRollers climbRollers;
+
   public RobotContainer() {
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
-          swerve = new Drive(
-              new GyroIOPigeon2(),
-              new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[0]),
-              new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
-              new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
-              new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
           // vision = new Vision(new VisionIOPhotonvision(4), new
           // VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
@@ -78,54 +88,58 @@ public class RobotContainer {
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
           SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-          swerve = new Drive(
-              new GyroIOSim(driveSimulation.getGyroSimulation()),
-              new ModuleIOTalonFXSim(
-                  DriveConstants.MODULE_CONFIGS[0], driveSimulation.getModules()[0]),
-              new ModuleIOTalonFXSim(
-                  DriveConstants.MODULE_CONFIGS[1], driveSimulation.getModules()[1]),
-              new ModuleIOTalonFXSim(
-                  DriveConstants.MODULE_CONFIGS[2], driveSimulation.getModules()[2]),
-              new ModuleIOTalonFXSim(
-                  DriveConstants.MODULE_CONFIGS[3], driveSimulation.getModules()[3]));
-          vision = new Vision(
-              new VisionIOPhotonvisionSim(4, driveSimulation::getSimulatedDriveTrainPose),
-              new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
+          swerve =
+              new Drive(
+                  new GyroIOSim(driveSimulation.getGyroSimulation()),
+                  new ModuleIOTalonFXSim(
+                      DriveConstants.MODULE_CONFIGS[0], driveSimulation.getModules()[0]),
+                  new ModuleIOTalonFXSim(
+                      DriveConstants.MODULE_CONFIGS[1], driveSimulation.getModules()[1]),
+                  new ModuleIOTalonFXSim(
+                      DriveConstants.MODULE_CONFIGS[2], driveSimulation.getModules()[2]),
+                  new ModuleIOTalonFXSim(
+                      DriveConstants.MODULE_CONFIGS[3], driveSimulation.getModules()[3]));
+          vision =
+              new Vision(
+                  new VisionIOPhotonvisionSim(4, driveSimulation::getSimulatedDriveTrainPose),
+                  new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
+          climbPivot = new ClimbPivot(new ClimbPivotIOSim());
+          climbRollers = new ClimbRollers(new ClimbRollersIOSim());
         }
       }
     }
 
     if (swerve == null) {
-      swerve = new Drive(
-          new GyroIO() {
-          },
-          new ModuleIO() {
-          },
-          new ModuleIO() {
-          },
-          new ModuleIO() {
-          },
-          new ModuleIO() {
-          });
+      swerve =
+          new Drive(
+              new GyroIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {});
     }
     if (vision == null) {
-      vision = new Vision(new VisionIO() {
-      }, new VisionIO() {
-      });
+      vision = new Vision(new VisionIO() {}, new VisionIO() {});
     }
 
     if (canWatchdog == null) {
-      canWatchdog = new CANWatchdog(new CANWatchdogIO() {
-      }, rgb);
+      canWatchdog = new CANWatchdog(new CANWatchdogIO() {}, rgb);
+    }
+
+    if (climbPivot == null) {
+      climbPivot = new ClimbPivot(new ClimbPivotIO() {});
+    }
+
+    if (climbRollers == null) {
+      climbRollers = new ClimbRollers(new ClimbRollersIO() {});
     }
 
     if (rgb == null) {
-      rgb = new RGB(new RGBIO() {
-      });
+      rgb = new RGB(new RGBIO() {});
     }
-
+    climbController = new ClimbController(climbRollers, climbPivot);
     nameCommands();
     configureAutos();
     configureBindings();
@@ -158,6 +172,9 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverA.x().onTrue(new InstantCommand(() -> climbController.setTargetState(ClimbState.CLIMB)));
+    driverA.y().onTrue(new InstantCommand(() -> climbController.setTargetState(ClimbState.IDLE)));
+    driverA.b().onTrue(new InstantCommand(() -> climbController.setTargetState(ClimbState.CLEAR)));
   }
 
   private void configureAutos() {
@@ -171,18 +188,19 @@ public class RobotContainer {
 
     var passRobotConfig = robotConfig; // workaround
 
-    BooleanSupplier flipAlliance = () -> {
-      // Boolean supplier that controls when the path will be mirrored for the red
-      // alliance
-      // This will flip the path being followed to the red side of the field.
-      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    BooleanSupplier flipAlliance =
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-      var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-        return alliance.get() == DriverStation.Alliance.Red;
-      }
-      return false;
-    };
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        };
 
     AutoBuilder.configure(
         () -> RobotState.getInstance().getEstimatedPose(),
@@ -196,7 +214,8 @@ public class RobotContainer {
         flipAlliance,
         swerve);
 
-    autoChooser = new LoggedDashboardChooser<Command>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    autoChooser =
+        new LoggedDashboardChooser<Command>("Auto Chooser", AutoBuilder.buildAutoChooser());
     SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
   }
 
@@ -235,12 +254,12 @@ public class RobotContainer {
   }
 
   public void updateSimulation() {
-    if (Constants.getRobotMode() != Constants.Mode.SIM)
-      return;
+    if (Constants.getRobotMode() != Constants.Mode.SIM) return;
 
     SimulatedArena.getInstance().simulationPeriodic();
     Logger.recordOutput(
-        "FieldSimulation/RobotPosition", RobotSimState.getInstance().getDriveSimulation().getSimulatedDriveTrainPose());
+        "FieldSimulation/RobotPosition",
+        RobotSimState.getInstance().getDriveSimulation().getSimulatedDriveTrainPose());
     Logger.recordOutput(
         "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
     Logger.recordOutput(
