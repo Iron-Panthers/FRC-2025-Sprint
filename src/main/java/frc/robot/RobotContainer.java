@@ -23,6 +23,14 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
+import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
+import frc.robot.subsystems.superstructure.arm.Arm;
+import frc.robot.subsystems.superstructure.arm.ArmIO;
+import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -65,6 +73,10 @@ public class RobotContainer {
   private RGB rgb;
   private CANWatchdog canWatchdog;
 
+  private SuperstructureController superstructureController;
+  private Arm arm;
+  private Elevator elevator;
+
   public RobotContainer() {
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
@@ -100,12 +112,15 @@ public class RobotContainer {
               new Vision(
                   new VisionIOPhotonvisionSim(4, driveSimulation::getSimulatedDriveTrainPose),
                   new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
-
           SimulatedArena.getInstance().resetFieldForAuto();
+
+          elevator = new Elevator(new ElevatorIOSim());
+          arm = new Arm(new ArmIOSim());
         }
       }
     }
 
+    // Swerve
     if (swerve == null) {
       swerve =
           new Drive(
@@ -115,17 +130,30 @@ public class RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {});
     }
+
+    // Vision
     if (vision == null) {
       vision = new Vision(new VisionIO() {}, new VisionIO() {});
     }
 
+    // CAN Watchdog
     if (canWatchdog == null) {
       canWatchdog = new CANWatchdog(new CANWatchdogIO() {}, rgb);
     }
 
+    // RGB
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
     }
+
+    // Superstructure
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {});
+    }
+    if (arm == null) {
+      arm = new Arm(new ArmIO() {});
+    }
+    superstructureController = new SuperstructureController(elevator, arm);
 
     nameCommands();
     configureAutos();
@@ -160,40 +188,23 @@ public class RobotContainer {
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
-    // auto align
-    driverA
-        .leftBumper()
-        .whileTrue(
-            (new ApproachReef(() -> levelOffsets, true, swerve)
-                    .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
-                    .andThen(
-                        new InstantCommand(
-                            () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
-                    .andThen(
-                        (new WaitUntilCommand(() -> RobotState.getInstance().alignError() > 0.5)
-                                .andThen(new ApproachReef(() -> levelOffsets, true, swerve)))
-                            .repeatedly()
-                            .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
-                .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
-    // auto align
-    driverA
-        .rightBumper()
-        .whileTrue(
-            (new ApproachReef(() -> levelOffsets, false, swerve)
-                    .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
-                    .andThen(
-                        new InstantCommand(
-                            () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
-                    .andThen(
-                        (new WaitUntilCommand(
-                                    () ->
-                                        RobotState.getInstance().alignError() > 0.5
-                                            || (RobotState.getInstance().alignError() < 2
-                                                && levelOffsets == LevelOffsets.PREP_L4_OFFSET))
-                                .andThen(new ApproachReef(() -> levelOffsets, false, swerve)))
-                            .repeatedly()
-                            .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
-                .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
+    driverB
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
+    driverB
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+    driverB
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
   }
 
   private void configureAutos() {
