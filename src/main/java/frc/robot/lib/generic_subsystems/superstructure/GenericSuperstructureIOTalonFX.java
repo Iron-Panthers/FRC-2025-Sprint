@@ -57,15 +57,21 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     config.Voltage.withPeakForwardVoltage(superstructureConfig.upperVoltLimit);
-    config.Voltage.withPeakReverseVoltage(superstructureConfig.lowerExtensionLimit);
+    config.Voltage.withPeakReverseVoltage(superstructureConfig.lowerVoltLimit);
     config.Feedback.withSensorToMechanismRatio(superstructureConfig.reduction);
 
-    config.SoftwareLimitSwitch.withReverseSoftLimitEnable(true);
-    config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
-        superstructureConfig.lowerExtensionLimit);
-    config.SoftwareLimitSwitch.withReverseSoftLimitEnable(true);
-    config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
-        superstructureConfig.upperExtensionLimit);
+    if (superstructureConfig.lowerExtensionLimitEnabled) {
+      config.SoftwareLimitSwitch.withReverseSoftLimitEnable(
+          superstructureConfig.lowerExtensionLimitEnabled);
+      config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
+          superstructureConfig.lowerExtensionLimit);
+    }
+    if (superstructureConfig.upperExtensionLimitEnabled) {
+      config.SoftwareLimitSwitch.withReverseSoftLimitEnable(
+          superstructureConfig.upperExtensionLimitEnabled);
+      config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
+          superstructureConfig.upperExtensionLimit);
+    }
 
     talon = new TalonFX(superstructureConfig.id);
 
@@ -100,10 +106,9 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
 
   @Override
   public void updateInputs(GenericSuperstructureIOInputs inputs) {
-    inputs.connected =
-        BaseStatusSignal.refreshAll(
-                positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
-            .isOK();
+    inputs.connected = BaseStatusSignal.refreshAll(
+        positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
+        .isOK();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.velocityRotPerSec = velocityRPS.getValueAsDouble();
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
