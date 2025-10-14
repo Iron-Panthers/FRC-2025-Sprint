@@ -1,6 +1,6 @@
-package frc.robot.subsystems.L1Pivot;
+package frc.robot.subsystems.l1_pivot;
 
-import static frc.robot.subsystems.L1Pivot.L1PivotConstants.*;
+import static frc.robot.subsystems.l1_pivot.L1PivotConstants.*;
 
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureConfiguration;
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureIOTalonFX;
@@ -18,8 +18,7 @@ public class L1PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements 
             .withLowerVoltageLimit(LOWER_VOLT_LIMIT)
             .withZeroingVolts(ZEROING_VOLTS)
             .withZeroingOffset(ZEROING_OFFSET)
-            .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD)
-            .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
+            .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD));
 
     setSlot0(
         GAINS.kP(),
