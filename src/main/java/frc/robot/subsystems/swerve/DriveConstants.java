@@ -212,6 +212,13 @@ public class DriveConstants {
         case PRACTICE -> new HeadingControllerConstants(6, 0, 5, 200, 0.002);
         default -> new HeadingControllerConstants(0, 0, 0, 0, 0);
       };
+  public static final PIDAutoAlignControllerConstants PID_AUTOALIGN_CONSTANTS =
+      switch (getRobotType()) {
+        case COMP -> new PIDAutoAlignControllerConstants(
+            3.8, 0, 0, 4, 2); /*FIXME: tune these constants*/
+        case SIM -> new PIDAutoAlignControllerConstants(10, 0, 0, 5, 2);
+        default -> new PIDAutoAlignControllerConstants(0, 0, 0, 0, 0);
+      };
 
   public static final double[] REEF_SNAP_ANGLES = {-120, -60, 0, 60, 120, 180};
 
@@ -291,6 +298,9 @@ public class DriveConstants {
   /* tolerance in degrees */
   public record HeadingControllerConstants(
       double kP, double kD, double maxVelocity, double maxAcceleration, double tolerance) {}
+
+  public record PIDAutoAlignControllerConstants(
+      double kP, double kI, double kD, double maxVelocity, double maxAcceleration) {}
 
   public record ApproachPose(Pose2d pose) {
     public static ApproachPose[] fromPose2ds(Pose2d... poses) {
