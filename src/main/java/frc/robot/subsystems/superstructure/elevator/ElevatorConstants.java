@@ -78,6 +78,7 @@ public class ElevatorConstants {
       switch (Constants.getRobotType()) {
         case SIM -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 5, true);
         case COMP -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 0, false);
+        default -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 0, false);
       }; // CHANGE VALUES WHEN CAD FINISHES
 
   public static final Transform3d ELEVATOR_BASE_3D_OFFSET =

@@ -60,6 +60,9 @@ public class IntakeController extends SubsystemBase {
       case L1 -> {
         intakeRollers.setVoltageTarget(IntakeRollers.Target.HOLD);
         intakePivot.setPositionTarget(IntakePivotTarget.L1);
+        if (intakeReachedTarget()) {
+          intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);
+        }
       }
       case PASS -> {
         intakePivot.setPositionTarget(IntakePivotTarget.PASS);

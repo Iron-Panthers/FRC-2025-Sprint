@@ -77,6 +77,7 @@ public class ArmConstants {
       switch (Constants.getRobotType()) {
         case SIM -> new ArmPhysicalConstants(0.03, 0.497, -1000.0, 1000, true);
         case COMP -> new ArmPhysicalConstants(0.1, 0, 0, 0, false);
+        default -> new ArmPhysicalConstants(0.1, 0, 0, 0, false);
       };
 
   public static final Transform3d ARM_TO_OUTTAKE_TRANSFORM =
