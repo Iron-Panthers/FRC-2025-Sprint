@@ -76,10 +76,6 @@ public class RobotContainer {
   private IntakePivot intakePivot;
   private IntakeController intakeController;
 
-  private SuperstructureController superstructureController;
-  private Arm arm;
-  private Elevator elevator;
-
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
