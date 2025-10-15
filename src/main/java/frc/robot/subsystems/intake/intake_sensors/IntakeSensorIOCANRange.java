@@ -8,18 +8,16 @@ import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsIO.IntakeSensorsI
 
 public class IntakeSensorIOCANRange implements IntakeSensorsIO {
 
-  // sensor object and objects for the values we want to find
   private final CANrange canRange;
   private final StatusSignal<Distance> distance;
   private final StatusSignal<Boolean> isDetected;
 
-  public IntakeSensorIOCANRange() {
-    /* fix the args or the id in here */
-    canRange = new CANrange(0);
-    // configure the CANrange
+  public IntakeSensorIOCANRange(int id) {
+
+    canRange = new CANrange(id);
+
     canRange.getConfigurator().apply(new CANrangeConfiguration());
 
-    // find the distance and if an object is being detected
     distance = canRange.getDistance();
     isDetected = canRange.getIsDetected();
 

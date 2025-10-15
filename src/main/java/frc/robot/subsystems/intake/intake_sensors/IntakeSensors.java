@@ -1,42 +1,35 @@
 package frc.robot.subsystems.intake.intake_sensors;
 
+import frc.robot.RobotState;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSensors {
 
-  private IntakeSensorsIO intakeSensorsIO;
-  private final int index;
-  private IntakeSensorsIOInputsAutoLogged inputs = new IntakeSensorsIOInputsAutoLogged();
+  private IntakeSensorsIO intakeSensorsIO1;
+  private IntakeSensorsIO intakeSensorsIO2;
+  private IntakeSensorsIOInputsAutoLogged inputs2 = new IntakeSensorsIOInputsAutoLogged();
+  private IntakeSensorsIOInputsAutoLogged inputs1 = new IntakeSensorsIOInputsAutoLogged();
 
-  public IntakeSensors(IntakeSensorsIO intakeSensorsIO, int index) {
-    this.intakeSensorsIO = intakeSensorsIO;
-    this.index = index;
+  public IntakeSensors(IntakeSensorsIO intakeSensorsIO1, IntakeSensorsIO intakeSensorsIO2) {
+    this.intakeSensorsIO1 = intakeSensorsIO1;
+    this.intakeSensorsIO2 = intakeSensorsIO2;
   }
 
   public void updateInputs() {
-    intakeSensorsIO.updateInputs(inputs);
-    Logger.processInputs("Intake/IntakeSensors" + index, inputs);
-    // FIXME: Change this directory so it's actually correct
+    intakeSensorsIO1.updateInputs(inputs1);
+    intakeSensorsIO1.updateInputs(inputs2);
+    Logger.processInputs("Intake/IntakeSensors1", inputs1);
+    Logger.processInputs("Intake/IntakeSensors2", inputs2);
+    RobotState.getInstance().updateNumSensorsTriggered(numSensorsTriggered());
   }
 
-  // if the object is detected and within a certain distance then return true
-  public boolean isReadyToIntake() {
-    if (getIsDetected() == true
-        && getDistance() < 0.5 /*FIXME: CHANGE THIS VALUE TO WHAT WE NEED*/) {
-      return true;
-    } else {
-      return false;
+  // Sensor 2 is never triggered by itself
+  public int numSensorsTriggered() {
+    if (inputs1.distance < 0.5 && inputs2.distance < 0.5) {
+      return 2;
+    } else if (inputs1.distance < 0.5) {
+      return 1;
     }
-  }
-  // FIXME: make it so that if this method returns true, then the robot will align to or intake the
-  // piece
-
-  // getters
-  public double getDistance() {
-    return inputs.distance;
-  }
-
-  public boolean getIsDetected() {
-    return inputs.isDetected;
+    return 0;
   }
 }

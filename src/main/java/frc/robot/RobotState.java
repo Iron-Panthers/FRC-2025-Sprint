@@ -229,43 +229,20 @@ public class RobotState {
 
   private ApproachPose findApproachPose(double offset, boolean bSide, boolean l1) {
     approachPoses = generateApproachPoses(offset, bSide, l1);
-    Pose2d origin = new Pose2d(DriveConstants.BLUE_REEF_ORIGIN, Rotation2d.kZero);
-    int closestIndex = 0;
-    double closestDistance =
-        1000; // this means the pidautalign only works until you are farther than the school so
-    // don't worry about it
-    List<Pose2d> poses = new ArrayList<Pose2d>();
-    for (int i = closestIndex; i < approachPoses.length; i++) {
-      double angle = -Math.PI / 3 * i;
-      double x =
-          (offset + 1.285) * Math.cos(angle)
-              + origin.getX(); // just trust the 1.285 (it's the distance from the origin)
-      double y = (offset + 1.285) * Math.sin(angle) + origin.getY();
-      ApproachPose reefPose = new ApproachPose(new Pose2d(x, y, new Rotation2d(angle)));
-      double newDistance =
-          getEstimatedPose()
-              .getTranslation()
-              .getDistance(reefPose.getAlliancePose().getTranslation());
-      if (closestDistance > newDistance) {
-        closestIndex = i;
-        closestDistance = newDistance;
-      }
-      poses.add(reefPose.getPose()); // logging
-    }
-    var poseArray = poses.toArray(new Pose2d[poses.size()]);
 
-    Logger.recordOutput("RobotState/Approach/OOPSIESP", poseArray);
+    int closestIndex = 0;
+
     // absolutely not
-    // for (int i = closestIndex; i < approachPoses.length; ++i) {
-    //   if (getEstimatedPose()
-    //           .getTranslation()
-    //           .getDistance(approachPoses[i].getAlliancePose().getTranslation())
-    //       < getEstimatedPose()
-    //           .getTranslation()
-    //           .getDistance(approachPoses[closestIndex].getAlliancePose().getTranslation())) {
-    //     closestIndex = i;
-    //   }
-    // }
+    for (int i = closestIndex; i < approachPoses.length; ++i) {
+      if (getEstimatedPose()
+              .getTranslation()
+              .getDistance(approachPoses[i].getAlliancePose().getTranslation())
+          < getEstimatedPose()
+              .getTranslation()
+              .getDistance(approachPoses[closestIndex].getAlliancePose().getTranslation())) {
+        closestIndex = i;
+      }
+    }
 
     ApproachPose approachPose = approachPoses[closestIndex];
 
