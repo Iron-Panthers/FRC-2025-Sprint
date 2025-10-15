@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
@@ -223,6 +224,15 @@ public class Drive extends SubsystemBase {
 
   public void clearTargetPositionController() {
     pidAutoAlignController = null;
+  }
+
+  public Command setTargetApproachReef(double offset, boolean bside, boolean l1) {
+    return new FunctionalCommand(
+        () -> setTargetPosition(RobotState.getInstance().getApproachPose(offset, bside, l1)),
+        () -> {},
+        (t) -> clearTargetPositionController(),
+        () -> false,
+        this);
   }
 
   public boolean isTeleop() {
