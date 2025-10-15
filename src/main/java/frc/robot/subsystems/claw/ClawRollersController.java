@@ -16,13 +16,17 @@ public class ClawRollersController extends SubsystemBase {
   }
 
   private boolean stop = false;
-  private ClawState targetState;
+  private ClawState targetState = ClawState.IDLE;
 
   private final ClawRollers clawRollers;
 
   public ClawRollersController(ClawRollers clawRollers) {
     this.clawRollers = clawRollers;
     clawRollers.setVoltageTarget(ClawRollersTarget.HOLD);
+  }
+
+  public void setVoltageTarget(ClawState targetState) {
+    this.targetState = targetState;
   }
 
   @Override
@@ -57,10 +61,6 @@ public class ClawRollersController extends SubsystemBase {
 
     clawRollers.periodic();
 
-    Logger.recordOutput("clawRollers/targetState", targetState);
-  }
-
-  public void setVoltageTarget(ClawState targetState) {
-    this.targetState = targetState;
+    Logger.recordOutput("ClawRollers/targetState", targetState);
   }
 }

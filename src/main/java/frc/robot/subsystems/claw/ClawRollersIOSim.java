@@ -35,7 +35,7 @@ public class ClawRollersIOSim extends GenericRollersIOSim implements ClawRollers
 
     double rotations = 0; // can't really be simulated
     // Correct unit conversion: meters/s to rotations/s
-    double velocityRPS = ClawRollersSim.getAngularVelocityRadPerSec() * REDUCTION;
+    double velocityRPS = ClawRollersSim.getAngularVelocityRadPerSec() / (REDUCTION);
 
     talon.getSimState().setRawRotorPosition(rotations);
     talon.getSimState().setRotorVelocity(velocityRPS);
