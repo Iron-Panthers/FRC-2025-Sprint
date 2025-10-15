@@ -28,17 +28,14 @@ import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
-<<<<<<< Updated upstream
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsIOSim;
 import frc.robot.subsystems.l1_pivot.L1Pivot;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotIO;
 import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
 import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
-=======
-import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
-import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
-import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsIOSim;
->>>>>>> Stashed changes
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -137,11 +134,8 @@ public class RobotContainer {
 
           intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
           intakePivot = new IntakePivot(new IntakePivotIOSim());
-<<<<<<< Updated upstream
           l1Pivot = new L1Pivot(new L1PivotIOSim());
-=======
           intakeSensors = new IntakeSensors(new IntakeSensorsIOSim(), new IntakeSensorsIOSim());
->>>>>>> Stashed changes
         }
         case PRACTICE -> {
           swerve =
