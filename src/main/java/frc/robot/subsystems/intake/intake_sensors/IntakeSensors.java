@@ -15,9 +15,9 @@ public class IntakeSensors {
     this.intakeSensorIO2 = intakeSensorIO2;
   }
 
-  public void updateInputs() {
-    intakeSensorsIO1.updateInputs(inputs1);
-    intakeSensorsIO2.updateInputs(inputs2);
+  public void periodic() {
+    intakeSensorIO1.updateInputs(inputs1);
+    intakeSensorIO2.updateInputs(inputs2);
     Logger.processInputs("Intake/IntakeSensors1", inputs1);
     Logger.processInputs("Intake/IntakeSensors2", inputs2);
     RobotState.getInstance().updateSensorsTriggered(sensorsTriggered());
