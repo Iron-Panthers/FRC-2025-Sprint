@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.Logger;
 public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTarget>
     implements LoggableMechanism3d {
   public enum IntakePivotTarget implements GenericSuperstructure.PositionTarget {
-    INTAKE(-18), // TODO: Get real values or something uh i forgot what the todo was before
+    INTAKE(-17), // TODO: Get real values or something uh i forgot what the todo was before
     // deleting it
     STOW(90),
     L1(90),

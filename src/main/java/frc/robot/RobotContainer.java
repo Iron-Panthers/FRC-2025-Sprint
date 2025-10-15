@@ -31,8 +31,8 @@ import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOSim;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
-import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsIOSim;
 import frc.robot.subsystems.l1_pivot.L1Pivot;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotIO;
@@ -129,15 +129,15 @@ public class RobotContainer {
                       DriveConstants.MODULE_CONFIGS[3], driveSimulation.getModules()[3]));
           vision =
               new Vision(
-                  new VisionIOPhotonvisionSim(4, driveSimulation::getSimulatedDriveTrainPose),
-                  new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
+                  new VisionIOPhotonvisionSim(1, driveSimulation::getSimulatedDriveTrainPose),
+                  new VisionIOPhotonvisionSim(2, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
 
           intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
           intakePivot = new IntakePivot(new IntakePivotIOSim());
           l1Pivot = new L1Pivot(new L1PivotIOSim());
-          intakeSensors = new IntakeSensors(new IntakeSensorsIOSim(), new IntakeSensorsIOSim());
+          intakeSensors = new IntakeSensors(new IntakeSensorIOSim(), new IntakeSensorIOSim());
         }
         case PRACTICE -> {
           swerve =
@@ -189,7 +189,7 @@ public class RobotContainer {
     if (intakePivot == null) {
       intakePivot = new IntakePivot(new IntakePivotIO() {});
     }
-    intakeController = new IntakeController(intakeRollers, intakePivot);
+    intakeController = new IntakeController(intakeRollers, intakePivot, intakeSensors);
 
     if (l1Pivot == null) {
       l1Pivot = new L1Pivot(new L1PivotIO() {});
