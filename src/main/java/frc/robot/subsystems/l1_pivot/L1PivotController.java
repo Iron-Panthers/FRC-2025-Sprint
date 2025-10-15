@@ -5,6 +5,7 @@ import static frc.robot.subsystems.l1_pivot.L1PivotConstants.ZEROING_VOLTAGE_THR
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructure.ControlMode;
 import frc.robot.subsystems.l1_pivot.L1Pivot.L1PivotTarget;
 import org.littletonrobotics.junction.Logger;
@@ -56,9 +57,12 @@ public class L1PivotController extends SubsystemBase {
 
   public Command setTargetStateCommand(L1PivotState targetState) {
     return new InstantCommand(
-        () -> {
-          setTargetState(targetState);
-        });
+            () -> {
+              setTargetState(targetState);
+            },
+            this)
+        .withTimeout(0.02)
+        .andThen(new WaitUntilCommand(this::l1PivotReachedTarget));
   }
 
   /**
@@ -68,6 +72,10 @@ public class L1PivotController extends SubsystemBase {
    */
   public L1PivotState getTargetState() {
     return targetState;
+  }
+
+  public boolean l1PivotReachedTarget() {
+    return l1Pivot.reachedTarget();
   }
 
   /**

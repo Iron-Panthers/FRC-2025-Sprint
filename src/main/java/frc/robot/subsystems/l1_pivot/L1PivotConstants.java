@@ -44,7 +44,7 @@ public class L1PivotConstants {
 
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
 
-  public static final double POSITION_TARGET_EPSILON = 0.01;
+  public static final double POSITION_TARGET_EPSILON = .05;
   public static final double L1_PIVOT_LENGTH = 13.138; // inches
 
   // CURRENT LIMITS
@@ -78,5 +78,6 @@ public class L1PivotConstants {
       switch (Constants.getRobotType()) {
         case SIM -> new L1PivotPhysicalConstants(0.0109810104, 0.332194, -1000.0, 1000, false);
         case COMP -> new L1PivotPhysicalConstants(0.0109810104, 0.332194, 0, 0, false);
+        default -> new L1PivotPhysicalConstants(0.0109810104, 0.332194, 0, 0, false);
       };
 }
