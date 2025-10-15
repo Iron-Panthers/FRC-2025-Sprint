@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.claw.ClawRollers.ClawRollersTarget;
 import org.littletonrobotics.junction.Logger;
 
-public class ClawController extends SubsystemBase {
+public class ClawRollersController extends SubsystemBase {
   public enum ClawState {
     IDLE,
     INTAKE,
@@ -20,7 +20,7 @@ public class ClawController extends SubsystemBase {
 
   private final ClawRollers clawRollers;
 
-  public ClawController(ClawRollers clawRollers) {
+  public ClawRollersController(ClawRollers clawRollers) {
     this.clawRollers = clawRollers;
     clawRollers.setVoltageTarget(ClawRollersTarget.HOLD);
   }
@@ -58,5 +58,9 @@ public class ClawController extends SubsystemBase {
     clawRollers.periodic();
 
     Logger.recordOutput("clawRollers/targetState", targetState);
+  }
+
+  public void setVoltageTarget(ClawState targetState) {
+    this.targetState = targetState;
   }
 }

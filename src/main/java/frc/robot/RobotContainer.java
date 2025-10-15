@@ -18,10 +18,9 @@ import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.claw.ClawRollers;
-import frc.robot.subsystems.claw.ClawRollers.ClawRollersTarget;
+import frc.robot.subsystems.claw.ClawRollersController;
 import frc.robot.subsystems.claw.ClawRollersIO;
 import frc.robot.subsystems.claw.ClawRollersIOSim;
-import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -61,6 +60,7 @@ public class RobotContainer {
   private RGB rgb;
   private CANWatchdog canWatchdog;
   private ClawRollers clawRollers;
+  private ClawRollersController clawRollersController;
 
   public RobotContainer() {
 
@@ -128,6 +128,8 @@ public class RobotContainer {
       clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
 
+    clawRollersController = new ClawRollersController(clawRollers);
+
     nameCommands();
     configureAutos();
     configureBindings();
@@ -163,10 +165,17 @@ public class RobotContainer {
     driverA
         .x()
         .onTrue(
-            new InstantCommand(() -> clawRollers.setVoltageTarget(ClawRollersTarget.EJECT_TOP)));
+            new InstantCommand(
+                () ->
+                    clawRollersController.setVoltageTarget(
+                        ClawRollersController.ClawState.EJECT_TOP)));
     driverA
         .y()
-        .onTrue(new InstantCommand(() -> clawRollers.setVoltageTarget(ClawRollersTarget.INTAKE)));
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    clawRollersController.setVoltageTarget(
+                        ClawRollersController.ClawState.INTAKE)));
   }
 
   private void configureAutos() {
