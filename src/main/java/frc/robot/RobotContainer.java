@@ -14,25 +14,17 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.VibrateHIDCommand;
-import frc.robot.subsystems.L1Pivot.L1Pivot;
-import frc.robot.subsystems.L1Pivot.L1Pivot.L1PivotTarget;
-import frc.robot.subsystems.L1Pivot.L1PivotController;
-import frc.robot.subsystems.L1Pivot.L1PivotIOSim;
-import frc.robot.subsystems.L1Pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.l1_pivot.L1Pivot;
+import frc.robot.subsystems.l1_pivot.L1PivotController;
+import frc.robot.subsystems.l1_pivot.L1PivotController.L1PivotState;
+import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
+import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
-import frc.robot.subsystems.superstructure.SuperstructureController;
-import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
-import frc.robot.subsystems.superstructure.arm.Arm;
-import frc.robot.subsystems.superstructure.arm.ArmIO;
-import frc.robot.subsystems.superstructure.arm.ArmIOSim;
-import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -178,10 +170,9 @@ public class RobotContainer {
 
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
-    driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-
-    driverA.x().onTrue(l1PivotController.setPositionTargetCommand(L1PivotTarget.L1_SCORE));
-    driverA.y().onTrue(l1PivotController.setPositionTargetCommand(L1PivotTarget.STOW));
+    driverA.b().onTrue(l1PivotController.setTargetStateCommand(L1PivotState.ZEROING));
+    driverA.x().onTrue(l1PivotController.setTargetStateCommand(L1PivotState.SCORE_L1));
+    driverA.y().onTrue(l1PivotController.setTargetStateCommand(L1PivotState.STOW));
   }
 
   private void configureAutos() {

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.L1Pivot;
+package frc.robot.subsystems.l1_pivot;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
