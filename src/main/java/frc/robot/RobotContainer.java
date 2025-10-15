@@ -31,6 +31,7 @@ import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.l1_pivot.L1Pivot;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
+import frc.robot.subsystems.l1_pivot.L1PivotIO;
 import frc.robot.subsystems.l1_pivot.L1PivotController.L1PivotState;
 import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
 import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
@@ -190,6 +191,12 @@ public class RobotContainer {
     }
     intakeController = new IntakeController(intakeRollers, intakePivot);
 
+    if (l1Pivot == null) {
+      l1Pivot = new L1Pivot(new L1PivotIO() {
+      });
+    }
+    l1PivotController = new L1PivotController(l1Pivot);
+
     nameCommands();
     configureAutos();
     configureBindings();
@@ -238,18 +245,17 @@ public class RobotContainer {
 
     var passRobotConfig = robotConfig; // workaround
 
-    BooleanSupplier flipAlliance =
-        () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red
-          // alliance ll flip the path being followed to the red side of the field.
-          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    BooleanSupplier flipAlliance = () -> {
+      // Boolean supplier that controls when the path will be mirrored for the red
+      // alliance ll flip the path being followed to the red side of the field.
+      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-          var alliance = DriverStation.getAlliance();
-          if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-          }
-          return false;
-        };
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+        return alliance.get() == DriverStation.Alliance.Red;
+      }
+      return false;
+    };
 
     AutoBuilder.configure(
         () -> RobotState.getInstance().getEstimatedPose(),
@@ -263,8 +269,7 @@ public class RobotContainer {
         flipAlliance,
         swerve);
 
-    autoChooser =
-        new LoggedDashboardChooser<Command>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    autoChooser = new LoggedDashboardChooser<Command>("Auto Chooser", AutoBuilder.buildAutoChooser());
     SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
   }
 
@@ -304,7 +309,8 @@ public class RobotContainer {
 
   public void updateSimulation() {
 
-    if (Constants.getRobotMode() != Constants.Mode.SIM) return;
+    if (Constants.getRobotMode() != Constants.Mode.SIM)
+      return;
 
     SimulatedArena.getInstance().simulationPeriodic();
 
@@ -317,4 +323,3 @@ public class RobotContainer {
         "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
   }
 }
-
