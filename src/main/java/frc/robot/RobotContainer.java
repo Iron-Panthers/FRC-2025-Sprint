@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
 import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
@@ -227,8 +229,43 @@ public class RobotContainer {
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
     driverA.y().onTrue(new ScoreL1Command(intakeController, l1PivotController));
-    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.HOLD));
+    // driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.HOLD));
+
+    // auto align
+    driverA
+        .b()
+        .whileTrue(
+            (new ApproachReef(() -> levelOffsets, true, swerve)
+                    .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
+                    .andThen(
+                        new InstantCommand(
+                            () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
+                    .andThen(
+                        (new WaitUntilCommand(() -> RobotState.getInstance().alignError() > 0.5)
+                                .andThen(new ApproachReef(() -> levelOffsets, true, swerve)))
+                            .repeatedly()
+                            .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
+                .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
+    // auto align
+    driverA
+        .x()
+        .whileTrue(
+            (new ApproachReef(() -> levelOffsets, false, swerve)
+                    .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
+                    .andThen(
+                        new InstantCommand(
+                            () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
+                    .andThen(
+                        (new WaitUntilCommand(
+                                    () ->
+                                        RobotState.getInstance().alignError() > 0.5
+                                            || (RobotState.getInstance().alignError() < 2
+                                                && levelOffsets == LevelOffsets.PREP_L4_OFFSET))
+                                .andThen(new ApproachReef(() -> levelOffsets, false, swerve)))
+                            .repeatedly()
+                            .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
+                .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
   }
 
   private void configureAutos() {

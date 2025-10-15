@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.RobotState;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot.IntakePivotTarget;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
@@ -47,6 +48,9 @@ public class IntakeController extends SubsystemBase {
         intakePivot.setPositionTarget(IntakePivotTarget.STOW);
       }
       case INTAKE -> {
+        if (RobotState.getInstance().getSensorsTriggered() != 0) {
+          targetState = IntakeState.HOLD;
+        }
         intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
         intakePivot.setPositionTarget(IntakePivotTarget.INTAKE);
       }

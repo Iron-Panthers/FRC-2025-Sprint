@@ -226,9 +226,9 @@ public class Drive extends SubsystemBase {
     pidAutoAlignController = null;
   }
 
-  public Command setTargetApproachReef(double offset, boolean bside, boolean l1) {
+  public Command setTargetApproachReef(double offset, boolean bside, double l1Offset) {
     return new FunctionalCommand(
-        () -> setTargetPosition(RobotState.getInstance().getApproachPose(offset, bside, l1)),
+        () -> setTargetPosition(RobotState.getInstance().getApproachPose(offset, bside, l1Offset)),
         () -> {},
         (t) -> clearTargetPositionController(),
         () -> false,

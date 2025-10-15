@@ -22,16 +22,30 @@ public class VisionConstants {
         case COMP -> new Transform3d[] {
           // arducam-1 (Lower intake)
           new Transform3d(
-            0.101600, -0.304800, 0.158750, new Rotation3d(0, -Math.toRadians(35.295812), Math.toRadians(38.375192))),
+              0.101600,
+              -0.304800,
+              0.158750,
+              new Rotation3d(0, -Math.toRadians(35.295812), Math.toRadians(38.375192))),
           // arducam-2 (Upper intake)
-          new Transform3d(0.3017, 0, 0.3373, new Rotation3d(0, -Math.toRadians(19.623363), Math.toRadians(34.912707)))
+          new Transform3d(
+              0.3017,
+              0,
+              0.3373,
+              new Rotation3d(0, -Math.toRadians(19.623363), Math.toRadians(34.912707)))
         };
         case SIM -> new Transform3d[] {
           // arducam-1 (Lower intake)
           new Transform3d(
-            0.101600, -0.304800, 0.158750, new Rotation3d(0, -Math.toRadians(35.295812), Math.toRadians(38.375192))),
+              0.101600,
+              -0.304800,
+              0.158750,
+              new Rotation3d(0, -Math.toRadians(35.295812), Math.toRadians(38.375192))),
           // arducam-2 (Upper intake)
-          new Transform3d(0.3017, 0, 0.3373, new Rotation3d(0, -Math.toRadians(19.623363), Math.toRadians(34.912707)))
+          new Transform3d(
+              0.3017,
+              0,
+              0.3373,
+              new Rotation3d(0, -Math.toRadians(19.623363), Math.toRadians(34.912707)))
         };
         default -> new Transform3d[0];
       };

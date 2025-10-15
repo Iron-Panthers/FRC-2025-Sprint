@@ -17,19 +17,24 @@ public class IntakeSensors {
 
   public void updateInputs() {
     intakeSensorsIO1.updateInputs(inputs1);
-    intakeSensorsIO1.updateInputs(inputs2);
+    intakeSensorsIO2.updateInputs(inputs2);
     Logger.processInputs("Intake/IntakeSensors1", inputs1);
     Logger.processInputs("Intake/IntakeSensors2", inputs2);
-    RobotState.getInstance().updateNumSensorsTriggered(numSensorsTriggered());
+    RobotState.getInstance().updateSensorsTriggered(sensorsTriggered());
   }
 
   // Sensor 2 is never triggered by itself
-  public int numSensorsTriggered() {
-    if (inputs1.distance < 0.5 && inputs2.distance < 0.5) {
-      return 2;
-    } else if (inputs1.distance < 0.5) {
-      return 1;
+  // if sensor1 is triggered but not sensor2, it returns 6
+  // if sensor1 is not triggered but sensor2 is, it returns 7
+  // if both are triggered, it retruns 13;
+  public int sensorsTriggered() {
+    int output = 0;
+    if (inputs1.distance < 0.5) {
+      output += 6;
     }
-    return 0;
+    if (inputs2.distance < 0.5) {
+      output += 7;
+    }
+    return output;
   }
 }
