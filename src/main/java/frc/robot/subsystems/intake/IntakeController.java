@@ -1,8 +1,9 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot.IntakePivotTarget;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
@@ -108,15 +109,12 @@ public class IntakeController extends SubsystemBase {
    *     intake system reaches the specified target state.
    */
   public Command setTargetCommand(IntakeState target) {
-    return new FunctionalCommand(
-        () -> {
-          this.targetState = target;
-        },
-        () -> {},
-        (exited) -> {},
-        () -> {
-          return intakeReachedTarget();
-        },
-        this);
+    return new InstantCommand(
+            () -> {
+              this.targetState = target;
+            },
+            this)
+        .withTimeout(.02)
+        .andThen(new WaitUntilCommand(this::intakeReachedTarget));
   }
 }

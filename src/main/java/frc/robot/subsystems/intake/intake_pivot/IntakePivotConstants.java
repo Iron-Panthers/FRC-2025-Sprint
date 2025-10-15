@@ -15,7 +15,7 @@ public class IntakePivotConstants {
       switch (Constants.getRobotType()) {
         case COMP -> new IntakePivotConfig(
             // Reduction between sensor and mechansim
-            CAN.at(30, "Intake Pivot"), CAN.at(31, "Intake Pivot Encoder"), -0.286, 2.25); // (36/16
+            CAN.at(30, "Intake Pivot"), CAN.at(31, "Intake Pivot Encoder"), -0.543, 2.25); // (36/16
           // is the reduction for the encoder)
         case SIM -> new IntakePivotConfig(
             // Reduction between motor and mechansim
@@ -56,8 +56,8 @@ public class IntakePivotConstants {
   public static final double INTAKE_PIVOT_LENGTH = 25; // inches
 
   // CURRENT LIMITS
-  public static final double UPPER_VOLT_LIMIT = 2;
-  public static final double LOWER_VOLT_LIMIT = -2;
+  public static final double UPPER_VOLT_LIMIT = 6;
+  public static final double LOWER_VOLT_LIMIT = -6;
   public static final double SUPPLY_CURRENT_LIMIT = 30;
 
   // ZEROING CONSTANTS

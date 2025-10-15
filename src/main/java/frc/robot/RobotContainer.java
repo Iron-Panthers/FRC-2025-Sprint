@@ -11,11 +11,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
+import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -29,6 +28,11 @@ import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
+import frc.robot.subsystems.l1_pivot.L1Pivot;
+import frc.robot.subsystems.l1_pivot.L1PivotController;
+import frc.robot.subsystems.l1_pivot.L1PivotIO;
+import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
+import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -77,6 +81,9 @@ public class RobotContainer {
   private IntakePivot intakePivot;
   private IntakeController intakeController;
 
+  private L1PivotController l1PivotController;
+  private L1Pivot l1Pivot;
+
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -92,6 +99,7 @@ public class RobotContainer {
           // VisionIOPhotonvision(5));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
+          l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
           intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
           intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
         }
@@ -118,6 +126,7 @@ public class RobotContainer {
 
           intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
           intakePivot = new IntakePivot(new IntakePivotIOSim());
+          l1Pivot = new L1Pivot(new L1PivotIOSim());
         }
         case PRACTICE -> {
           swerve =
@@ -171,6 +180,11 @@ public class RobotContainer {
     }
     intakeController = new IntakeController(intakeRollers, intakePivot);
 
+    if (l1Pivot == null) {
+      l1Pivot = new L1Pivot(new L1PivotIO() {});
+    }
+    l1PivotController = new L1PivotController(l1Pivot);
+
     nameCommands();
     configureAutos();
     configureBindings();
@@ -203,9 +217,9 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverA.y().onTrue(new ScoreL1Command(intakeController, l1PivotController));
     driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.HOLD));
   }
 
   private void configureAutos() {
@@ -222,8 +236,7 @@ public class RobotContainer {
     BooleanSupplier flipAlliance =
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
-          // alliance
-          // This will flip the path being followed to the red side of the field.
+          // alliance ll flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
           var alliance = DriverStation.getAlliance();

@@ -6,7 +6,7 @@ public class IntakeRollers extends GenericRollers<IntakeRollers.Target> {
   public enum Target implements GenericRollers.VoltageTarget {
     IDLE(0), // for not moving
     INTAKE(12), // for intaking the coral
-    HOLD(4), // for holding the coral
+    HOLD(8), // for holding the coral
     EJECT(-2.5), // for ejecting into L1
     PASS(1); // for passing to the grabber
 
