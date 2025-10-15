@@ -69,7 +69,7 @@ public class ApproachReef extends SequentialCommandGroup {
             drive.setTargetApproachReef(
                 levelOffsetSupplier.get().getLevelOffset(),
                 bSide,
-                RobotState.getInstance().getL1Offset());
+                (bSide ? -1 : 1) * RobotState.getInstance().getL1Offset());
         reefAlign.initialize();
       } catch (Exception e) {
         e.printStackTrace();
