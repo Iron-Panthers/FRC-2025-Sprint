@@ -11,8 +11,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.ApproachReef;
+import frc.robot.commands.ApproachReef.LevelOffsets;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -26,6 +29,14 @@ import frc.robot.subsystems.claw.ClawController.ClawState;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
+import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
+import frc.robot.subsystems.superstructure.arm.Arm;
+import frc.robot.subsystems.superstructure.arm.ArmIO;
+import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -40,6 +51,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonvisionSim;
 import java.util.function.BooleanSupplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -57,12 +69,21 @@ public class RobotContainer {
   private final CommandXboxController driverA = new CommandXboxController(0);
   private final CommandXboxController driverB = new CommandXboxController(1);
 
+  @AutoLogOutput(key = "CommandedOffset")
+  private LevelOffsets levelOffsets = LevelOffsets.PREP_L4_OFFSET;
+
+  private boolean eject = false;
+
   private Drive swerve;
   private Vision vision;
   private RGB rgb;
   private CANWatchdog canWatchdog;
   private ClawRollers clawRollers;
   private ClawRollersController clawRollersController;
+
+  private SuperstructureController superstructureController;
+  private Arm arm;
+  private Elevator elevator;
 
   public RobotContainer() {
 
@@ -99,13 +120,17 @@ public class RobotContainer {
               new Vision(
                   new VisionIOPhotonvisionSim(4, driveSimulation::getSimulatedDriveTrainPose),
                   new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
+          SimulatedArena.getInstance().resetFieldForAuto();
 
+          elevator = new Elevator(new ElevatorIOSim());
+          arm = new Arm(new ArmIOSim());
           clawRollers = new ClawRollers(new ClawRollersIOSim());
           SimulatedArena.getInstance().resetFieldForAuto();
         }
       }
     }
 
+    // Swerve
     if (swerve == null) {
       swerve =
           new Drive(
@@ -115,20 +140,33 @@ public class RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {});
     }
+
+    // Vision
     if (vision == null) {
       vision = new Vision(new VisionIO() {}, new VisionIO() {});
     }
 
+    // CAN Watchdog
     if (canWatchdog == null) {
       canWatchdog = new CANWatchdog(new CANWatchdogIO() {}, rgb);
     }
 
+    // RGB
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
     }
     if (clawRollers == null) {
       clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
+
+    // Superstructure
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {});
+    }
+    if (arm == null) {
+      arm = new Arm(new ArmIO() {});
+    }
+    superstructureController = new SuperstructureController(elevator, arm);
 
     clawRollersController = new ClawRollersController(clawRollers);
 
@@ -178,6 +216,24 @@ public class RobotContainer {
                 () ->
                     clawRollersController.setVoltageTarget(
                         ClawRollersController.ClawState.INTAKE)));
+
+    driverB
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
+    driverB
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+    driverB
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
   }
 
   private void configureAutos() {

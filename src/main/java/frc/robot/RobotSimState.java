@@ -1,5 +1,7 @@
 package frc.robot;
 
+import frc.robot.subsystems.swerve.DriveConstants;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -16,8 +18,15 @@ import org.littletonrobotics.junction.AutoLogOutput;
 
 public class RobotSimState {
 
+  // SIMULATION VARIABLES
+  private SwerveDriveSimulation driveSimulation =
+      new SwerveDriveSimulation(
+          DriveConstants.mapleSimConfig, RobotState.getInstance().getEstimatedPose());
   private SwerveDriveSimulation driveSimulation = null;
 
+  public SwerveDriveSimulation getDriveSimulation() {
+    return driveSimulation;
+  }
   public SwerveDriveSimulation getDriveSimulation() {
     return driveSimulation;
   }
