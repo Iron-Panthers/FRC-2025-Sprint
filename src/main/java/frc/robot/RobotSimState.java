@@ -1,7 +1,5 @@
 package frc.robot;
 
-import frc.robot.subsystems.swerve.DriveConstants;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -22,11 +20,7 @@ public class RobotSimState {
   private SwerveDriveSimulation driveSimulation =
       new SwerveDriveSimulation(
           DriveConstants.mapleSimConfig, RobotState.getInstance().getEstimatedPose());
-  private SwerveDriveSimulation driveSimulation = null;
 
-  public SwerveDriveSimulation getDriveSimulation() {
-    return driveSimulation;
-  }
   public SwerveDriveSimulation getDriveSimulation() {
     return driveSimulation;
   }
