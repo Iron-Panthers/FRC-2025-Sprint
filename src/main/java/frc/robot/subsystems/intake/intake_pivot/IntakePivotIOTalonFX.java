@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake.intake_pivot;
 import static frc.robot.subsystems.intake.intake_pivot.IntakePivotConstants.*;
 
 import frc.robot.lib.generic_subsystems.superstructure.*;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class IntakePivotIOTalonFX extends GenericSuperstructureIOTalonFX implements IntakePivotIO {
 
@@ -36,8 +37,19 @@ public class IntakePivotIOTalonFX extends GenericSuperstructureIOTalonFX impleme
         GRAVITY_TYPE);
   }
 
+  @AutoLogOutput(key = "Intake/IntakePivot/ModdedRotations")
+  public double moddedRotations;
+
   @Override
   public void runPosition(double position) {
-    super.runPosition(position / 360d); // convert degrees to rotations
+
+    position /= 360;
+    moddedRotations =
+        position
+            - (talon.getPosition().getValueAsDouble()
+                // + 0.1
+                - ((talon.getPosition().getValueAsDouble()) % (1 / 2.25)));
+    // - 0.1; // calculates how much the fricking encoder is off by (so sad🥲)
+    super.runPosition(moddedRotations);
   }
 }
