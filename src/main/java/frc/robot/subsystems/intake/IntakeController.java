@@ -4,12 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.RobotState;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot.IntakePivotTarget;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
-
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeController extends SubsystemBase {
@@ -35,7 +33,8 @@ public class IntakeController extends SubsystemBase {
   private final IntakePivot intakePivot;
   private final IntakeSensors intakeSensors;
 
-  public IntakeController(IntakeRollers intakeRollers, IntakePivot intakePivot, IntakeSensors intakeSensors) {
+  public IntakeController(
+      IntakeRollers intakeRollers, IntakePivot intakePivot, IntakeSensors intakeSensors) {
     this.intakeRollers = intakeRollers;
     this.intakePivot = intakePivot;
     this.intakeSensors = intakeSensors;
@@ -52,8 +51,8 @@ public class IntakeController extends SubsystemBase {
         intakePivot.setPositionTarget(IntakePivotTarget.STOW);
       }
       case INTAKE -> {
-        if (RobotState.getInstance().getSensorsTriggered() != 0) {
-          targetState = IntakeState.HOLD;
+        if (intakeRollers.getFilteredCurrent() > 30) {
+          setTargetState(IntakeState.HOLD);
         }
         intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
         intakePivot.setPositionTarget(IntakePivotTarget.INTAKE);
@@ -67,11 +66,11 @@ public class IntakeController extends SubsystemBase {
         intakePivot.setPositionTarget(IntakePivotTarget.STOW);
       }
       case L1 -> {
-        intakeRollers.setVoltageTarget(IntakeRollers.Target.HOLD);
+        intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);
         intakePivot.setPositionTarget(IntakePivotTarget.L1);
-        if (intakeReachedTarget()) {
-          intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);
-        }
+        // if (intakeReachedTarget()) {
+        //   intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);
+        // }
       }
       case PASS -> {
         intakePivot.setPositionTarget(IntakePivotTarget.PASS);
