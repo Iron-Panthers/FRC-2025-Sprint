@@ -63,4 +63,35 @@ public class ClawRollersController extends SubsystemBase {
 
     Logger.recordOutput("ClawRollers/targetState", targetState);
   }
+
+  /*public boolean clawRollersReachedTarget() {
+      return clawRollers();
+    }
+
+    public ClawState getTargetState() {
+      return targetState;
+    }
+
+    public void setTargetState(ClawState targetState) {
+      this.targetState = targetState;
+    }
+  */
+
+  public void setVoltageTarget(ClawState targetState) {
+    this.targetState = targetState;
+  }
+
+  /*return new FunctionalCommand(
+          () -> {
+            this.targetState = target;
+          },
+          () -> {},
+          (exited) -> {},
+          () -> {
+            return clawRollersReachedTarget();
+          },
+          this);
+
+  */
+
 }
