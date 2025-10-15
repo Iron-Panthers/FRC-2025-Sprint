@@ -219,7 +219,7 @@ public class RobotContainer {
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
     driverA.y().onTrue(new ScoreL1Command(intakeController, l1PivotController));
     driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.HOLD));
   }
 
   private void configureAutos() {

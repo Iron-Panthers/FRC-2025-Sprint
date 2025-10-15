@@ -22,7 +22,7 @@ public class ScoreL1Command extends SequentialCommandGroup {
     addCommands(
         l1PivotController.setTargetStateCommand(L1PivotState.STOW),
         intakeController.setTargetCommand(IntakeState.L1),
-        new WaitCommand(0),
+        new WaitCommand(.5),
         l1PivotController.setTargetStateCommand(L1PivotState.SCORE_L1),
         l1PivotController.setTargetStateCommand(L1PivotState.STOW));
   }
