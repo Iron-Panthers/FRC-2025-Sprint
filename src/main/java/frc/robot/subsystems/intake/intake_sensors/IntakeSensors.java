@@ -5,19 +5,19 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeSensors {
 
-  private IntakeSensorsIO intakeSensorsIO1;
-  private IntakeSensorsIO intakeSensorsIO2;
-  private IntakeSensorsIOInputsAutoLogged inputs2 = new IntakeSensorsIOInputsAutoLogged();
-  private IntakeSensorsIOInputsAutoLogged inputs1 = new IntakeSensorsIOInputsAutoLogged();
+  private IntakeSensorIO intakeSensorIO1;
+  private IntakeSensorIO intakeSensorIO2;
+  private IntakeSensorIOInputsAutoLogged inputs2 = new IntakeSensorIOInputsAutoLogged();
+  private IntakeSensorIOInputsAutoLogged inputs1 = new IntakeSensorIOInputsAutoLogged();
 
-  public IntakeSensors(IntakeSensorsIO intakeSensorsIO1, IntakeSensorsIO intakeSensorsIO2) {
-    this.intakeSensorsIO1 = intakeSensorsIO1;
-    this.intakeSensorsIO2 = intakeSensorsIO2;
+  public IntakeSensors(IntakeSensorIO intakeSensorIO1, IntakeSensorIO intakeSensorIO2) {
+    this.intakeSensorIO1 = intakeSensorIO1;
+    this.intakeSensorIO2 = intakeSensorIO2;
   }
 
-  public void updateInputs() {
-    intakeSensorsIO1.updateInputs(inputs1);
-    intakeSensorsIO1.updateInputs(inputs2);
+  public void periodic() {
+    intakeSensorIO1.updateInputs(inputs1);
+    intakeSensorIO2.updateInputs(inputs2);
     Logger.processInputs("Intake/IntakeSensors1", inputs1);
     Logger.processInputs("Intake/IntakeSensors2", inputs2);
     RobotState.getInstance().updateNumSensorsTriggered(numSensorsTriggered());

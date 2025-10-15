@@ -315,8 +315,6 @@ public class RobotState {
 
   public Pose2d getApproachPose(double offset, boolean bside, boolean l1) {
     return findApproachPose(offset, bside, l1).getAlliancePose();
-
-    
   }
 
   @AutoLogOutput(key = "RobotState/NumSensorsTriggered")

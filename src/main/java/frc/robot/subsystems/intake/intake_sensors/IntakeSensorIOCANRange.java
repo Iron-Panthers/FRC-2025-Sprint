@@ -4,9 +4,9 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.hardware.CANrange;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsIO.IntakeSensorsIOInputs;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIO.IntakeSensorIOInputs;
 
-public class IntakeSensorIOCANRange implements IntakeSensorsIO {
+public class IntakeSensorIOCANRange implements IntakeSensorIO {
 
   private final CANrange canRange;
   private final StatusSignal<Distance> distance;
@@ -26,5 +26,8 @@ public class IntakeSensorIOCANRange implements IntakeSensorsIO {
   }
 
   @Override
-  public void updateInputs(IntakeSensorsIOInputs inputs) {}
+  public void updateInputs(IntakeSensorIOInputs inputs) {
+    inputs.distance = canRange.getDistance().getValueAsDouble();
+    inputs.connected = canRange.isConnected();
+  }
 }

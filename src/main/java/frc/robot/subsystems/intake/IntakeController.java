@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot.IntakePivotTarget;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
+
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeController extends SubsystemBase {
@@ -30,10 +32,12 @@ public class IntakeController extends SubsystemBase {
 
   private final IntakeRollers intakeRollers;
   private final IntakePivot intakePivot;
+  private final IntakeSensors intakeSensors;
 
-  public IntakeController(IntakeRollers intakeRollers, IntakePivot intakePivot) {
+  public IntakeController(IntakeRollers intakeRollers, IntakePivot intakePivot, IntakeSensors intakeSensors) {
     this.intakeRollers = intakeRollers;
     this.intakePivot = intakePivot;
+    this.intakeSensors = intakeSensors;
   }
 
   @Override
@@ -75,6 +79,7 @@ public class IntakeController extends SubsystemBase {
 
     intakeRollers.periodic();
     intakePivot.periodic();
+    intakeSensors.periodic();
 
     Logger.recordOutput("Rollers/TargetState", targetState);
   }
