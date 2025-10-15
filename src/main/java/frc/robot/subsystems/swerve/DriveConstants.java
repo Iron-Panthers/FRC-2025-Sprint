@@ -72,7 +72,10 @@ public class DriveConstants {
   public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(MODULE_TRANSLATIONS);
 
-  public static final int GYRO_ID = 0;
+  public static final int GYRO_ID =
+      switch (Constants.getRobotType()) {
+        default -> 15;
+      };
 
   // fl, fr, bl, br; negate offsets
   public static final ModuleConfig[] MODULE_CONFIGS =
@@ -215,7 +218,7 @@ public class DriveConstants {
   public static final PIDAutoAlignControllerConstants PID_AUTOALIGN_CONSTANTS =
       switch (getRobotType()) {
         case COMP -> new PIDAutoAlignControllerConstants(
-            3.8, 0, 0, 4, 2); /*FIXME: tune these constants*/
+            3.8, 0, 0, 4, 2); /* FIXME: tune these constants */
         case SIM -> new PIDAutoAlignControllerConstants(10, 0, 0, 5, 2);
         default -> new PIDAutoAlignControllerConstants(0, 0, 0, 0, 0);
       };
