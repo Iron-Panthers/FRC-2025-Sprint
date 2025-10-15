@@ -19,11 +19,13 @@ public class ScoreL1Command extends SequentialCommandGroup {
   public ScoreL1Command(IntakeController intakeController, L1PivotController l1PivotController) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(
-        l1PivotController.setTargetStateCommand(L1PivotState.STOW),
-        intakeController.setTargetCommand(IntakeState.L1),
-        new WaitCommand(.5),
-        l1PivotController.setTargetStateCommand(L1PivotState.SCORE_L1),
-        l1PivotController.setTargetStateCommand(L1PivotState.STOW));
+    if (intakeController.getTargetState() == IntakeController.IntakeState.HOLD){
+      addCommands(
+          l1PivotController.setTargetStateCommand(L1PivotState.STOW),
+          intakeController.setTargetCommand(IntakeState.L1),
+          new WaitCommand(.5),
+          l1PivotController.setTargetStateCommand(L1PivotState.SCORE_L1),
+          l1PivotController.setTargetStateCommand(L1PivotState.STOW));
+    }
   }
 }
