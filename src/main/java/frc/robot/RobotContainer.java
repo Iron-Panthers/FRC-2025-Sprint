@@ -222,12 +222,16 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
+    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
   }
 
   private void configureAutos() {
     RobotConfig robotConfig;
     try {
-      robotConfig = R on e) {
+      robotConfig = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
       e.printStackTrace();
       robotConfig = null;
     }
@@ -251,18 +255,19 @@ public class RobotContainer {
         () -> RobotState.getInstance().getEstimatedPose(),
         (pose) -> RobotState.getInstance().resetPose(pose),
         () -> swerve.getRobotSpeeds(),
-        (speeds) -> {   swerv
-      
-      iveConstant
-      ssRobotConfig,
-      ipAlliance,
+        (speeds) -> {
+          swerve.setTrajectorySpeeds(speeds);
+        },
+        DriveConstants.HOLONOMIC_DRIVE_CONTROLLER,
+        passRobotConfig,
+        flipAlliance,
+        swerve);
 
-      
-      ooser =
-        LoggedDashboardChooser<Command>("Auto Chooser", Auto
-      a
-      
-    
+    autoChooser =
+        new LoggedDashboardChooser<Command>("Auto Chooser", AutoBuilder.buildAutoChooser());
+    SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
+  }
+
   public Command getAutoCommand() {
     return AutoBuilder.buildAuto("R L4 (3) (EDC)"); // HACK: Replace once we get auto logging
   }
@@ -276,7 +281,8 @@ public class RobotContainer {
   // runs when teleop starts
   public void teleopInit() {
     CommandScheduler.getInstance()
-        .schedule 
+        .schedule(new ParallelCommandGroup(new VibrateHIDCommand(driverB.getHID(), 5, .5)));
+
     // vibrate controller at 30 seconds left
     CommandScheduler.getInstance()
         .schedule(
@@ -312,4 +318,3 @@ public class RobotContainer {
   }
 }
 
-      
