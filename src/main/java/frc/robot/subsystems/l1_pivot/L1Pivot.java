@@ -12,8 +12,8 @@ import org.littletonrobotics.junction.Logger;
 public class L1Pivot extends GenericSuperstructure<L1Pivot.L1PivotTarget>
     implements LoggableMechanism3d {
   public enum L1PivotTarget implements GenericSuperstructure.PositionTarget {
-    L1_SCORE(0),
-    STOW(90);
+    L1_SCORE(80),
+    STOW(100);
 
     private double position;
     private static final double EPSILON = L1PivotConstants.POSITION_TARGET_EPSILON;

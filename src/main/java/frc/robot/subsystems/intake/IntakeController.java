@@ -51,7 +51,7 @@ public class IntakeController extends SubsystemBase {
         intakePivot.setPositionTarget(IntakePivotTarget.STOW);
       }
       case INTAKE -> {
-        if (intakeRollers.getFilteredCurrent() > 30) {
+        if (intakeRollers.getFilteredCurrent() > 23) {
           setTargetState(IntakeState.HOLD);
         }
         intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);

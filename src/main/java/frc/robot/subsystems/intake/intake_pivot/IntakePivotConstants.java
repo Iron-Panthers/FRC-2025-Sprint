@@ -15,7 +15,7 @@ public class IntakePivotConstants {
       switch (Constants.getRobotType()) {
         case COMP -> new IntakePivotConfig(
             // Reduction between sensor and mechansim
-            CAN.at(30, "Intake Pivot"), CAN.at(31, "Intake Pivot Encoder"), -0.5, 2.25); // (36/16
+            CAN.at(30, "Intake Pivot"), CAN.at(31, "Intake Pivot Encoder"), -0.163, 2.25); // (36/16
           // is the reduction for the encoder)
         case SIM -> new IntakePivotConfig(
             // Reduction between motor and mechansim
@@ -64,6 +64,8 @@ public class IntakePivotConstants {
   public static final double ZEROING_VOLTS = 1;
   public static final double ZEROING_OFFSET = 0; // offset in degrees
   public static final double ZEROING_VOLTAGE_THRESHOLD = 5;
+
+  public static final double SENSOR_DISCONTINUITY_POINT = 0.1;
 
   // PHYSICAL CONSTANTS
   public static final Transform3d BASE_TO_INTAKE_PIVOT_TRANSFORM =

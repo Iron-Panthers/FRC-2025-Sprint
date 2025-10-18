@@ -21,7 +21,8 @@ public class IntakePivotIOTalonFX extends GenericSuperstructureIOTalonFX impleme
             .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD)
             .withCANCoderID(INTAKE_PIVOT_CONFIG.canCoderID())
             .withCANCoderOffset(INTAKE_PIVOT_CONFIG.canCoderOffset())
-            .withCANCoderDirection(CANCODER_DIRECTION));
+            .withCANCoderDirection(CANCODER_DIRECTION)
+            .withSensorDiscontinuityPoint(SENSOR_DISCONTINUITY_POINT));
 
     setSlot0(
         GAINS.kP(),
@@ -44,12 +45,14 @@ public class IntakePivotIOTalonFX extends GenericSuperstructureIOTalonFX impleme
   public void runPosition(double position) {
 
     position /= 360;
-    moddedRotations =
-        position
-            - (talon.getPosition().getValueAsDouble()
-                // + 0.1
-                - ((talon.getPosition().getValueAsDouble()) % (1 / 2.25)));
-    // - 0.1; // calculates how much the fricking encoder is off by (so sad🥲)
-    super.runPosition(moddedRotations);
+    position -= (1 / 2.25);
+    moddedRotations = position;
+    // moddedRotations =
+    //     position
+    //         - (talon.getPosition().getValueAsDouble()
+    //             // + 0.1
+    //             - ((talon.getPosition().getValueAsDouble()) % (1 / 2.25)));
+    // // - 0.1; // calculates how much the fricking encoder is off by (so sad🥲)
+    super.runPosition(position);
   }
 }

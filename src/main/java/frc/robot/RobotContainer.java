@@ -229,13 +229,9 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverB
-        .leftTrigger()
-        .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    driverB
-        .rightTrigger()
-        .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverB.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
+    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
 
     // // auto align
     // driverA
