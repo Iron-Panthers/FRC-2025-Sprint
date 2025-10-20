@@ -11,10 +11,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
@@ -41,6 +39,7 @@ import frc.robot.subsystems.swerve.ModuleIOTalonFXReal;
 import frc.robot.subsystems.swerve.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonvision;
 import frc.robot.subsystems.vision.VisionIOPhotonvisionSim;
 import java.util.function.BooleanSupplier;
 import org.ironmaple.simulation.SimulatedArena;
@@ -89,8 +88,7 @@ public class RobotContainer {
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
-          // vision = new Vision(new VisionIOPhotonvision(4), new
-          // VisionIOPhotonvision(5));
+          vision = new Vision(new VisionIOPhotonvision(1), new VisionIOPhotonvision(2));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
         }
