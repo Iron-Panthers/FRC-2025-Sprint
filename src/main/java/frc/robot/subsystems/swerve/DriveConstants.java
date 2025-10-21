@@ -130,31 +130,6 @@ public class DriveConstants {
           new ModuleConfig(
               CAN.at(23, "BR Drive"), CAN.at(22, "BRSteer"), 4, new Rotation2d(-2.8148), true, true)
         };
-        case PRACTICE -> new ModuleConfig[] { // FIXME: Tune these thingy wingies
-          new ModuleConfig(
-              CAN.at(19, "FL Drive"),
-              CAN.at(18, "FL Steer"),
-              2,
-              new Rotation2d(-1.148),
-              true,
-              false),
-          new ModuleConfig(
-              CAN.at(17, "FR Drive"),
-              CAN.at(16, "FR Steer"),
-              1,
-              new Rotation2d(-0.405),
-              true,
-              true),
-          new ModuleConfig(
-              CAN.at(21, "BL Drive"),
-              CAN.at(20, "BLSteer"),
-              3,
-              new Rotation2d(1.0139),
-              true,
-              false),
-          new ModuleConfig(
-              CAN.at(23, "BR Drive"), CAN.at(22, "BRSteer"), 4, new Rotation2d(-2.8148), true, true)
-        };
       };
 
   public static final ModuleConstants MODULE_CONSTANTS =
@@ -203,8 +178,6 @@ public class DriveConstants {
         case COMP -> new TrajectoryFollowerConstants(
             new PIDConstants(8, 0), new PIDConstants(4, 0));
         case SIM -> new TrajectoryFollowerConstants(new PIDConstants(8, 0), new PIDConstants(4, 0));
-        case PRACTICE -> new TrajectoryFollowerConstants(
-            new PIDConstants(8, 0), new PIDConstants(4, 0));
         default -> new TrajectoryFollowerConstants(new PIDConstants(0, 0), new PIDConstants(0, 0));
       };
 
@@ -212,7 +185,6 @@ public class DriveConstants {
       switch (getRobotType()) {
         case COMP -> new HeadingControllerConstants(6, 0, 5, 200, 0.002);
         case SIM -> new HeadingControllerConstants(6, 0, 5, 200, 0.002);
-        case PRACTICE -> new HeadingControllerConstants(6, 0, 5, 200, 0.002);
         default -> new HeadingControllerConstants(0, 0, 0, 0, 0);
       };
   public static final PIDAutoAlignControllerConstants PID_AUTOALIGN_CONSTANTS =

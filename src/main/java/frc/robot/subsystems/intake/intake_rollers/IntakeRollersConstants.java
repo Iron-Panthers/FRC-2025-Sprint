@@ -4,9 +4,8 @@ import frc.robot.Constants;
 
 public class IntakeRollersConstants {
   public static final int ID = switch (Constants.getRobotType()) {
-    case COMP -> 32;
-    case SIM -> 32;
-    case PRACTICE -> 45;
+    case COMP -> 45;
+    case SIM -> 45;
     default -> 0;
   };
   public static final int CURRENT_LIMIT_AMPS = switch (Constants.getRobotType()) {
@@ -17,7 +16,6 @@ public class IntakeRollersConstants {
   public static final boolean INVERTED = switch (Constants.getRobotType()) {
     case COMP -> true;
     case SIM -> true;
-    case PRACTICE -> true;
     default -> true;
   };
   public static final boolean BRAKE = switch (Constants.getRobotType()) {
