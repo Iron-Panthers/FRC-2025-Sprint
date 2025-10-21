@@ -23,10 +23,13 @@ public class IntakeSensors {
     RobotState.getInstance().updateSensorsTriggered(sensorsTriggered());
   }
 
-  // Sensor 2 is never triggered by itself
-  // if sensor1 is triggered but not sensor2, it returns 6
-  // if sensor1 is not triggered but sensor2 is, it returns 7
-  // if both are triggered, it retruns 13;
+  // FIXME: what in the actual fuck -- bruce
+  /**
+   * Sensor 2 is never triggered by itself
+   * if sensor1 is triggered but not sensor2, it returns 6
+   * if sensor1 is not triggered but sensor2 is, it returns 7
+   * if both are triggered, it retruns 13;
+   */
   public int sensorsTriggered() {
     int output = 0;
     if (inputs1.distance < 0.5) {
