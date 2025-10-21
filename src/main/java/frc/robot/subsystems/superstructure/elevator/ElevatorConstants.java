@@ -13,29 +13,27 @@ import frc.robot.utility.PIDGains;
 
 public class ElevatorConstants {
 
-  public static final ElevatorConfig ELEVATOR_CONFIG =
-      switch (Constants.getRobotType()) {
-        case COMP -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
-        case SIM -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
-        default -> new ElevatorConfig(0, 0, 1.6875); // FIXME
-      };
+  public static final ElevatorConfig ELEVATOR_CONFIG = switch (Constants.getRobotType()) {
+    case COMP -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
+    case SIM -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
+    default -> new ElevatorConfig(0, 0, 1.6875); // FIXME
+  };
 
-  public static final PIDGains GAINS =
-      switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(
-            1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
-        case SIM -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
-        default -> new PIDGains(1.5, 0, 0, 0, 0, 0, 0);
-      };
+  public static final PIDGains GAINS = switch (Constants.getRobotType()) {
+    case COMP -> new PIDGains(
+        1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
+    case SIM -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
+    default -> new PIDGains(1.5, 0, 0, 0, 0, 0, 0);
+  };
 
-  public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
-      switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(500, 100, 0);
-        case SIM -> new MotionMagicConfig(100, 100, 0);
-        default -> new MotionMagicConfig(0, 0, 0);
-      };
+  public static final MotionMagicConfig MOTION_MAGIC_CONFIG = switch (Constants.getRobotType()) {
+    case COMP -> new MotionMagicConfig(500, 100, 0);
+    case SIM -> new MotionMagicConfig(100, 100, 0);
+    default -> new MotionMagicConfig(0, 0, 0);
+  };
 
-  public record ElevatorConfig(int motorID, int motorID2, double reduction) {}
+  public record ElevatorConfig(int motorID, int motorID2, double reduction) {
+  }
 
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
 
@@ -72,19 +70,18 @@ public class ElevatorConstants {
       double drumRadiusMeters,
       double minHeightMeters,
       double maxHeightMeters,
-      boolean simulateGravity) {}
+      boolean simulateGravity) {
+  }
 
-  public static final ElevatorPhysicalConstants PHYSICAL_CONSTANTS =
-      switch (Constants.getRobotType()) {
-        case SIM -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 5, true);
-        case COMP -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 0, false);
-      }; // CHANGE VALUES WHEN CAD FINISHES
+  public static final ElevatorPhysicalConstants PHYSICAL_CONSTANTS = switch (Constants.getRobotType()) {
+    case SIM -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 5, true);
+    case COMP -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 0, false);
+  }; // CHANGE VALUES WHEN CAD FINISHES
 
-  public static final Transform3d ELEVATOR_BASE_3D_OFFSET =
-      switch (Constants.getRobotType()) {
-        default -> new Transform3d(
-            new Translation3d(
-                Units.inchesToMeters(-3.0), Units.inchesToMeters(0), Units.inchesToMeters(2.875)),
-            new Rotation3d(0, 0, 0));
-      };
+  public static final Transform3d ELEVATOR_BASE_3D_OFFSET = switch (Constants.getRobotType()) {
+    default -> new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(4.508), Units.inchesToMeters(0), Units.inchesToMeters(3.125)),
+        new Rotation3d(0, 0, 0));
+  };
 }
