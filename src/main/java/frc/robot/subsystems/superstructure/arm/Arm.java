@@ -1,14 +1,9 @@
 package frc.robot.subsystems.superstructure.arm;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.lib.generic_subsystems.superstructure.*;
-import frc.robot.utility.LoggableMechanism3d;
 import org.littletonrobotics.junction.Logger;
 
-public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements LoggableMechanism3d {
+public class Arm extends GenericSuperstructure<Arm.ArmTarget> {
   public enum ArmTarget implements GenericSuperstructure.PositionTarget {
     TOP(90),
     PICKUP(-90),
@@ -38,9 +33,6 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
     setControlMode(ControlMode.STOP);
   }
 
-  /** The parent LoggableMechanism3d, typically a reference to the elevator subsystem */
-  public LoggableMechanism3d loggableMechanism3dParent = null;
-
   @Override
   public void periodic() {
     super.periodic();
@@ -62,34 +54,5 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> implements Loggabl
   /** Returns the position of the arm in DEGREES */
   public double getPosition() {
     return super.getPosition() * 360.0;
-  }
-
-  // ----- LoggableMechanism3d methods
-  @Override
-  public Pose3d getParentPosition() {
-    if (loggableMechanism3dParent != null) {
-      return loggableMechanism3dParent.getDisplayPose3d();
-    }
-    return new Pose3d();
-  }
-
-  @Override
-  public void setParent(LoggableMechanism3d parent) {
-    if (parent == null) {
-      throw new IllegalArgumentException("Parent cannot be null");
-    }
-    if (parent == this) {
-      throw new IllegalArgumentException("Parent cannot be itself");
-    }
-    this.loggableMechanism3dParent = parent;
-  }
-
-  @Override
-  public Pose3d getDisplayPose3d() {
-    return getParentPosition()
-        .plus(ArmConstants.ELEVATOR_TO_ARM_TRANSFORM)
-        .plus(
-            new Transform3d(
-                Translation3d.kZero, new Rotation3d(0, Math.toRadians(getPosition() - 90), 0)));
   }
 }
