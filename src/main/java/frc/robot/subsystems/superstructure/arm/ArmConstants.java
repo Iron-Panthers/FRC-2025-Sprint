@@ -56,14 +56,11 @@ public class ArmConstants {
   public static final double SUPPLY_CURRENT_LIMIT = 30;
 
   // ARM POSITION CONSTANTS
-  public static final Transform3d
-      ELEVATOR_TO_ARM_TRANSFORM = // HACK: Currently no transform because testing
-      switch (Constants.getRobotType()) {
-            default -> new Transform3d(
-                new Translation3d(
-                    Units.inchesToMeters(0), Units.inchesToMeters(0d), Units.inchesToMeters(34.5)),
-                new Rotation3d(0, 0, 0));
-          };
+  public static final Transform3d ELEVATOR_TO_ARM_TRANSFORM3D =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(2)),
+          new Rotation3d(0, 0, 0));
 
   // PHYSICAL CONSTANTS
   public static record ArmPhysicalConstants(
@@ -80,15 +77,5 @@ public class ArmConstants {
         default -> new ArmPhysicalConstants(0.1, 0, 0, 0, false);
       };
 
-  public static final Transform3d ARM_TO_OUTTAKE_TRANSFORM =
-      switch (Constants.getRobotType()) {
-        default -> new Transform3d(
-            new Translation3d(
-                Units.inchesToMeters(22.445),
-                Units.inchesToMeters(0.0),
-                Units.inchesToMeters(1.742)),
-            new Rotation3d(0, 0, 0));
-      };
-
-  public static final double ARM_LENGTH = 20; // inches
+  public static final double ARM_LENGTH = 29.4; // inches
 }
