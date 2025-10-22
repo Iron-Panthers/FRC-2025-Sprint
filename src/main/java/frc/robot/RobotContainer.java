@@ -18,6 +18,10 @@ import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.claw.ClawRollers;
+import frc.robot.subsystems.claw.ClawRollersController;
+import frc.robot.subsystems.claw.ClawRollersIO;
+import frc.robot.subsystems.claw.ClawRollersIOSim;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
@@ -92,6 +96,9 @@ public class RobotContainer {
   private IntakePivot intakePivot;
   private IntakeController intakeController;
   private IntakeSensors intakeSensors;
+  private ClawRollers clawRollers;
+  private ClawRollersController clawRollersController;
+
   private SuperstructureController superstructureController;
   private Arm arm;
   private Elevator elevator;
@@ -148,6 +155,8 @@ public class RobotContainer {
           intakeSensors = new IntakeSensors(new IntakeSensorIOSim(), new IntakeSensorIOSim());
           elevator = new Elevator(new ElevatorIOSim());
           arm = new Arm(new ArmIOSim());
+          clawRollers = new ClawRollers(new ClawRollersIOSim());
+          SimulatedArena.getInstance().resetFieldForAuto();
         }
       }
     }
@@ -177,6 +186,9 @@ public class RobotContainer {
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
     }
+    if (clawRollers == null) {
+      clawRollers = new ClawRollers(new ClawRollersIO() {});
+    }
 
     if (intakeRollers == null) {
       intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
@@ -202,6 +214,8 @@ public class RobotContainer {
       arm = new Arm(new ArmIO() {});
     }
     superstructureController = new SuperstructureController(elevator, arm);
+
+    clawRollersController = new ClawRollersController(clawRollers);
 
     nameCommands();
     configureAutos();
@@ -239,6 +253,20 @@ public class RobotContainer {
     driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
     driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverA
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    clawRollersController.setVoltageTarget(
+                        ClawRollersController.ClawState.EJECT_TOP)));
+    driverA
+        .y()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    clawRollersController.setVoltageTarget(
+                        ClawRollersController.ClawState.INTAKE)));
 
     driverB
         .a()
