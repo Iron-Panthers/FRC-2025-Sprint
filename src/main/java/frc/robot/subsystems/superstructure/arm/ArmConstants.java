@@ -59,7 +59,7 @@ public class ArmConstants {
   public static final Transform3d ELEVATOR_TO_ARM_TRANSFORM3D =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(2)),
+              Units.inchesToMeters(-0.375), Units.inchesToMeters(0), Units.inchesToMeters(8)),
           new Rotation3d(0, 0, 0));
 
   // PHYSICAL CONSTANTS
