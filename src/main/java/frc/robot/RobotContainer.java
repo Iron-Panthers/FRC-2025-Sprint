@@ -39,6 +39,14 @@ import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
+import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
+import frc.robot.subsystems.superstructure.arm.Arm;
+import frc.robot.subsystems.superstructure.arm.ArmIO;
+import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -50,20 +58,13 @@ import frc.robot.subsystems.swerve.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonvisionSim;
-import frc.robot.subsystems.superstructure.SuperstructureController;
-import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
-import frc.robot.subsystems.superstructure.arm.Arm;
-import frc.robot.subsystems.superstructure.arm.ArmIO;
-import frc.robot.subsystems.superstructure.arm.ArmIOSim;
-import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
 import java.util.function.BooleanSupplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}

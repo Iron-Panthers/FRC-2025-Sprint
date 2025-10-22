@@ -52,7 +52,8 @@ public class IntakeController extends SubsystemBase {
         intakePivot.setPositionTarget(IntakePivotTarget.STOW);
       }
       case INTAKE -> {
-        if (intakeRollers.getFilteredCurrent() > IntakeRollersConstants.FILTERED_SUPPLY_CURRENT_THRESHOLD_INTAKING) {
+        if (intakeRollers.getFilteredCurrent()
+            > IntakeRollersConstants.FILTERED_SUPPLY_CURRENT_THRESHOLD_INTAKING) {
           setTargetState(IntakeState.HOLD);
         }
         intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
@@ -91,9 +92,8 @@ public class IntakeController extends SubsystemBase {
   /**
    * Checks if the intake pivot mechanism has reached its target position.
    *
-   * @return {@code true} if the intake pivot has reached its target position,
-   *         {@code false}
-   *         otherwise.
+   * @return {@code true} if the intake pivot has reached its target position, {@code false}
+   *     otherwise.
    */
   public boolean intakeReachedTarget() {
     return intakePivot.reachedTarget();
@@ -111,24 +111,19 @@ public class IntakeController extends SubsystemBase {
    * Creates a command to set the target state of the intake system.
    *
    * @param target The desired {@link IntakeState} to set as the target state.
-   * @return A {@link Command} that sets the target state and monitors when the
-   *         intake reaches the
-   *         target.
-   *         <p>
-   *         The command performs the following actions: - Initializes by setting
-   *         the target state of
-   *         the intake system. - Executes with no additional behavior during the
-   *         command's active
-   *         phase. - Cleans up with no specific actions upon command termination.
-   *         - Ends when the
-   *         intake system reaches the specified target state.
+   * @return A {@link Command} that sets the target state and monitors when the intake reaches the
+   *     target.
+   *     <p>The command performs the following actions: - Initializes by setting the target state of
+   *     the intake system. - Executes with no additional behavior during the command's active
+   *     phase. - Cleans up with no specific actions upon command termination. - Ends when the
+   *     intake system reaches the specified target state.
    */
   public Command setTargetCommand(IntakeState target) {
     return new InstantCommand(
-        () -> {
-          this.targetState = target;
-        },
-        this)
+            () -> {
+              this.targetState = target;
+            },
+            this)
         .withTimeout(.02)
         .andThen(new WaitUntilCommand(this::intakeReachedTarget));
   }
