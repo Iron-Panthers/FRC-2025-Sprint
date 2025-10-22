@@ -37,14 +37,14 @@ public class ClawRollersIOSim extends GenericRollersIOSim implements ClawRollers
     // Correct unit conversion: meters/s to rotations/s
     double velocityRPS = ClawRollersSim.getAngularVelocityRadPerSec() / (REDUCTION);
 
-    talon.getSimState().setRawRotorPosition(rotations);
+    // talon.getSimState().setRawRotorPosition(rotations);
     talon.getSimState().setRotorVelocity(velocityRPS);
 
     inputs.connected = true;
     inputs.positionRads = rotations;
     inputs.velocityRadsPerSec = velocityRPS;
     inputs.appliedVolts = appliedVoltage;
-    inputs.supplyCurrentAmps = 1.0; // Not simulated
+    inputs.supplyCurrentAmps = talon.getSimState().getSupplyCurrent();
 
     // Update robot sim state
     RobotSimState.getInstance()

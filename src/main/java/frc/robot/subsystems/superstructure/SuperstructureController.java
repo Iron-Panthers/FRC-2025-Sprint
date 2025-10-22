@@ -24,8 +24,7 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 public class SuperstructureController extends SubsystemBase {
 
   /**
-   * Enum for the different states of the superstructure each state represents a
-   * different position
+   * Enum for the different states of the superstructure each state represents a different position
    * or configuration of the superstructure (Arm and Elevator)
    */
   public enum SuperstructureState {
@@ -42,10 +41,8 @@ public class SuperstructureController extends SubsystemBase {
     private final SuperstructurePose targetPose;
 
     /**
-     * Gets the target pose for the superstructure state The arm direction part of
-     * the target pose
-     * tells future logic weather it matters (CLOCKWISE, COUNTERCLOCKWISE) or
-     * doesn't (BOTH)
+     * Gets the target pose for the superstructure state The arm direction part of the target pose
+     * tells future logic weather it matters (CLOCKWISE, COUNTERCLOCKWISE) or doesn't (BOTH)
      *
      * @return the target pose for this superstructure state
      */
@@ -65,8 +62,7 @@ public class SuperstructureController extends SubsystemBase {
     /** Counter Clockwise when looking at the mechanism from the intake side */
     COUNTERCLOCKWISE,
     /**
-     * The Arm can move in either direction and chooses the most optimal path
-     * Basically hands off
+     * The Arm can move in either direction and chooses the most optimal path Basically hands off
      * control to future logic
      */
     BOTH
@@ -77,8 +73,7 @@ public class SuperstructureController extends SubsystemBase {
     /** Height of the elevator in meters */
     public final Distance elevatorHeight;
     /**
-     * Angle of the arm relative to the horizon (horizontal right when looking from
-     * intake side is 0
+     * Angle of the arm relative to the horizon (horizontal right when looking from intake side is 0
      * degrees)
      */
     public final Angle armAngle;
@@ -89,8 +84,8 @@ public class SuperstructureController extends SubsystemBase {
      * Constructor for the superstructure pose
      *
      * @param elevatorHeight height of the elevator in meters
-     * @param armAngle       angle of the arm in degrees
-     * @param armDirection   direction the arm should move when going to a position
+     * @param armAngle angle of the arm in degrees
+     * @param armDirection direction the arm should move when going to a position
      */
     public SuperstructurePose(Distance elevatorHeight, Angle armAngle, ArmDirection armDirection) {
       this.elevatorHeight = elevatorHeight;
@@ -99,8 +94,9 @@ public class SuperstructureController extends SubsystemBase {
     }
 
     public LoggedMechanism2d getAsMechanism2d() {
-      LoggedMechanism2d mech = new LoggedMechanism2d(
-          Units.Inches.of(50).in(Units.Meters), Units.Inches.of(50).in(Units.Meters));
+      LoggedMechanism2d mech =
+          new LoggedMechanism2d(
+              Units.Inches.of(50).in(Units.Meters), Units.Inches.of(50).in(Units.Meters));
       mech.getRoot("Superstructure", Units.Inches.of(25).in(Units.Meters), 0)
           .append(new LoggedMechanismLigament2d("Elevator", elevatorHeight.in(Units.Meters), 90))
           .append(
@@ -124,9 +120,7 @@ public class SuperstructureController extends SubsystemBase {
                       new Rotation3d(0, 0, 0)))); // The elevator doesn't rotate, duh
     }
 
-    /**
-     * Get the Pose3d of the arm pivot based on the current elevator height and arm
-     */
+    /** Get the Pose3d of the arm pivot based on the current elevator height and arm */
     public Pose3d getPivotPose3d() {
       return this.getElevatorPose3d()
           .plus(ArmConstants.ELEVATOR_TO_ARM_TRANSFORM3D)
@@ -158,19 +152,17 @@ public class SuperstructureController extends SubsystemBase {
    *
    * @param minElevatorHeight minimum height of the elevator in meters
    * @param maxElevatorHeight maximum height of the elevator in meters
-   * @param minArmAngle       minimum angle of the arm in degrees -- centered
-   *                          around 0/360 being directly
-   *                          right when looking from the intake side
-   * @param maxArmAngle       maximum angle of the arm in degrees -- centered
-   *                          around 0/360 being directly
-   *                          right when looking from the intake side
+   * @param minArmAngle minimum angle of the arm in degrees -- centered around 0/360 being directly
+   *     right when looking from the intake side
+   * @param maxArmAngle maximum angle of the arm in degrees -- centered around 0/360 being directly
+   *     right when looking from the intake side
    */
   record SuperstructureConstraints(
       Distance minElevatorHeight,
       Distance maxElevatorHeight,
       Angle minArmAngle,
-      Angle maxArmAngle) {
-  };
+      Angle maxArmAngle) {}
+  ;
 
   /** The current target state of the superstructure */
   private SuperstructureState superstructureState = SuperstructureState.STOW;
@@ -194,14 +186,11 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Gets the relative angle to give to the motor controller to reach the given
-   * absolute angle
+   * Gets the relative angle to give to the motor controller to reach the given absolute angle
    *
-   * @param absoluteAngle (0-360 degrees) centered at directly right when looking
-   *                      from the intake
-   *                      side
-   * @param armDirection  the direction the arm should move when going to the
-   *                      position
+   * @param absoluteAngle (0-360 degrees) centered at directly right when looking from the intake
+   *     side
+   * @param armDirection the direction the arm should move when going to the position
    * @return the relative angle to give to the motor controller
    */
   public double absoluteToRelativeTarget(
@@ -245,7 +234,7 @@ public class SuperstructureController extends SubsystemBase {
   /**
    * Calculates the shortest delta between two angles
    *
-   * @param target  Target angle (0-360)
+   * @param target Target angle (0-360)
    * @param current Current angle (0-360)
    * @return Delta angle in range [-180, 180]
    */
@@ -275,7 +264,7 @@ public class SuperstructureController extends SubsystemBase {
    * Constructor for the superstructure controller
    *
    * @param elevator the elevator subsystem to control
-   * @param arm      the arm subsystem to control
+   * @param arm the arm subsystem to control
    */
   public SuperstructureController(Elevator elevator, Arm arm) {
     // setup the subsystems
@@ -352,8 +341,7 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Get the current pose of the superstructure based on the readings from the
-   * subsystems
+   * Get the current pose of the superstructure based on the readings from the subsystems
    *
    * @return The current superstructure pose
    */
@@ -367,9 +355,8 @@ public class SuperstructureController extends SubsystemBase {
   /**
    * Get the target pose for the current target state
    *
-   * @return The modified superstructure target pose based on the current state
-   *         and the physical
-   *         constraints of the mechanism
+   * @return The modified superstructure target pose based on the current state and the physical
+   *     constraints of the mechanism
    */
   public SuperstructurePose getTargetSuperstructurePose() {
     // Get the prerequisite info for these calculations
@@ -377,47 +364,54 @@ public class SuperstructureController extends SubsystemBase {
 
     // 1. Calculate the Min and Max heights and angles for the elevator and pivot
     SuperstructureConstraints constraints = getSuperstructureConstraints();
-    Angle normalizedCurrentArmAngle = Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
-    Angle normalizedTargetArmAngle = Units.Degrees
-        .of(normalizeAngle(superstructureState.targetPose.armAngle.in(Units.Degrees)));
+    Angle normalizedCurrentArmAngle =
+        Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
+    Angle normalizedTargetArmAngle =
+        Units.Degrees.of(normalizeAngle(superstructureState.targetPose.armAngle.in(Units.Degrees)));
 
     // 2. Clamp the elevator target height between the min and max
-    Distance targetElevatorHeight = clamp(
-        superstructureState.getTargetPose().elevatorHeight,
-        constraints.minElevatorHeight,
-        constraints.maxElevatorHeight);
+    Distance targetElevatorHeight =
+        clamp(
+            superstructureState.getTargetPose().elevatorHeight,
+            constraints.minElevatorHeight,
+            constraints.maxElevatorHeight);
 
     // 3. Figure out what direction the arm should be allowed to move
     ArmDirection targetArmDirection = superstructureState.getTargetPose().armDirection;
-    double shortestDeltaAngleToTarget = calculateShortestDeltaAngle(
-        normalizedTargetArmAngle.in(Units.Degrees),
-        normalizedCurrentArmAngle.in(Units.Degrees));
+    double shortestDeltaAngleToTarget =
+        calculateShortestDeltaAngle(
+            normalizedTargetArmAngle.in(Units.Degrees),
+            normalizedCurrentArmAngle.in(Units.Degrees));
     if (targetArmDirection == ArmDirection.BOTH) {
       // see what direction is the most optimal direction and set our direction based
       // on that
-      targetArmDirection = (shortestDeltaAngleToTarget >= 0)
-          ? ArmDirection.COUNTERCLOCKWISE
-          : ArmDirection.CLOCKWISE;
+      targetArmDirection =
+          (shortestDeltaAngleToTarget >= 0)
+              ? ArmDirection.COUNTERCLOCKWISE
+              : ArmDirection.CLOCKWISE;
     }
 
     // 4. Figure out if we need to change the elevator height to allow for
     // pivot rotation
     if (armGoesThroughBottom(
         normalizedCurrentArmAngle, normalizedTargetArmAngle, targetArmDirection)) {
-      targetElevatorHeight = Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
-          .plus(Units.Inches.of(ArmConstants.ARM_LENGTH))
-          .plus(Units.Inches.of(2.0)); // TODO: make the 2.0 an actual
+      targetElevatorHeight =
+          Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
+              .plus(Units.Inches.of(ArmConstants.ARM_LENGTH))
+              .plus(Units.Inches.of(2.0)); // TODO: make the 2.0 an actual
       // constant value
     }
 
     // 5. Smart clamp our arm target angle using constraints and target arm
     // direction
-    Angle targetArmAngle = smartClampArmTargetAngle(
-        normalizedCurrentArmAngle, normalizedTargetArmAngle, targetArmDirection, constraints);
+    Angle targetArmAngle =
+        smartClampArmTargetAngle(
+            normalizedCurrentArmAngle, normalizedTargetArmAngle, targetArmDirection, constraints);
 
     // 6. Figure out what final arm direction to go in to get to that target
-    double finalDeltaAngle = calculateShortestDeltaAngle(
-        targetArmAngle.in(Units.Degrees), normalizedCurrentArmAngle.in(Units.Degrees));
+    double finalDeltaAngle =
+        calculateShortestDeltaAngle(
+            targetArmAngle.in(Units.Degrees), normalizedCurrentArmAngle.in(Units.Degrees));
     ArmDirection finalArmDirection;
     if (finalDeltaAngle > 0) {
       finalArmDirection = ArmDirection.COUNTERCLOCKWISE;
@@ -431,11 +425,10 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Uses angle logic and the direction we want our arm to move in to clamp the
-   * target angle between
+   * Uses angle logic and the direction we want our arm to move in to clamp the target angle between
    * our min and max angles
    *
-   * @param currentAngle       the angle that our superstructure is currently at
+   * @param currentAngle the angle that our superstructure is currently at
    * @param targetAngle
    * @param targetArmDirection
    * @param constraints
@@ -450,11 +443,14 @@ public class SuperstructureController extends SubsystemBase {
     // creating some variables that will get used later
     Angle normalizedCurrentAngle = Units.Degrees.of(normalizeAngle(currentAngle.in(Units.Degrees)));
     Angle normalizedTargetAngle = Units.Degrees.of(normalizeAngle(targetAngle.in(Units.Degrees)));
-    double shortestDeltaAngleToTarget = calculateShortestDeltaAngle(
-        normalizeAngle(targetAngle.in(Units.Degrees)),
-        normalizeAngle(normalizedCurrentAngle.in(Units.Degrees)));
-    Angle armMinimumAngle = Units.Degrees.of(normalizeAngle(constraints.minArmAngle.in(Units.Degrees)));
-    Angle armMaximumAngle = Units.Degrees.of(normalizeAngle(constraints.maxArmAngle.in(Units.Degrees)));
+    double shortestDeltaAngleToTarget =
+        calculateShortestDeltaAngle(
+            normalizeAngle(targetAngle.in(Units.Degrees)),
+            normalizeAngle(normalizedCurrentAngle.in(Units.Degrees)));
+    Angle armMinimumAngle =
+        Units.Degrees.of(normalizeAngle(constraints.minArmAngle.in(Units.Degrees)));
+    Angle armMaximumAngle =
+        Units.Degrees.of(normalizeAngle(constraints.maxArmAngle.in(Units.Degrees)));
 
     // 1. Modify the target arm pose based on the direction we want to go (if we
     // want to go clockwise we go to the nearest mod of the target angle in the
@@ -463,24 +459,27 @@ public class SuperstructureController extends SubsystemBase {
     if (targetArmDirection == ArmDirection.CLOCKWISE) {
       // if we are going clockwise, take the shortest delta angle and make it negative
       // and add it to the current angle
-      double deltaAngle = (shortestDeltaAngleToTarget <= 0)
-          ? shortestDeltaAngleToTarget
-          : shortestDeltaAngleToTarget - 360.0;
+      double deltaAngle =
+          (shortestDeltaAngleToTarget <= 0)
+              ? shortestDeltaAngleToTarget
+              : shortestDeltaAngleToTarget - 360.0;
       modifiedTargetAngle = Units.Degrees.of(normalizedCurrentAngle.in(Units.Degrees) + deltaAngle);
     } else if (targetArmDirection == ArmDirection.COUNTERCLOCKWISE) {
       // if we are going counterclockwise, take the shortest delta angle and
       // make it positive and add it to the current angle
-      double deltaAngle = (shortestDeltaAngleToTarget >= 0)
-          ? shortestDeltaAngleToTarget
-          : shortestDeltaAngleToTarget + 360.0;
+      double deltaAngle =
+          (shortestDeltaAngleToTarget >= 0)
+              ? shortestDeltaAngleToTarget
+              : shortestDeltaAngleToTarget + 360.0;
       modifiedTargetAngle = Units.Degrees.of(normalizedCurrentAngle.in(Units.Degrees) + deltaAngle);
     }
 
     // EDGE CASE 1: if our min and max angles give us almost a full revolution we
     // should just return our modified target angle
     if (Math.abs(
-        calculateShortestDeltaAngle(
-            armMaximumAngle.in(Units.Degrees), armMinimumAngle.in(Units.Degrees))) < 1.0) {
+            calculateShortestDeltaAngle(
+                armMaximumAngle.in(Units.Degrees), armMinimumAngle.in(Units.Degrees)))
+        < 1.0) {
       return modifiedTargetAngle;
     }
 
@@ -488,8 +487,9 @@ public class SuperstructureController extends SubsystemBase {
     // is at like 270 and the min is 280 and the max is 290) we should just make our
     // target position the closest min or max angle
     if (armMinimumAngle.gt(normalizedCurrentAngle) && armMaximumAngle.lt(normalizedCurrentAngle)) {
-      Angle closestConstrainingAngle = (Math.abs(armMinimumAngle.minus(normalizedCurrentAngle)
-          .in(Units.Degrees)) < (Math.abs(normalizedCurrentAngle.minus(armMaximumAngle).in(Units.Degrees))))
+      Angle closestConstrainingAngle =
+          (Math.abs(armMinimumAngle.minus(normalizedCurrentAngle).in(Units.Degrees))
+                  < (Math.abs(normalizedCurrentAngle.minus(armMaximumAngle).in(Units.Degrees))))
               ? armMinimumAngle
               : armMaximumAngle; // TODO: add some logging error here
       if (armGoesThroughBottom(normalizedCurrentAngle, modifiedTargetAngle, targetArmDirection)) {
@@ -538,33 +538,34 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Determine if the arm will go through the bottom (270 degrees) when moving
-   * from the current
+   * Determine if the arm will go through the bottom (270 degrees) when moving from the current
    * state to the target state in the given arm direction
    *
    * @param current
    * @param target
-   * @param armDirection if set to BOTH the function will assume it will take the
-   *                     most optimized
-   *                     path
-   * @return weather or not the mechanism will go through 270 on the route between
-   *         the current and
-   *         the target
+   * @param armDirection if set to BOTH the function will assume it will take the most optimized
+   *     path
+   * @return weather or not the mechanism will go through 270 on the route between the current and
+   *     the target
    */
   public static boolean armGoesThroughBottom(
       Angle current, Angle target, ArmDirection armDirection) {
-    double currentToTargetDelta = calculateShortestDeltaAngle(
-        normalizeAngle(target.in(Units.Degrees)), normalizeAngle(current.in(Units.Degrees)));
-    double bottomToTargetDelta = calculateShortestDeltaAngle(normalizeAngle(target.in(Units.Degrees)), 270.0);
+    double currentToTargetDelta =
+        calculateShortestDeltaAngle(
+            normalizeAngle(target.in(Units.Degrees)), normalizeAngle(current.in(Units.Degrees)));
+    double bottomToTargetDelta =
+        calculateShortestDeltaAngle(normalizeAngle(target.in(Units.Degrees)), 270.0);
 
-    boolean armGoesThroughBottomOnOptimizedPath = (Math.abs(currentToTargetDelta) > Math.abs(bottomToTargetDelta)
-        && currentToTargetDelta * bottomToTargetDelta >= 0);
+    boolean armGoesThroughBottomOnOptimizedPath =
+        (Math.abs(currentToTargetDelta) > Math.abs(bottomToTargetDelta)
+            && currentToTargetDelta * bottomToTargetDelta >= 0);
 
     // figure out if were trying to go through the optimized path or not
-    ArmDirection optimizedDirection = (currentToTargetDelta >= 0) ? ArmDirection.COUNTERCLOCKWISE
-        : ArmDirection.CLOCKWISE;
+    ArmDirection optimizedDirection =
+        (currentToTargetDelta >= 0) ? ArmDirection.COUNTERCLOCKWISE : ArmDirection.CLOCKWISE;
 
-    boolean armGoingThroughOptimizedPath = (armDirection == ArmDirection.BOTH || armDirection == optimizedDirection);
+    boolean armGoingThroughOptimizedPath =
+        (armDirection == ArmDirection.BOTH || armDirection == optimizedDirection);
 
     if (armGoingThroughOptimizedPath) {
       return armGoesThroughBottomOnOptimizedPath;
@@ -574,8 +575,7 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Get the physical constraints of the superstructure Based on where the arm and
-   * elevator
+   * Get the physical constraints of the superstructure Based on where the arm and elevator
    * currently are
    *
    * @return The physical constraints of the superstructure
@@ -592,38 +592,39 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
-   * Get the minimum height the elevator can be at based on the current position
-   * of the arm
+   * Get the minimum height the elevator can be at based on the current position of the arm
    *
    * @return The minimum height the elevator can be at
    */
   private Distance getMinElevatorHeight() {
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
 
-    Distance armHeightRelativeToElevator = Units.Inches.of( // convert the arm length to inches
-        ArmConstants.ARM_LENGTH
-            * Math.sin(currentPose.armAngle.in(Units.Radians))); // vertical component
+    Distance armHeightRelativeToElevator =
+        Units.Inches.of( // convert the arm length to inches
+            ArmConstants.ARM_LENGTH
+                * Math.sin(currentPose.armAngle.in(Units.Radians))); // vertical component
 
     if (armHeightRelativeToElevator.compareTo(Units.Inches.of(0)) > 0) {
       // arm is above the elevator
       return Units.Inches.of(
-          ElevatorConstants.MIN_HEIGHT); // return the min height of the mech because we know the arm is safe
+          ElevatorConstants
+              .MIN_HEIGHT); // return the min height of the mech because we know the arm is safe
     }
 
     // arm is below the elevator
-    Distance minSafeHeight = Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
-        .plus(
-            armHeightRelativeToElevator
-                .unaryMinus() // get the inverse of the arm height relative to the elevator
-        ); // add that to the min safe height for the mech and we get the min safe height
+    Distance minSafeHeight =
+        Units.Inches.of(ElevatorConstants.MIN_SAFE_HEIGHT_FOR_ARM_ROTATION)
+            .plus(
+                armHeightRelativeToElevator
+                    .unaryMinus() // get the inverse of the arm height relative to the elevator
+                ); // add that to the min safe height for the mech and we get the min safe height
     // for the elevator
 
     return minSafeHeight;
   }
 
   /**
-   * Get the minimum and maximum angles the arm can be at based on the current
-   * height of the
+   * Get the minimum and maximum angles the arm can be at based on the current height of the
    * elevator
    *
    * @return A pair containing the minimum and maximum angles the arm can be at

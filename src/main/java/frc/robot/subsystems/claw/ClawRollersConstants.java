@@ -28,16 +28,16 @@ public class ClawRollersConstants {
       };
   public static final double REDUCTION =
       switch (Constants.getRobotType()) {
-        case COMP -> 2.25; // TODO CHANGE
-        case SIM -> 2.25; // TODO CHANGE
+        case COMP -> 10.0;
+        case SIM -> 10.0;
         default -> 1;
       };
   // TODO: Change default to bot being used in Comp
   public static final double ROLLER_CIRCUMFERENCE =
       switch (Constants.getRobotType()) {
-        case COMP, SIM -> 0.16022122533; // TODO CHANGE
+        case COMP, SIM -> 3d * Math.PI;
         default -> 1;
       };
 
-  public static final double MOI = 0.06; // MAYBE CHANGE?
+  public static final double MOI = 0.0003 * 4; // MAYBE CHANGE?
 }
