@@ -31,6 +31,7 @@ import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIO;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOSim;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsConstants;
 import frc.robot.subsystems.l1_pivot.L1Pivot;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotIO;
@@ -118,8 +119,8 @@ public class RobotContainer {
           intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
           intakeSensors =
               new IntakeSensors(
-                  new IntakeSensorIOCANRange(1),
-                  new IntakeSensorIOCANRange(2)); // FIXME: change ports if this doesn't work
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
