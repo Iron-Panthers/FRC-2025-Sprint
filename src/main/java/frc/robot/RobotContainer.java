@@ -50,6 +50,14 @@ import frc.robot.subsystems.swerve.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonvisionSim;
+import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
+import frc.robot.subsystems.superstructure.arm.Arm;
+import frc.robot.subsystems.superstructure.arm.ArmIO;
+import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
 import java.util.function.BooleanSupplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -83,7 +91,9 @@ public class RobotContainer {
   private IntakePivot intakePivot;
   private IntakeController intakeController;
   private IntakeSensors intakeSensors;
-
+  private SuperstructureController superstructureController;
+  private Arm arm;
+  private Elevator elevator;
   private L1PivotController l1PivotController;
   private L1Pivot l1Pivot;
 
@@ -135,6 +145,8 @@ public class RobotContainer {
           intakePivot = new IntakePivot(new IntakePivotIOSim());
           l1Pivot = new L1Pivot(new L1PivotIOSim());
           intakeSensors = new IntakeSensors(new IntakeSensorIOSim(), new IntakeSensorIOSim());
+          elevator = new Elevator(new ElevatorIOSim());
+          arm = new Arm(new ArmIOSim());
         }
       }
     }
@@ -181,6 +193,15 @@ public class RobotContainer {
     }
     l1PivotController = new L1PivotController(l1Pivot);
 
+    // Superstructure
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {});
+    }
+    if (arm == null) {
+      arm = new Arm(new ArmIO() {});
+    }
+    superstructureController = new SuperstructureController(elevator, arm);
+
     nameCommands();
     configureAutos();
     configureBindings();
@@ -216,7 +237,25 @@ public class RobotContainer {
     driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
     driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
     driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
+    driverB
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
+    driverB
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+    driverB
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
     // // auto align
     // driverA
     //     .b()
