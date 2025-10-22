@@ -70,14 +70,16 @@ public class RobotState {
   private boolean lastApproachBSide = false;
 
   @AutoLogOutput(key = "RobotState/Approach/LastL1")
-  private boolean lastL1 = false;
+  private double lastL1Offset = 0;
 
   private Pose2d lastApproachPose = new Pose2d();
 
   private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
+  private int sensorsTriggered;
+
   private ApproachPose[] approachPoses =
-      generateApproachPoses(lastApproachOffset, lastApproachBSide, lastL1);
+      generateApproachPoses(lastApproachOffset, lastApproachBSide, lastL1Offset);
 
   private static RobotState instance;
 
@@ -205,7 +207,7 @@ public class RobotState {
   }
 
   // returns 6 approach poses, corresponding offset from reef wall & side, metres
-  private ApproachPose[] generateApproachPoses(double offset, boolean bSide, boolean l1) {
+  private ApproachPose[] generateApproachPoses(double offset, boolean bSide, double l1Offset) {
     lastApproachBSide = bSide;
     lastApproachOffset = offset;
     Pose2d origin = new Pose2d(DriveConstants.BLUE_REEF_ORIGIN, Rotation2d.kZero);
@@ -217,7 +219,7 @@ public class RobotState {
       Rotation2d initialTheta = new Rotation2d(i * -Math.PI / 3);
       Pose2d directPose = offsetByVector(origin, (offset + 1.285), initialTheta);
 
-      Pose2d pose = translateByVector(directPose, l1 ? 0.42 : 0.165, horizontalOffset);
+      Pose2d pose = translateByVector(directPose, l1Offset + 0.165, horizontalOffset);
       poses.add(pose);
     }
     var poseArray = poses.toArray(new Pose2d[poses.size()]);
@@ -227,21 +229,16 @@ public class RobotState {
     return ApproachPose.fromPose2ds(poseArray);
   }
 
-  private ApproachPose findApproachPose(double offset, boolean bSide, boolean l1) {
-    approachPoses = generateApproachPoses(offset, bSide, l1);
+  private ApproachPose findApproachPose(double offset, boolean bSide, double l1Offset) {
+    approachPoses = generateApproachPoses(offset, bSide, l1Offset);
     Pose2d origin = new Pose2d(DriveConstants.BLUE_REEF_ORIGIN, Rotation2d.kZero);
     int closestIndex = 0;
-    double closestDistance =
-        1000; // this means the pidautalign only works until you are farther than the school so
-    // don't worry about it
-    List<Pose2d> poses = new ArrayList<Pose2d>();
+    double closestDistance = 1000;
     for (int i = closestIndex; i < approachPoses.length; i++) {
       double angle = -Math.PI / 3 * i;
-      double x =
-          (offset + 1.285) * Math.cos(angle)
-              + origin.getX(); // just trust the 1.285 (it's the distance from the origin)
+      double x = (offset + 1.285) * Math.cos(angle) + origin.getX();
       double y = (offset + 1.285) * Math.sin(angle) + origin.getY();
-      ApproachPose reefPose = new ApproachPose(new Pose2d(x, y, new Rotation2d(angle)));
+      ApproachPose reefPose = new ApproachPose(new Pose2d(x, y, new Rotation2d()));
       double newDistance =
           getEstimatedPose()
               .getTranslation()
@@ -250,11 +247,7 @@ public class RobotState {
         closestIndex = i;
         closestDistance = newDistance;
       }
-      poses.add(reefPose.getPose()); // logging
     }
-    var poseArray = poses.toArray(new Pose2d[poses.size()]);
-
-    Logger.recordOutput("RobotState/Approach/OOPSIESP", poseArray);
     // absolutely not
     // for (int i = closestIndex; i < approachPoses.length; ++i) {
     //   if (getEstimatedPose()
@@ -298,7 +291,29 @@ public class RobotState {
     return lastApproachPose;
   }
 
-  public Pose2d getApproachPose(double offset, boolean bside, boolean l1) {
-    return findApproachPose(offset, bside, l1).getAlliancePose();
+  public Pose2d getApproachPose(double offset, boolean bside, double l1Offset) {
+    return findApproachPose(offset, bside, l1Offset).getAlliancePose();
+  }
+
+  @AutoLogOutput(key = "RobotState/SensorsTriggered")
+  public void updateSensorsTriggered(int sensorsTriggered) {
+    this.sensorsTriggered = sensorsTriggered;
+  }
+
+  public int getSensorsTriggered() {
+    return sensorsTriggered;
+  }
+
+  public double getL1Offset() {
+    if (sensorsTriggered == 6) { // to the left
+      return -1;
+    }
+    if (sensorsTriggered == 7) { // to the right
+      return 1;
+    }
+    if (sensorsTriggered == 13) { // in the middle
+      return 0;
+    }
+    return 0;
   }
 }

@@ -386,4 +386,17 @@ public class GenericSuperstructureConfiguration {
     this.zeroingVoltageThreshold = zeroingVoltageThreshold;
     return this;
   }
+  /** Sensor discontinuity */
+  public double sensorDiscontinuityPoint = 0.5;
+
+  /**
+   * Sensor discontinuity
+   *
+   * @return itself
+   */
+  public GenericSuperstructureConfiguration withSensorDiscontinuityPoint(
+      double sensorDiscontinuityPoint) {
+    this.sensorDiscontinuityPoint = sensorDiscontinuityPoint;
+    return this;
+  }
 }
