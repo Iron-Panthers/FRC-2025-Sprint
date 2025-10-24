@@ -64,7 +64,7 @@ public class PIDAutoAlignController {
     calculateLinearMovement();
     Logger.recordOutput("SWERVE/PIDAutoalign/XVel", xVel);
     Logger.recordOutput("SWERVE/PIDAutoalign/yVel", yVel);
-    return ChassisSpeeds.fromFieldRelativeSpeeds(-xVel, -yVel, 0, yawSupplier.get());
+    return ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, 0, yawSupplier.get());
   }
   // log your data in advantage kit
   public Pose2d getTargetPosition() {
@@ -72,11 +72,11 @@ public class PIDAutoAlignController {
   }
 
   public double getXVel() {
-    return -xVel;
+    return xVel;
   }
 
   public double getYVel() {
-    return -yVel;
+    return yVel;
   }
 
   public void setTargetPosition(Pose2d targetPosition) {

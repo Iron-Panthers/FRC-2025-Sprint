@@ -217,7 +217,7 @@ public class Drive extends SubsystemBase {
       pidAutoAlignController.setTargetPosition(targetPosition);
     }
 
-    setTargetHeading(targetPosition.getRotation().plus(new Rotation2d(Math.PI)));
+    setTargetHeading(targetPosition.getRotation());
 
     return targetPosition;
   }
