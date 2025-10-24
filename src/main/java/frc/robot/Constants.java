@@ -54,7 +54,9 @@ public final class Constants {
 
   /* */
   public enum RobotType {
+    /** For our competition robot */
     COMP,
+    /** For our simulator robot */
     SIM;
   }
 }

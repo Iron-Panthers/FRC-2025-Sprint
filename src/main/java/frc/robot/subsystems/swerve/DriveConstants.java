@@ -51,6 +51,14 @@ public class DriveConstants {
             4.5,
             10,
             6);
+        default -> new DrivebaseConfig(
+            Units.inchesToMeters(1.925),
+            Units.inchesToMeters(22.5),
+            Units.inchesToMeters(34),
+            Units.inchesToMeters(34),
+            4.5,
+            10,
+            6);
       };
 
   public static final Translation2d[] MODULE_TRANSLATIONS =
@@ -135,6 +143,13 @@ public class DriveConstants {
             3.125);
         case SIM -> new ModuleConstants(
             new Gains(0.25, 2.26, 0, 70, 0, 0),
+            new MotionProfileGains(4, 64, 640),
+            new Gains(0.16, 0.67, 0, 1.5, 0, 0),
+            (45.0 / 15) * (17.0 / 27) * (50.0 / 16), // MK4i L2.5 16 tooth
+            150.0 / 7,
+            3.125);
+        default -> new ModuleConstants(
+            new Gains(0.25, 2.26, 0, 50, 0, 0),
             new MotionProfileGains(4, 64, 640),
             new Gains(0.16, 0.67, 0, 1.5, 0, 0),
             (45.0 / 15) * (17.0 / 27) * (50.0 / 16), // MK4i L2.5 16 tooth

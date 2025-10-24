@@ -78,13 +78,16 @@ public class ElevatorConstants {
       switch (Constants.getRobotType()) {
         case SIM -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 5, true);
         case COMP -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 0, false);
+        default -> new ElevatorPhysicalConstants(6.52900857, 0.0142875, 0, 0, false);
       }; // CHANGE VALUES WHEN CAD FINISHES
 
   public static final Transform3d ELEVATOR_BASE_3D_OFFSET =
       switch (Constants.getRobotType()) {
         default -> new Transform3d(
             new Translation3d(
-                Units.inchesToMeters(-3.0), Units.inchesToMeters(0), Units.inchesToMeters(2.875)),
+                Units.inchesToMeters(3.2575),
+                Units.inchesToMeters(0),
+                Units.inchesToMeters(4.9801)),
             new Rotation3d(0, 0, 0));
       };
 }

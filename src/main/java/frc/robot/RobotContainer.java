@@ -18,6 +18,29 @@ import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
+import frc.robot.subsystems.claw.ClawRollers;
+import frc.robot.subsystems.claw.ClawRollersController;
+import frc.robot.subsystems.claw.ClawRollersIO;
+import frc.robot.subsystems.claw.ClawRollersIOSim;
+import frc.robot.subsystems.intake.IntakeController;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOSim;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOTalonFX;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIO;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOSim;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsConstants;
+import frc.robot.subsystems.l1_pivot.L1Pivot;
+import frc.robot.subsystems.l1_pivot.L1PivotController;
+import frc.robot.subsystems.l1_pivot.L1PivotIO;
+import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
+import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
@@ -56,6 +79,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
+  // DO NOT DELETE -- this actually does something important
+  private RobotState robotState = RobotState.getInstance();
+
   // private SendableChooser<Command> autoChooser;
   private LoggedDashboardChooser<Command> autoChooser;
 
@@ -71,13 +97,20 @@ public class RobotContainer {
   private Vision vision;
   private RGB rgb;
   private CANWatchdog canWatchdog;
+  private IntakeRollers intakeRollers;
+  private IntakePivot intakePivot;
+  private IntakeController intakeController;
+  private IntakeSensors intakeSensors;
+  private ClawRollers clawRollers;
+  private ClawRollersController clawRollersController;
 
   private SuperstructureController superstructureController;
   private Arm arm;
   private Elevator elevator;
+  private L1PivotController l1PivotController;
+  private L1Pivot l1Pivot;
 
   public RobotContainer() {
-
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
@@ -91,6 +124,14 @@ public class RobotContainer {
           vision = new Vision(new VisionIOPhotonvision(1), new VisionIOPhotonvision(2));
           rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
+          l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
+
+          intakeSensors =
+              new IntakeSensors(
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -108,12 +149,19 @@ public class RobotContainer {
                       DriveConstants.MODULE_CONFIGS[3], driveSimulation.getModules()[3]));
           vision =
               new Vision(
-                  new VisionIOPhotonvisionSim(4, driveSimulation::getSimulatedDriveTrainPose),
-                  new VisionIOPhotonvisionSim(5, driveSimulation::getSimulatedDriveTrainPose));
+                  new VisionIOPhotonvisionSim(1, driveSimulation::getSimulatedDriveTrainPose),
+                  new VisionIOPhotonvisionSim(2, driveSimulation::getSimulatedDriveTrainPose));
+
           SimulatedArena.getInstance().resetFieldForAuto();
 
+          intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
+          intakePivot = new IntakePivot(new IntakePivotIOSim());
+          l1Pivot = new L1Pivot(new L1PivotIOSim());
+          intakeSensors = new IntakeSensors(new IntakeSensorIOSim(), new IntakeSensorIOSim());
           elevator = new Elevator(new ElevatorIOSim());
           arm = new Arm(new ArmIOSim());
+          clawRollers = new ClawRollers(new ClawRollersIOSim());
+          SimulatedArena.getInstance().resetFieldForAuto();
         }
       }
     }
@@ -143,6 +191,25 @@ public class RobotContainer {
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
     }
+    if (clawRollers == null) {
+      clawRollers = new ClawRollers(new ClawRollersIO() {});
+    }
+
+    if (intakeRollers == null) {
+      intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
+    }
+    if (intakePivot == null) {
+      intakePivot = new IntakePivot(new IntakePivotIO() {});
+    }
+    if (intakeSensors == null) {
+      intakeSensors = new IntakeSensors(new IntakeSensorIO() {}, new IntakeSensorIO() {});
+    }
+    intakeController = new IntakeController(intakeRollers, intakePivot, intakeSensors);
+
+    if (l1Pivot == null) {
+      l1Pivot = new L1Pivot(new L1PivotIO() {});
+    }
+    l1PivotController = new L1PivotController(l1Pivot);
 
     // Superstructure
     if (elevator == null) {
@@ -152,6 +219,8 @@ public class RobotContainer {
       arm = new Arm(new ArmIO() {});
     }
     superstructureController = new SuperstructureController(elevator, arm);
+
+    clawRollersController = new ClawRollersController(clawRollers);
 
     nameCommands();
     configureAutos();
@@ -184,7 +253,25 @@ public class RobotContainer {
 
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
+    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
+    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverA
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    clawRollersController.setVoltageTarget(
+                        ClawRollersController.ClawState.EJECT_TOP)));
+    driverA
+        .y()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    clawRollersController.setVoltageTarget(
+                        ClawRollersController.ClawState.INTAKE)));
 
     driverB
         .a()
@@ -203,6 +290,40 @@ public class RobotContainer {
             new InstantCommand(
                 () ->
                     superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
+    // // auto align
+    // driverA
+    //     .b()
+    //     .whileTrue(
+    //         (new ApproachReef(() -> levelOffsets, true, swerve)
+    //                 .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
+    //                 .andThen(
+    //                     new InstantCommand(
+    //                         () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
+    //                 .andThen(
+    //                     (new WaitUntilCommand(() -> RobotState.getInstance().alignError() > 0.5)
+    //                             .andThen(new ApproachReef(() -> levelOffsets, true, swerve)))
+    //                         .repeatedly()
+    //                         .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
+    //             .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
+    // // auto align
+    // driverA
+    //     .x()
+    //     .whileTrue(
+    //         (new ApproachReef(() -> levelOffsets, false, swerve)
+    //                 .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
+    //                 .andThen(
+    //                     new InstantCommand(
+    //                         () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
+    //                 .andThen(
+    //                     (new WaitUntilCommand(
+    //                                 () ->
+    //                                     RobotState.getInstance().alignError() > 0.5
+    //                                         || (RobotState.getInstance().alignError() < 2
+    //                                             && levelOffsets == LevelOffsets.PREP_L4_OFFSET))
+    //                             .andThen(new ApproachReef(() -> levelOffsets, false, swerve)))
+    //                         .repeatedly()
+    //                         .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
+    //             .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
   }
 
   private void configureAutos() {
@@ -219,8 +340,7 @@ public class RobotContainer {
     BooleanSupplier flipAlliance =
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
-          // alliance
-          // This will flip the path being followed to the red side of the field.
+          // alliance ll flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
           var alliance = DriverStation.getAlliance();
@@ -282,9 +402,11 @@ public class RobotContainer {
   }
 
   public void updateSimulation() {
+
     if (Constants.getRobotMode() != Constants.Mode.SIM) return;
 
     SimulatedArena.getInstance().simulationPeriodic();
+
     Logger.recordOutput(
         "FieldSimulation/RobotPosition",
         RobotSimState.getInstance().getDriveSimulation().getSimulatedDriveTrainPose());

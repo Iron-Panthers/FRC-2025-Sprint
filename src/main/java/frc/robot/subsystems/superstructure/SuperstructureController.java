@@ -1,6 +1,10 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
@@ -101,6 +105,29 @@ public class SuperstructureController extends SubsystemBase {
                   Units.Inches.of(ArmConstants.ARM_LENGTH).in(Units.Meters),
                   armAngle.in(Units.Degrees) - 90));
       return mech;
+    }
+
+    /** Get the Pose3d of the elevator based on the current elevator height */
+    public Pose3d getElevatorPose3d() {
+      return new Pose3d()
+          .plus(
+              ElevatorConstants.ELEVATOR_BASE_3D_OFFSET.plus(
+                  new Transform3d(
+                      new Translation3d(
+                          0,
+                          0,
+                          elevatorHeight.in(Units.Meters)), // Add the current elevator's extension
+                      new Rotation3d(0, 0, 0)))); // The elevator doesn't rotate, duh
+    }
+
+    /** Get the Pose3d of the arm pivot based on the current elevator height and arm */
+    public Pose3d getPivotPose3d() {
+      return this.getElevatorPose3d()
+          .plus(ArmConstants.ELEVATOR_TO_ARM_TRANSFORM3D)
+          .plus(
+              new Transform3d(
+                  new Translation3d(0, 0, 0),
+                  new Rotation3d(armAngle.minus(Units.Degrees.of(90)).in(Units.Radians), 0, 0)));
     }
 
     /**
@@ -299,6 +326,8 @@ public class SuperstructureController extends SubsystemBase {
     Logger.recordOutput(
         "Superstructure/CurrentPose/ArmAngle", currentPose.armAngle.in(Units.Degrees));
     Logger.recordOutput("Superstructure/CurrentPose/ArmDirection", currentPose.armDirection);
+    Logger.recordOutput("Superstructure/CurrentPose/ElevatorPose", currentPose.getElevatorPose3d());
+    Logger.recordOutput("Superstructure/CurrentPose/PivotPose", currentPose.getPivotPose3d());
 
     // Log constraints
     Logger.recordOutput(
