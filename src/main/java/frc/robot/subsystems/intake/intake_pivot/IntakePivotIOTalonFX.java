@@ -45,7 +45,7 @@ public class IntakePivotIOTalonFX extends GenericSuperstructureIOTalonFX impleme
   public void runPosition(double position) {
 
     position /= 360;
-    position -= (1 / 2.25);
+    // position -= (1 / 2.25);
     moddedRotations = position;
     // moddedRotations =
     //     position

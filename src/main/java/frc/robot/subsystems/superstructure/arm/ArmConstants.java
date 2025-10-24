@@ -14,7 +14,7 @@ public class ArmConstants {
   public static final ArmConfig ARM_CONFIG =
       switch (Constants.getRobotType()) {
         case COMP -> new ArmConfig(CAN.at(8, "Arm"), CAN.at(28, "Arm Encoder"), 0, 1);
-        case SIM -> new ArmConfig(CAN.at(8, "Arm"), CAN.at(28, "Arm Encoder"), 0, 25.0 / 3);
+        case SIM -> new ArmConfig(CAN.at(62, "Arm"), CAN.at(63, "Arm Encoder"), 0, 25.0 / 3);
         default -> new ArmConfig(0, 0, 0, 1);
       };
 
@@ -59,7 +59,7 @@ public class ArmConstants {
   public static final Transform3d ELEVATOR_TO_ARM_TRANSFORM3D =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(2)),
+              Units.inchesToMeters(-0.375), Units.inchesToMeters(0), Units.inchesToMeters(8)),
           new Rotation3d(0, 0, 0));
 
   // PHYSICAL CONSTANTS
