@@ -13,9 +13,9 @@ public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTa
   public enum IntakePivotTarget implements GenericSuperstructure.PositionTarget {
     INTAKE(-17), // TODO: Get real values or something uh i forgot what the todo was before
     // deleting it
-    STOW(90),
-    L1(90),
-    PASS(90);
+    STOW(94),
+    L1(94),
+    PASS(94);
 
     private double position;
     private static final double EPSILON = IntakePivotConstants.POSITION_TARGET_EPSILON;

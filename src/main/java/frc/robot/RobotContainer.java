@@ -127,6 +127,7 @@ public class RobotContainer {
           l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
           intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
           intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
+
           intakeSensors =
               new IntakeSensors(
                   new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
@@ -200,13 +201,13 @@ public class RobotContainer {
     if (intakePivot == null) {
       intakePivot = new IntakePivot(new IntakePivotIO() {});
     }
+    if (intakeSensors == null) {
+      intakeSensors = new IntakeSensors(new IntakeSensorIO() {}, new IntakeSensorIO() {});
+    }
     intakeController = new IntakeController(intakeRollers, intakePivot, intakeSensors);
 
     if (l1Pivot == null) {
       l1Pivot = new L1Pivot(new L1PivotIO() {});
-    }
-    if (intakeSensors == null) {
-      intakeSensors = new IntakeSensors(new IntakeSensorIO() {}, new IntakeSensorIO() {});
     }
     l1PivotController = new L1PivotController(l1Pivot);
 
