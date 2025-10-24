@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot.IntakePivotTarget;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
-import frc.robot.subsystems.intake.intake_rollers.IntakeRollersConstants;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
 import org.littletonrobotics.junction.Logger;
 
@@ -52,8 +51,7 @@ public class IntakeController extends SubsystemBase {
         intakePivot.setPositionTarget(IntakePivotTarget.STOW);
       }
       case INTAKE -> {
-        if (intakeRollers.getFilteredCurrent()
-            > IntakeRollersConstants.FILTERED_SUPPLY_CURRENT_THRESHOLD_INTAKING) {
+        if (intakeSensors.sensorsTriggered() > 0) {
           setTargetState(IntakeState.HOLD);
         }
         intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
