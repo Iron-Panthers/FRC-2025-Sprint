@@ -211,7 +211,7 @@ public class Drive extends SubsystemBase {
       pidAutoAlignController =
           new PIDAutoAlignController(
               () -> RobotState.getInstance().getEstimatedPose(),
-              () -> arbitraryYaw,
+              () -> gyroInputs.yawPosition,
               targetPosition);
     } else {
       pidAutoAlignController.setTargetPosition(targetPosition);
