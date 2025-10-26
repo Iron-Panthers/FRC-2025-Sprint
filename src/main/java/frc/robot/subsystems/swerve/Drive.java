@@ -108,6 +108,8 @@ public class Drive extends SubsystemBase {
         if (pidAutoAlignController != null) {
           targetSpeeds = pidAutoAlignController.update();
           targetSpeeds.omegaRadiansPerSecond = headingController.update();
+        } else {
+          targetSpeeds = new ChassisSpeeds(0, 0, 0);
         }
       }
     }
