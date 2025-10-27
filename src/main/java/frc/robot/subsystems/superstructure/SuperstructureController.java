@@ -10,7 +10,11 @@ import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.subsystems.intake.IntakeController.IntakeState;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
 import frc.robot.subsystems.superstructure.arm.ArmConstants;
@@ -183,6 +187,33 @@ public class SuperstructureController extends SubsystemBase {
    */
   public void setSuperstructureState(SuperstructureState state) {
     this.superstructureState = state;
+  }
+
+  public Command setTargetSuperstructureState(SuperstructureState state) {
+    return new InstantCommand(
+            () -> {
+              this.superstructureState = state;
+            },
+            this)
+        .withTimeout(.02)
+        .andThen(new WaitUntilCommand(this::superstructureReachedTarget));
+  }
+
+  public boolean superstructureReachedTarget() {
+    SuperstructurePose targetPose = getTargetSuperstructurePose();
+    SuperstructurePose currentPose = getCurrentSuperstructurePose();
+
+    boolean elevatorAtTarget =
+        Math.abs(
+                currentPose.elevatorHeight.in(Units.Inches)
+                    - targetPose.elevatorHeight.in(Units.Inches))
+            < 0.5; // 0.5 inch tolerance
+
+    boolean armAtTarget =
+        Math.abs(currentPose.armAngle.in(Units.Degrees) - targetPose.armAngle.in(Units.Degrees))
+            < 2.0; // 2 degree tolerance
+
+    return elevatorAtTarget && armAtTarget;
   }
 
   /**
