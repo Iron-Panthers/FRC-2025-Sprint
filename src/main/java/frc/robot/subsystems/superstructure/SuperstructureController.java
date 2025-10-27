@@ -200,20 +200,7 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   public boolean superstructureReachedTarget() {
-    SuperstructurePose targetPose = getTargetSuperstructurePose();
-    SuperstructurePose currentPose = getCurrentSuperstructurePose();
-
-    boolean elevatorAtTarget =
-        Math.abs(
-                currentPose.elevatorHeight.in(Units.Inches)
-                    - targetPose.elevatorHeight.in(Units.Inches))
-            < 0.5; // 0.5 inch tolerance
-
-    boolean armAtTarget =
-        Math.abs(currentPose.armAngle.in(Units.Degrees) - targetPose.armAngle.in(Units.Degrees))
-            < 2.0; // 2 degree tolerance
-
-    return elevatorAtTarget && armAtTarget;
+    return elevator.reachedTarget() && arm.reachedTarget();
   }
 
   /**
