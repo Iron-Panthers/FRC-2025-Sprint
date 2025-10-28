@@ -35,7 +35,16 @@ public class SuperstructureController extends SubsystemBase {
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     L1_LEFT(
-        SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.LEFT, ArmDirection.BOTH));
+        SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.LEFT, ArmDirection.BOTH)),
+    L2_ALGAE(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.L2, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    L3_ALGAE(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.L3, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    GROUND_ALGAE(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH));
     // TODO: add more states and document them here
 
     private final SuperstructurePose targetPose;
