@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
@@ -89,7 +90,7 @@ public class RobotContainer {
   private final CommandXboxController driverB = new CommandXboxController(1);
 
   @AutoLogOutput(key = "CommandedOffset")
-  private LevelOffsets levelOffsets = LevelOffsets.PREP_L4_OFFSET;
+  private LevelOffsets levelOffsets = LevelOffsets.L1_OFFSET;
 
   private boolean eject = false;
 
@@ -248,6 +249,10 @@ public class RobotContainer {
                       -driverA.getLeftX(),
                       driverA.getLeftTriggerAxis() - driverA.getRightTriggerAxis(),
                       DriveConstants.DRIVE_CONFIG.maxLinearAcceleration());
+                  if (Math.abs(driverA.getLeftTriggerAxis()) > 0.1
+                      || Math.abs(driverA.getRightTriggerAxis()) > 0.1) {
+                    swerve.clearHeadingControl();
+                  }
                 })
             .withName("Drive Teleop"));
 
@@ -258,20 +263,20 @@ public class RobotContainer {
     driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
     driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverA
-        .x()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    clawRollersController.setVoltageTarget(
-                        ClawRollersController.ClawState.EJECT_TOP)));
-    driverA
-        .y()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    clawRollersController.setVoltageTarget(
-                        ClawRollersController.ClawState.INTAKE)));
+    // driverA
+    //     .x()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 clawRollersController.setVoltageTarget(
+    //                     ClawRollersController.ClawState.EJECT_TOP)));
+    // driverA
+    //     .y()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 clawRollersController.setVoltageTarget(
+    //                     ClawRollersController.ClawState.INTAKE)));
 
     driverB
         .a()
@@ -290,40 +295,28 @@ public class RobotContainer {
             new InstantCommand(
                 () ->
                     superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
-    // // auto align
-    // driverA
-    //     .b()
-    //     .whileTrue(
-    //         (new ApproachReef(() -> levelOffsets, true, swerve)
-    //                 .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
-    //                 .andThen(
-    //                     new InstantCommand(
-    //                         () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
-    //                 .andThen(
-    //                     (new WaitUntilCommand(() -> RobotState.getInstance().alignError() > 0.5)
-    //                             .andThen(new ApproachReef(() -> levelOffsets, true, swerve)))
-    //                         .repeatedly()
-    //                         .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
-    //             .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
-    // // auto align
-    // driverA
-    //     .x()
-    //     .whileTrue(
-    //         (new ApproachReef(() -> levelOffsets, false, swerve)
-    //                 .alongWith(new InstantCommand(() -> swerve.clearHeadingControl()))
-    //                 .andThen(
-    //                     new InstantCommand(
-    //                         () -> eject = levelOffsets != LevelOffsets.PREP_L4_OFFSET))
-    //                 .andThen(
-    //                     (new WaitUntilCommand(
-    //                                 () ->
-    //                                     RobotState.getInstance().alignError() > 0.5
-    //                                         || (RobotState.getInstance().alignError() < 2
-    //                                             && levelOffsets == LevelOffsets.PREP_L4_OFFSET))
-    //                             .andThen(new ApproachReef(() -> levelOffsets, false, swerve)))
-    //                         .repeatedly()
-    //                         .until(() -> levelOffsets == LevelOffsets.L4_OFFSET)))
-    //             .repeatedly()); // so if it aligns to L4 prep, it will then try to align to L4
+    // auto align
+    driverA
+        .leftBumper()
+        .whileTrue(
+            (new ApproachReef(() -> levelOffsets, true, swerve)
+                    .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
+                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(new WaitCommand(1))
+                .andThen(
+                    intakeController.setTargetCommand(
+                        IntakeController.IntakeState.UPRIGHT_INTAKE)));
+    // auto align
+    driverA
+        .rightBumper()
+        .whileTrue(
+            (new ApproachReef(() -> levelOffsets, false, swerve)
+                    .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
+                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(new WaitCommand(1))
+                .andThen(
+                    intakeController.setTargetCommand(
+                        IntakeController.IntakeState.UPRIGHT_INTAKE)));
   }
 
   private void configureAutos() {

@@ -7,7 +7,7 @@ public class IntakeRollers extends GenericRollers<IntakeRollers.Target> {
     IDLE(0), // for not moving
     INTAKE(12), // for intaking the coral
     HOLD(0.5), // for holding the coral
-    EJECT(-3.5), // for ejecting into L1
+    EJECT(-3.4), // for ejecting into L1
     PASS(1); // for passing to the grabber
 
     private double volts;

@@ -48,7 +48,7 @@ public class TeleopController {
     Translation2d linearVelocity = calculateLinearVelocity(controllerX, controllerY);
 
     double omega = MathUtil.applyDeadband(controllerOmega, 0.001);
-    omega = Math.copySign(Math.pow(Math.abs(omega), 2.5), omega);
+    omega = Math.copySign(Math.pow(Math.abs(omega), 1.5), omega);
 
     // acceleration limiting
     Translation2d linearVelocityDiff = linearVelocity.minus(pastLinearVelocity);
