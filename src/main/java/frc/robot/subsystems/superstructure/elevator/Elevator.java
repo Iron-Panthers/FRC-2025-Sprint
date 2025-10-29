@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.lib.generic_subsystems.superstructure.*;
@@ -16,7 +17,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     L4(32.5),
     ALGAE_SCORE_PROCESSOR(5),
     ALGAE_SCORE_NET(30),
-    TOP(31),
+    TOP(40),
     INTAKE(4),
     ALGAE_INTAKE_REEF(15),
     CLIMB(13),
@@ -62,8 +63,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     elasticPID =
         new ElasticPID(
             io::setSlot0,
-            GravityTypeValue.Elevator_Static,
-            "Elevator",
+            GravityTypeValue.Elevator_Static, "Elevator",
             ElevatorConstants.GAINS,
             ElevatorConstants.MOTION_MAGIC_CONFIG);
   }

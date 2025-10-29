@@ -30,7 +30,7 @@ public class SuperstructureController extends SubsystemBase {
   public enum SuperstructureState {
     STOW(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L2, ArmTarget.PICKUP, ArmDirection.BOTH)),
+            ElevatorTarget.TOP, ArmTarget.PICKUP, ArmDirection.BOTH)),
     L1_RIGHT(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),

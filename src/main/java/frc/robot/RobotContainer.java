@@ -5,6 +5,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -52,6 +53,7 @@ import frc.robot.subsystems.superstructure.arm.ArmIOSim;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -132,6 +134,8 @@ public class RobotContainer {
               new IntakeSensors(
                   new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
                   new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
+          
+          elevator = new Elevator(new ElevatorIOTalonFX());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -254,24 +258,24 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
-    driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverA
-        .x()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    clawRollersController.setVoltageTarget(
-                        ClawRollersController.ClawState.EJECT_TOP)));
-    driverA
-        .y()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    clawRollersController.setVoltageTarget(
-                        ClawRollersController.ClawState.INTAKE)));
+    // driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
+    // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    // driverA
+    //     .x()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 clawRollersController.setVoltageTarget(
+    //                     ClawRollersController.ClawState.EJECT_TOP)));
+    // driverA
+    //     .y()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 clawRollersController.setVoltageTarget(
+    //                     ClawRollersController.ClawState.INTAKE)));
 
     driverB
         .a()
@@ -284,6 +288,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+
     driverB
         .x()
         .onTrue(
