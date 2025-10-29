@@ -306,10 +306,10 @@ public class RobotState {
 
   public double getL1Offset() {
     if (sensorsTriggered == 6) { // to the left
-      return -1;
+      return 0.042;
     }
     if (sensorsTriggered == 7) { // to the right
-      return 1;
+      return -0.042;
     }
     if (sensorsTriggered == 13) { // in the middle
       return 0;
