@@ -46,7 +46,6 @@ import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
 import frc.robot.subsystems.superstructure.SuperstructureController;
-import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
@@ -260,9 +259,17 @@ public class RobotContainer {
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
     driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+
+    driverB
+        .leftTrigger()
+        .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
+    driverB
+        .rightBumper()
+        .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.HOLD));
+
     // driverA
     //     .x()
     //     .onTrue(
@@ -278,23 +285,26 @@ public class RobotContainer {
     //                 clawRollersController.setVoltageTarget(
     //                     ClawRollersController.ClawState.INTAKE)));
 
-    driverB
-        .a()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
-    driverB
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
-    driverB
-        .x()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
+    // driverB
+    //     .a()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //
+    // superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
+    // driverB
+    //     .b()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    // superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+    // driverB
+    //     .x()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //
+    // superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
     // auto align
     driverA
         .leftBumper()
