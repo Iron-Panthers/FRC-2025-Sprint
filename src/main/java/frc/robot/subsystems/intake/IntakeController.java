@@ -17,6 +17,8 @@ public class IntakeController extends SubsystemBase {
     IDLE,
     /** Intake state -- down and spinning to intake */
     INTAKE,
+    /** Intake state -- down and spinning to intake, won't go up on sensor trigger */
+    FORCE_INTAKE,
     /** Upright intake state -- up and spinning to intake */
     UPRIGHT_INTAKE,
     /** Eject state -- up and spinning to intake in reverse to score in L1 */
@@ -56,6 +58,10 @@ public class IntakeController extends SubsystemBase {
         if (intakeSensors.sensorsTriggered() > 0) {
           setTargetState(IntakeState.HOLD);
         }
+        intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
+        intakePivot.setPositionTarget(IntakePivotTarget.INTAKE);
+      }
+      case FORCE_INTAKE -> {
         intakeRollers.setVoltageTarget(IntakeRollers.Target.INTAKE);
         intakePivot.setPositionTarget(IntakePivotTarget.INTAKE);
       }
