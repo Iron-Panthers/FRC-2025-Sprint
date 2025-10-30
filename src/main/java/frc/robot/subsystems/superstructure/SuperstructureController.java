@@ -177,12 +177,6 @@ public class SuperstructureController extends SubsystemBase {
   private SuperstructureState superstructureState = SuperstructureState.STOW;
 
   /**
-   * Whether or not the superstructure state should be flipped or not (should be on the right side
-   * if false)
-   */
-  private boolean isFlipped = false;
-
-  /**
    * Get the current target state of the superstructure
    *
    * @return The current target state of the superstructure
@@ -196,9 +190,8 @@ public class SuperstructureController extends SubsystemBase {
    *
    * @param state
    */
-  public void setSuperstructureState(SuperstructureState state, boolean isFlipped) {
+  public void setSuperstructureState(SuperstructureState state) {
     this.superstructureState = state;
-    this.isFlipped = isFlipped;
   }
 
   /**
@@ -288,7 +281,7 @@ public class SuperstructureController extends SubsystemBase {
     this.arm = arm;
 
     // set the initial target state
-    setSuperstructureState(SuperstructureState.STOW, false);
+    setSuperstructureState(SuperstructureState.STOW);
   }
 
   @Override
@@ -326,7 +319,6 @@ public class SuperstructureController extends SubsystemBase {
 
     // Log state
     Logger.recordOutput("Superstructure/SuperstructureState", superstructureState);
-    Logger.recordOutput("Superstructure/IsFlipped", isFlipped);
 
     // Log target pose data
     Logger.recordOutput("Superstructure/TargetPose/Mechanism2d", targetPose.getAsMechanism2d());
@@ -385,12 +377,6 @@ public class SuperstructureController extends SubsystemBase {
         Units.Degrees.of(normalizeAngle(currentPose.armAngle.in(Units.Degrees)));
     Angle normalizedTargetArmAngle =
         Units.Degrees.of(normalizeAngle(superstructureState.targetPose.armAngle.in(Units.Degrees)));
-
-    // 1b. Flip the target arm angle and current arm angle if needed
-    if (isFlipped) {
-      normalizedTargetArmAngle =
-          Units.Degrees.of(normalizeAngle(180.0 - normalizedTargetArmAngle.in(Units.Degrees)));
-    }
 
     // 2. Clamp the elevator target height between the min and max
     Distance targetElevatorHeight =
