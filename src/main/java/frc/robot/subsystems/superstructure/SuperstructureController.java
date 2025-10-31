@@ -40,7 +40,7 @@ public class SuperstructureController extends SubsystemBase {
             ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     L1_LEFT(
         SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.LEFT, ArmDirection.BOTH));
-    // TODO: add more states and document them here
+    // TODO: add more states and document them her
 
     private final SuperstructurePose targetPose;
 
