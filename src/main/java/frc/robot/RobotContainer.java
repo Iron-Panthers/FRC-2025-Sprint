@@ -264,12 +264,18 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> (
+<<<<<<< HEAD
                   if (driverB.rightBumper().getAsBoolean()) {
                     if (superstructureController.superstructureReachedTarget()
                     && superstructureController.getSuperstructureState() == SuperstructureState.) {
 
                     }
                   }
+=======
+                  if (driverB.rightBumper() {
+                    
+                  })
+>>>>>>> origin/fix/button-bindings
                 )));      
     // // auto align
     // driverA
