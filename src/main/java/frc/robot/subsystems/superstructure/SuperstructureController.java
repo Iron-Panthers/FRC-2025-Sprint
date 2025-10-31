@@ -31,9 +31,16 @@ public class SuperstructureController extends SubsystemBase {
     STOW(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    ALGAE_PICKUP(
+    TOP(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L4, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+            ElevatorTarget.TOP, ArmTarget.BOTTOM, ArmDirection.BOTH)),
+    LEFT(SuperstructurePose.fromTargetStates(ElevatorTarget.L2, ArmTarget.LEFT, ArmDirection.BOTH)),
+    RIGHT(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.L2, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    // ALGAE_PICKUP(
+    //     SuperstructurePose.fromTargetStates(
+    //         ElevatorTarget.L4, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
     // L1_RIGHT(
     //     SuperstructurePose.fromTargetStates(

@@ -7,6 +7,7 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> {
   public enum ArmTarget implements GenericSuperstructure.PositionTarget {
     TOP(90),
     PICKUP(-90),
+    BOTTOM(-90),
     STRAIGHT(0),
     LEFT(180);
 

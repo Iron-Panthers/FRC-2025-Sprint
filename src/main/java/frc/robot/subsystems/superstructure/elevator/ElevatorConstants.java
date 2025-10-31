@@ -47,7 +47,7 @@ public class ElevatorConstants {
 
   public static final double POSITION_TARGET_EPSILON = 1;
 
-  public static final double MIN_SAFE_HEIGHT_FOR_ARM_ROTATION = 5;
+  public static final double MIN_SAFE_HEIGHT_FOR_ARM_ROTATION = 23;
   public static final double MIN_HEIGHT = 0;
 
   // CURRENT LIMITS
@@ -59,7 +59,7 @@ public class ElevatorConstants {
 
   // public static final int ZEROING_CURRENT_LIMIT = 20;
 
-  public static final double UPPER_EXTENSION_LIMIT = 100;
+  public static final double UPPER_EXTENSION_LIMIT = 59;
 
   // ZEROING CONSTANTS
   public static final double ZEROING_VOLTS = -1;

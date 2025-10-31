@@ -16,7 +16,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     L4(32.5),
     ALGAE_SCORE_PROCESSOR(5),
     ALGAE_SCORE_NET(30),
-    TOP(40),
+    TOP(57),
     INTAKE(4),
     ALGAE_INTAKE_REEF(15),
     CLIMB(13),

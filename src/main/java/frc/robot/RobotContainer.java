@@ -47,6 +47,7 @@ import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -125,7 +126,7 @@ public class RobotContainer {
           //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
           //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
-          // elevator = new Elevator(new ElevatorIOTalonFX());
+          elevator = new Elevator(new ElevatorIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
         }
         case SIM -> {
@@ -269,17 +270,20 @@ public class RobotContainer {
     //                     ClawRollersController.ClawState.INTAKE)));
 
     driverB
-        .a()
+        .x()
         .onTrue(
             new InstantCommand(
-                () ->
-                    superstructureController.setSuperstructureState(
-                        SuperstructureState.ALGAE_PICKUP)));
+                () -> superstructureController.setSuperstructureState(SuperstructureState.LEFT)));
+    driverB
+        .y()
+        .onTrue(
+            new InstantCommand(
+                () -> superstructureController.setSuperstructureState(SuperstructureState.TOP)));
     driverB
         .b()
         .onTrue(
             new InstantCommand(
-                () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+                () -> superstructureController.setSuperstructureState(SuperstructureState.RIGHT)));
 
     // // auto align
     // driverA

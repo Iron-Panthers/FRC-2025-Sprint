@@ -13,7 +13,7 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
 public class ArmConstants {
   public static final ArmConfig ARM_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new ArmConfig(CAN.at(35, "Arm"), CAN.at(45, "Arm Encoder"), 0.812, 1);
+        case COMP -> new ArmConfig(CAN.at(35, "Arm"), CAN.at(45, "Arm Encoder"), 0.8114, 1);
         case SIM -> new ArmConfig(CAN.at(62, "Arm"), CAN.at(63, "Arm Encoder"), 0, 25.0 / 3);
         default -> new ArmConfig(0, 0, 0, 1);
       };
