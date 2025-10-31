@@ -120,7 +120,7 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
 
   @Override
   public void runPosition(double rotations) {
-    talon.setControl(positionControl.withPosition(4));
+    talon.setControl(positionControl.withPosition(rotations));
   }
 
   @Override

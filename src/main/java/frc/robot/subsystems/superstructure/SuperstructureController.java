@@ -33,7 +33,7 @@ public class SuperstructureController extends SubsystemBase {
             ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
     ALGAE_PICKUP(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+            ElevatorTarget.L4, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
     // L1_RIGHT(
     //     SuperstructurePose.fromTargetStates(
@@ -296,8 +296,6 @@ public class SuperstructureController extends SubsystemBase {
   private void updateTargets() {
     SuperstructurePose targetPose = getTargetSuperstructurePose();
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
-    // elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
-    elevator.setPositionTarget(ElevatorTarget.INTAKE);
     // handle elevator zeroing
     if (superstructureState == SuperstructureState.ZEROING) {
       elevator.setZeroing(true);
@@ -307,7 +305,7 @@ public class SuperstructureController extends SubsystemBase {
         superstructureState = SuperstructureState.STOW; // put us in stow state by default
       }
     } else {
-      elevator.setPositionTarget(ElevatorTarget.INTAKE);
+      elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
     }
     arm.setPositionTargetManual(
         absoluteToRelativeTarget(targetPose.armAngle, currentPose, targetPose.armDirection));

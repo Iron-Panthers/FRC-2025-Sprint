@@ -35,7 +35,8 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
             .withZeroingVolts(ZEROING_VOLTS)
             .withZeroingOffset(ZEROING_OFFSET)
             .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD));
-    // .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
+    // .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT)); // breaks elevator -- don't add back not
+    // good
 
     talon2 = new TalonFX(ELEVATOR_CONFIG.motorID2());
     talon2.getConfigurator().apply(config);

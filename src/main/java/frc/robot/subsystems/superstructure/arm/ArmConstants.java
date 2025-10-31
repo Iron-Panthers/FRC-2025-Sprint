@@ -13,14 +13,14 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
 public class ArmConstants {
   public static final ArmConfig ARM_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new ArmConfig(CAN.at(35, "Arm"), CAN.at(45, "Arm Encoder"), 0, 1);
+        case COMP -> new ArmConfig(CAN.at(35, "Arm"), CAN.at(45, "Arm Encoder"), 0.812, 1);
         case SIM -> new ArmConfig(CAN.at(62, "Arm"), CAN.at(63, "Arm Encoder"), 0, 25.0 / 3);
         default -> new ArmConfig(0, 0, 0, 1);
       };
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(3, 0, 0, 0, 5.405, 0.2844, 0.23);
+        case COMP -> new PIDGains(12, 0, 0, 0, 5.405, 0.2844, 0.23);
         case SIM -> new PIDGains(50, 0, 0, 0, 8 / 0.8722, 0, 0.35);
         default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
       };
@@ -44,7 +44,7 @@ public class ArmConstants {
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
 
   public static final SensorDirectionValue CANCODER_DIRECTION =
-      SensorDirectionValue.Clockwise_Positive;
+      SensorDirectionValue.CounterClockwise_Positive;
 
   public static final double POSITION_TARGET_EPSILON = 0.01;
 

@@ -16,23 +16,23 @@ public class ElevatorConstants {
   public static final ElevatorConfig ELEVATOR_CONFIG =
       switch (Constants.getRobotType()) {
         case COMP -> new ElevatorConfig(
-            CAN.at(41, "Elevator 1"), CAN.at(39, "Elevator 2"), 1.125 * Math.PI / 3);
+            CAN.at(41, "Elevator 1"), CAN.at(39, "Elevator 2"), 1 / (1.125 * Math.PI / 3));
         case SIM -> new ElevatorConfig(
-            CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.125 * Math.PI / 3);
+            CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1 / (1.125 * Math.PI / 3));
         default -> new ElevatorConfig(0, 0, 1.6875); // FIXME
       };
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
         case COMP -> new PIDGains(
-            40, 0, 0, 0, 0.4566, 0.0377, 0.0); // CHANGE VALUES WHEN CAD FINISHES
+            4, 0, 0, 0, 0.1558, 0.00469, 0.0); // CHANGE VALUES WHEN CAD FINISHES
         case SIM -> new PIDGains(1.5, 0, 0, 0, 0.07, 0.00, 0.31); // CHANGE VALUES WHEN CAD FINISHES
         default -> new PIDGains(1.5, 0, 0, 0, 0, 0, 0);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(10, 6, 0);
+        case COMP -> new MotionMagicConfig(200, 200, 0);
         case SIM -> new MotionMagicConfig(100, 100, 0);
         default -> new MotionMagicConfig(0, 0, 0);
       };
@@ -55,7 +55,7 @@ public class ElevatorConstants {
 
   public static final double LOWER_VOLT_LIMIT = -16;
 
-  public static final double SUPPLY_CURRENT_LIMIT = 70;
+  public static final double SUPPLY_CURRENT_LIMIT = 100;
 
   // public static final int ZEROING_CURRENT_LIMIT = 20;
 

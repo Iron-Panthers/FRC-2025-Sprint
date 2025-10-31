@@ -43,10 +43,10 @@ import frc.robot.subsystems.superstructure.SuperstructureController.Superstructu
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -125,7 +125,8 @@ public class RobotContainer {
           //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
           //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
-          elevator = new Elevator(new ElevatorIOTalonFX());
+          // elevator = new Elevator(new ElevatorIOTalonFX());
+          arm = new Arm(new ArmIOTalonFX());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
