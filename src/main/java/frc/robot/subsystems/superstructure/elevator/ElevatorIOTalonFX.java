@@ -24,7 +24,6 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
   protected TalonFX talon2;
 
   public ElevatorIOTalonFX() {
-
     super(
         new GenericSuperstructureConfiguration()
             .withID(ELEVATOR_CONFIG.motorID())
@@ -35,14 +34,14 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
             .withLowerVoltageLimit(LOWER_VOLT_LIMIT)
             .withZeroingVolts(ZEROING_VOLTS)
             .withZeroingOffset(ZEROING_OFFSET)
-            .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD)
-            .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
+            .withZeroingVoltageThreshold(ZEROING_VOLTAGE_THRESHOLD));
+    // .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
 
     talon2 = new TalonFX(ELEVATOR_CONFIG.motorID2());
-
     talon2.getConfigurator().apply(config);
     talon2.setNeutralMode(NeutralModeValue.Brake);
-    talon2.setControl(new Follower(talon.getDeviceID(), OPOSE_MOTOR));
+    talon2.setControl(new Follower(talon.getDeviceID(), OPPOSE_MOTOR));
+    setOffset();
 
     velocityRPS2 = talon2.getVelocity();
     appliedVolts2 = talon2.getMotorVoltage();
@@ -78,5 +77,13 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
     inputs.appliedVolts2 = appliedVolts2.getValueAsDouble();
     inputs.supplyCurrentAmps2 = supplyCurrent2.getValueAsDouble();
     inputs.tempCelsius2 = temp2.getValueAsDouble();
+  }
+
+  @Override
+  public void setOffset() {
+    super.setOffset();
+    if (talon2 != null) {
+      talon2.getConfigurator().setPosition(zeroingOffset);
+    }
   }
 }

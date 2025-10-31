@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.lib.generic_subsystems.superstructure.*;
@@ -63,7 +62,8 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     elasticPID =
         new ElasticPID(
             io::setSlot0,
-            GravityTypeValue.Elevator_Static, "Elevator",
+            GravityTypeValue.Elevator_Static,
+            "Elevator",
             ElevatorConstants.GAINS,
             ElevatorConstants.MOTION_MAGIC_CONFIG);
   }
@@ -87,8 +87,9 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     // record our outputs
     Logger.recordOutput(
         "Superstructure/" + name + "/Filtered supply current amps", getFilteredSupplyCurrentAmps());
+    Logger.recordOutput("Superstructure/" + name + "/Zeroing", zeroing);
 
-    elasticPID.periodic();
+    // elasticPID.periodic();
   }
 
   public double getFilteredSupplyCurrentAmps() {

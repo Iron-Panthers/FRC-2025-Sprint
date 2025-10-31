@@ -15,8 +15,10 @@ public class ElevatorConstants {
 
   public static final ElevatorConfig ELEVATOR_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
-        case SIM -> new ElevatorConfig(CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.6875);
+        case COMP -> new ElevatorConfig(
+            CAN.at(41, "Elevator 1"), CAN.at(39, "Elevator 2"), 1.125 * Math.PI / 3);
+        case SIM -> new ElevatorConfig(
+            CAN.at(43, "Elevator 1"), CAN.at(44, "Elevator 2"), 1.125 * Math.PI / 3);
         default -> new ElevatorConfig(0, 0, 1.6875); // FIXME
       };
 
@@ -41,31 +43,34 @@ public class ElevatorConstants {
 
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
 
-  public static final boolean OPOSE_MOTOR = true;
+  public static final boolean OPPOSE_MOTOR = true;
 
   public static final double POSITION_TARGET_EPSILON = 1;
-
-  // SOFT LIMITS
-  public static final double UPPER_EXTENSION_LIMIT = 32.5;
 
   public static final double MIN_SAFE_HEIGHT_FOR_ARM_ROTATION = 5;
   public static final double MIN_HEIGHT = 0;
 
   // CURRENT LIMITS
-  public static final double UPPER_VOLT_LIMIT = 10;
+  public static final double UPPER_VOLT_LIMIT = 16;
 
-  public static final double LOWER_VOLT_LIMIT = -7;
+  public static final double LOWER_VOLT_LIMIT = -16;
 
-  public static final double SUPPLY_CURRENT_LIMIT = 30;
+  public static final double SUPPLY_CURRENT_LIMIT = 70;
 
-  public static final int ZEROING_CURRENT_LIMIT = 20;
+  // public static final int ZEROING_CURRENT_LIMIT = 20;
+
+  public static final double UPPER_EXTENSION_LIMIT = 100;
 
   // ZEROING CONSTANTS
   public static final double ZEROING_VOLTS = -1;
 
   public static final double ZEROING_OFFSET = 0; // offset in inches
 
-  public static final double ZEROING_VOLTAGE_THRESHOLD = 4;
+  public static final double ZEROING_VOLTAGE_THRESHOLD =
+      switch (Constants.getRobotType()) {
+        case SIM -> 2.5;
+        default -> 4;
+      };
 
   public static record ElevatorPhysicalConstants(
       double elevatorMassKg,

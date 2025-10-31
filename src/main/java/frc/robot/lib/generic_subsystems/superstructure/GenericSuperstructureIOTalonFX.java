@@ -33,7 +33,7 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
 
   // zeroing stuff
   private final double zeroingVolts;
-  private final double zeroingOffset;
+  protected final double zeroingOffset;
   private final double zeroingVoltageThreshold;
 
   protected final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
@@ -120,7 +120,7 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
 
   @Override
   public void runPosition(double rotations) {
-    talon.setControl(positionControl.withPosition(rotations));
+    talon.setControl(positionControl.withPosition(4));
   }
 
   @Override

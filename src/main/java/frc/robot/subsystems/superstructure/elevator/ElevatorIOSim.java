@@ -72,7 +72,7 @@ public class ElevatorIOSim extends GenericSuperstructureIOSim implements Elevato
     inputs.positionRotations = rotations;
     inputs.velocityRotPerSec = velocityRPS;
     inputs.appliedVolts = appliedVoltage;
-    inputs.supplyCurrentAmps = 1.0; // Not simulated
+    inputs.supplyCurrentAmps = talon.getSimState().getSupplyCurrent(); // Not simulated
     inputs.tempCelsius = 25.0; // Not simulated
   }
 
