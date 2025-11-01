@@ -267,9 +267,19 @@ public class RobotContainer {
         .leftTrigger()
         .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
     driverB
-        .rightBumper()
-        .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.HOLD));
-
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(
+                        SuperstructureState.GROUND_ALGAE)));
+    driverB
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
+    // // auto align
     // driverA
     //     .x()
     //     .onTrue(
