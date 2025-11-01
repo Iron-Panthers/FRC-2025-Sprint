@@ -28,22 +28,30 @@ public class SuperstructureController extends SubsystemBase {
    * or configuration of the superstructure (Arm and Elevator)
    */
   public enum SuperstructureState {
+    /** The stow mode (elevator down, arm up) */
     STOW(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    TOP(
-        SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    /** The highest point it can go */
+    TOP(SuperstructurePose.fromTargetStates(ElevatorTarget.TOP, ArmTarget.TOP, ArmDirection.BOTH)),
+    /** Picking up L2 algae from the reef */
     L2_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L2, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    /** Picking up L2 algae from the reef */
     L3_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L3, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    /** Picking up algae from the ground */
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH));
-    // TODO: add more states and document them here
+            ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+    /** Scoring from barge to the right */
+    BARGE_RIGHT(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.TOP, ArmTarget.BARGE_RIGHT, ArmDirection.BOTH)),
+    /** Zeroing the subystem -- elevator down, pivot up (much like stow) */
+    ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
 
     private final SuperstructurePose targetPose;
 
@@ -191,6 +199,7 @@ public class SuperstructureController extends SubsystemBase {
   public void setSuperstructureState(SuperstructureState state) {
     this.superstructureState = state;
   }
+
 
   /**
    * Gets the relative angle to give to the motor controller to reach the given absolute angle

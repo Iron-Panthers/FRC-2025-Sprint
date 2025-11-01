@@ -23,6 +23,7 @@ import frc.robot.subsystems.claw.ClawRollers;
 import frc.robot.subsystems.claw.ClawRollersController;
 import frc.robot.subsystems.claw.ClawRollersIO;
 import frc.robot.subsystems.claw.ClawRollersIOSim;
+import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
@@ -40,6 +41,7 @@ import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
@@ -128,6 +130,8 @@ public class RobotContainer {
 
           elevator = new Elevator(new ElevatorIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
+          clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
+          
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -190,6 +194,7 @@ public class RobotContainer {
     if (clawRollers == null) {
       clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
+    clawRollersController = new ClawRollersController(clawRollers);
 
     if (intakeRollers == null) {
       intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
@@ -262,6 +267,7 @@ public class RobotContainer {
     driverB
         .leftTrigger()
         .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
+
     driverB
         .b()
         .onTrue(
@@ -274,7 +280,8 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () ->
-                    superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
+                    superstructureController.setSuperstructureState(
+                        SuperstructureState.BARGE_RIGHT)));
     // // auto align
     // driverA
     //     .x()

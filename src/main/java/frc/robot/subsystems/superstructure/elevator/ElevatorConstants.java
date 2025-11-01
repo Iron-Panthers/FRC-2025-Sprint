@@ -47,7 +47,7 @@ public class ElevatorConstants {
 
   public static final double POSITION_TARGET_EPSILON = 1;
 
-  public static final double MIN_SAFE_HEIGHT_FOR_ARM_ROTATION = 23;
+  public static final double MIN_SAFE_HEIGHT_FOR_ARM_ROTATION = 0;
   public static final double MIN_HEIGHT = 0;
 
   // CURRENT LIMITS
@@ -62,14 +62,14 @@ public class ElevatorConstants {
   public static final double UPPER_EXTENSION_LIMIT = 59;
 
   // ZEROING CONSTANTS
-  public static final double ZEROING_VOLTS = -1;
+  public static final double ZEROING_VOLTS = -2;
 
   public static final double ZEROING_OFFSET = 0; // offset in inches
 
   public static final double ZEROING_VOLTAGE_THRESHOLD =
       switch (Constants.getRobotType()) {
         case SIM -> 2.5;
-        default -> 4;
+        default -> 7;
       };
 
   public static record ElevatorPhysicalConstants(

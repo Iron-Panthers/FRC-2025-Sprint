@@ -10,6 +10,7 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> {
     BOTTOM(-90),
     STRAIGHT(0),
     GROUND_ALGAE(-20),
+    BARGE_RIGHT(45),
     LEFT(180);
 
     private double position;

@@ -39,5 +39,7 @@ public class ClawRollersConstants {
         default -> 1;
       };
 
+  public static final double INTAKE_CURRENT_THRESHOLD = 5;
+
   public static final double MOI = 0.0003 * 4; // MAYBE CHANGE?
 }
