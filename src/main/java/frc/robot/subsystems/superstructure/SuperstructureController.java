@@ -30,12 +30,10 @@ public class SuperstructureController extends SubsystemBase {
   public enum SuperstructureState {
     STOW(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L2, ArmTarget.PICKUP, ArmDirection.BOTH)),
-    L1_RIGHT(
+            ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
+    TOP(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
-    L1_LEFT(
-        SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.LEFT, ArmDirection.BOTH)),
     L2_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L2, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
@@ -281,7 +279,7 @@ public class SuperstructureController extends SubsystemBase {
     this.arm = arm;
 
     // set the initial target state
-    setSuperstructureState(SuperstructureState.STOW);
+    setSuperstructureState(SuperstructureState.ZEROING);
   }
 
   @Override
@@ -300,7 +298,17 @@ public class SuperstructureController extends SubsystemBase {
   private void updateTargets() {
     SuperstructurePose targetPose = getTargetSuperstructurePose();
     SuperstructurePose currentPose = getCurrentSuperstructurePose();
-    elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
+    // handle elevator zeroing
+    if (superstructureState == SuperstructureState.ZEROING) {
+      elevator.setZeroing(true);
+      if (elevator.getFilteredSupplyCurrentAmps() > ElevatorConstants.ZEROING_VOLTAGE_THRESHOLD) {
+        elevator.setOffset();
+        elevator.setZeroing(false);
+        superstructureState = SuperstructureState.STOW; // put us in stow state by default
+      }
+    } else {
+      elevator.setPositionTargetManual(targetPose.elevatorHeight.in(Units.Inches));
+    }
     arm.setPositionTargetManual(
         absoluteToRelativeTarget(targetPose.armAngle, currentPose, targetPose.armDirection));
   }

@@ -43,7 +43,9 @@ public abstract class GenericSuperstructure<G extends GenericSuperstructure.Posi
         superstructureIO.runPosition(positionTarget.getPosition());
       }
       case POSITION_MANUAL -> {
-        positionTargetManual.ifPresent(superstructureIO::runPosition);
+        if (positionTargetManual.isPresent()) {
+          superstructureIO.runPosition(positionTargetManual.get());
+        }
       }
       case STOP -> {
         superstructureIO.stop();

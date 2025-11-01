@@ -16,7 +16,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     L4(32.5),
     ALGAE_SCORE_PROCESSOR(5),
     ALGAE_SCORE_NET(30),
-    TOP(31),
+    TOP(57),
     INTAKE(4),
     ALGAE_INTAKE_REEF_L3(35),
     ALGAE_INTAKE_REEF_L2(25),
@@ -88,8 +88,9 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     // record our outputs
     Logger.recordOutput(
         "Superstructure/" + name + "/Filtered supply current amps", getFilteredSupplyCurrentAmps());
+    Logger.recordOutput("Superstructure/" + name + "/Zeroing", zeroing);
 
-    elasticPID.periodic();
+    // elasticPID.periodic();
   }
 
   public double getFilteredSupplyCurrentAmps() {
