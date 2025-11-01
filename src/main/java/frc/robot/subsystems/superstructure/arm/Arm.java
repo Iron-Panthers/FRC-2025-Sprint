@@ -9,6 +9,7 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> {
     PICKUP(-90),
     BOTTOM(-90),
     STRAIGHT(0),
+    GROUND_ALGAE(-20),
     LEFT(180);
 
     private double position;
