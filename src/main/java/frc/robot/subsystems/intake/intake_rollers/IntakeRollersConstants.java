@@ -5,7 +5,7 @@ import frc.robot.Constants;
 public class IntakeRollersConstants {
   public static final int ID =
       switch (Constants.getRobotType()) {
-        case COMP -> 32;
+        case COMP -> 40;
         case SIM -> 32;
         default -> 0;
       };
