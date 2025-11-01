@@ -48,13 +48,15 @@ public class PIDAutoAlignController {
     double dy = targetPosition.getY() - positionSupplier.get().getY();
     double dx = targetPosition.getX() - positionSupplier.get().getX();
     double angle = Math.atan2(dy, dx);
-    double magStartPos = Math.hypot(startPosition.getX(), startPosition.getY());
-    double translMagCurrPos =
-        Math.hypot(positionSupplier.get().getX(), positionSupplier.get().getY()) - magStartPos;
-    double translMagTargPos =
-        Math.hypot(targetPosition.getX(), targetPosition.getY()) - magStartPos;
-    double magVel = magController.calculate(translMagCurrPos, translMagTargPos);
-    Logger.recordOutput("SWERVE/PIDAutoalign/MagVel", magVel);
+    double magTranslCurrPos =
+        Math.hypot(
+            positionSupplier.get().getX() - startPosition.getX(),
+            positionSupplier.get().getY() - startPosition.getY());
+    double magTanslTargPos =
+        Math.hypot(
+            targetPosition.getX() - startPosition.getX(),
+            targetPosition.getY() - startPosition.getY());
+    double magVel = magController.calculate(magTranslCurrPos, magTanslTargPos);
     yVel = Math.abs(magVel * Math.sin(angle)) * (dy < 0 ? -1 : 1);
     xVel = Math.abs(magVel * Math.cos(angle)) * (dx < 0 ? -1 : 1);
   }
