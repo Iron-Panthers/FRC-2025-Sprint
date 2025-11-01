@@ -283,13 +283,15 @@ public class RobotContainer {
         .b()
         .onTrue(
             new InstantCommand(
-                () -> superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+                () ->
+                    superstructureController.setSuperstructureState(
+                        SuperstructureState.GROUND_ALGAE)));
     driverB
         .x()
         .onTrue(
             new InstantCommand(
                 () ->
-                    superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
+                    superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
     // // auto align
     // driverA
     //     .b()

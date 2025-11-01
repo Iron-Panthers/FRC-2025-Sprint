@@ -12,13 +12,14 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     BOTTOM(0.6),
     L1(11),
     L2(30),
-    L3(5),
+    L3(31),
     L4(32.5),
     ALGAE_SCORE_PROCESSOR(5),
     ALGAE_SCORE_NET(30),
     TOP(31),
     INTAKE(4),
-    ALGAE_INTAKE_REEF(15),
+    ALGAE_INTAKE_REEF_L3(35),
+    ALGAE_INTAKE_REEF_L2(25),
     CLIMB(13),
     SAFE_MIDWAY(11.5);
     // CHANGE VALUES WHEN CAD FINISHES
