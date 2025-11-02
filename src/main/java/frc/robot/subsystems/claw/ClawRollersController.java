@@ -50,7 +50,7 @@ public class ClawRollersController extends SubsystemBase {
         }
         case INTAKE -> {
           clawRollers.setVoltageTarget(ClawRollersTarget.INTAKE);
-          if(clawRollers.getFilteredCurrent() > ClawRollersConstants.INTAKE_CURRENT_THRESHOLD){
+          if (clawRollers.getFilteredCurrent() > ClawRollersConstants.INTAKE_CURRENT_THRESHOLD) {
             setClawTarget(ClawState.HOLD);
           }
         }
@@ -65,5 +65,6 @@ public class ClawRollersController extends SubsystemBase {
     clawRollers.periodic();
 
     Logger.recordOutput("ClawRollers/targetState", targetState);
+    Logger.recordOutput("ClawRollers/Filtered Supply Current", clawRollers.getFilteredCurrent());
   }
 }

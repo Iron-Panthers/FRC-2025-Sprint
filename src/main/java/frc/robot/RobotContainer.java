@@ -21,6 +21,7 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.claw.ClawRollers;
 import frc.robot.subsystems.claw.ClawRollersController;
+import frc.robot.subsystems.claw.ClawRollersController.ClawState;
 import frc.robot.subsystems.claw.ClawRollersIO;
 import frc.robot.subsystems.claw.ClawRollersIOSim;
 import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
@@ -131,7 +132,6 @@ public class RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
           clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
-          
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -271,17 +271,18 @@ public class RobotContainer {
     driverB
         .b()
         .onTrue(
-            new InstantCommand(
-                () ->
-                    superstructureController.setSuperstructureState(
+            new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
+                .alongWith(
+                    superstructureController.setSuperstructureStateCommand(
                         SuperstructureState.GROUND_ALGAE)));
     driverB
         .x()
         .onTrue(
-            new InstantCommand(
-                () ->
-                    superstructureController.setSuperstructureState(
-                        SuperstructureState.BARGE_RIGHT)));
+            superstructureController
+                .setSuperstructureStateCommand(SuperstructureState.BARGE_RIGHT)
+                .andThen(
+                    new InstantCommand(
+                        () -> clawRollersController.setClawTarget(ClawState.EJECT_TOP))));
     // // auto align
     // driverA
     //     .x()

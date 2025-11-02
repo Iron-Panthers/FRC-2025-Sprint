@@ -10,7 +10,11 @@ import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
 import frc.robot.subsystems.superstructure.arm.ArmConstants;
@@ -192,6 +196,15 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
+   * Wether or not the superstructure has reached its target state
+   *
+   * @return true if the superstructure has reached its target state
+   */
+  public boolean superstructureReachedTargetState() {
+    return arm.reachedTarget() && elevator.reachedTarget();
+  }
+
+  /**
    * Set the current target state of the superstructure
    *
    * @param state
@@ -200,6 +213,18 @@ public class SuperstructureController extends SubsystemBase {
     this.superstructureState = state;
   }
 
+  /**
+   * Returns a command the sets the superstructure state and waits until the superstructure reaches
+   * the target state
+   *
+   * @param state
+   */
+  public Command setSuperstructureStateCommand(SuperstructureState state) {
+    return new InstantCommand(() -> setSuperstructureState(state), this)
+        .andThen(
+            new WaitCommand(.02)
+                .andThen(new WaitUntilCommand(this::superstructureReachedTargetState)));
+  }
 
   /**
    * Gets the relative angle to give to the motor controller to reach the given absolute angle

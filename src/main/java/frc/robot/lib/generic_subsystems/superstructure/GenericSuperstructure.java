@@ -16,16 +16,16 @@ public abstract class GenericSuperstructure<G extends GenericSuperstructure.Posi
     STOP;
   }
 
-  private ControlMode controlMode = ControlMode.STOP;
+  protected ControlMode controlMode = ControlMode.STOP;
 
   protected final String name;
   protected final GenericSuperstructureIO superstructureIO;
 
-  private Optional<Double> positionTargetManual = Optional.empty();
+  protected Optional<Double> positionTargetManual = Optional.empty();
 
-  private GenericSuperstructureIOInputsAutoLogged inputs =
+  protected GenericSuperstructureIOInputsAutoLogged inputs =
       new GenericSuperstructureIOInputsAutoLogged();
-  private G positionTarget;
+  protected G positionTarget;
 
   public GenericSuperstructure(String name, GenericSuperstructureIO superstructureIO) {
     this.name = name;

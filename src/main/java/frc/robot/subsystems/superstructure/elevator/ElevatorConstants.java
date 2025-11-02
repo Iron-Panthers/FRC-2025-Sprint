@@ -69,7 +69,7 @@ public class ElevatorConstants {
   public static final double ZEROING_VOLTAGE_THRESHOLD =
       switch (Constants.getRobotType()) {
         case SIM -> 2.5;
-        default -> 7;
+        default -> 15;
       };
 
   public static record ElevatorPhysicalConstants(
