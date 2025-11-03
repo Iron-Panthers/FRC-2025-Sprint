@@ -140,4 +140,8 @@ public class IntakeController extends SubsystemBase {
         .withTimeout(.02)
         .andThen(new WaitUntilCommand(this::intakeReachedTarget));
   }
+
+  public boolean intakeSensorsTriggered() {
+    return intakeSensors.sensorsTriggered() > 0;
+  }
 }

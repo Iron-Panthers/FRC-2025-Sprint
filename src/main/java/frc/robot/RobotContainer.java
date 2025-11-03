@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
+import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -269,6 +270,18 @@ public class RobotContainer {
     driverB
         .leftTrigger()
         .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
+    driverB
+        .leftTrigger()
+        .onFalse(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    driverB
+        .rightBumper()
+        .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.HOLD));
+    driverB
+        .rightTrigger()
+        .onTrue(
+            new ScoreL1Command(intakeController, l1PivotController)
+                .andThen(
+                    l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.STOW)));
     // driverB
     //     .b()
     //     .onTrue(
