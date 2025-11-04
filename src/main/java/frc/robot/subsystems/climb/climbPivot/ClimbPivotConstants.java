@@ -25,7 +25,7 @@ public class ClimbPivotConstants {
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(5, .5, 0);
+        case COMP -> new MotionMagicConfig(5, .17, 0);
         case SIM -> new MotionMagicConfig(2, 1, 0);
         default -> new MotionMagicConfig(0, 0, 0);
       };
@@ -49,7 +49,8 @@ public class ClimbPivotConstants {
   public record MotionMagicConfig(double acceleration, double cruiseVelocity, double jerk) {}
 
   // SOFT LIMITS
-  public static final double UPPER_EXTENSION_LIMIT = 121d; // top limit is 121 rotations
+  public static final double LOWWER_EXTENSION_LIMIT = 0.05d;
+
 
   // CURRENT LIMITS
   public static final double UPPER_VOLT_LIMIT = 12;
