@@ -42,7 +42,7 @@ public class SuperstructureController extends SubsystemBase {
     // TODO: add more states and document them her
     NET(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.ALGAE_SCORE_NET, ArmTarget.STRAIGHT, ArmDirection.BOTH));
+            ElevatorTarget.ALGAE_SCORE_NET, ArmTarget.TOP, ArmDirection.BOTH));
 
     private final SuperstructurePose targetPose;
 
