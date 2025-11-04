@@ -258,19 +258,37 @@ public class RobotContainer {
     driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
     driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    
+
+    // intake
+    driverB
+        .leftTrigger()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  intakeController.setTargetState(IntakeController.IntakeState.INTAKE);
+                }));
+
+    // outtake
     driverB
         .rightTrigger()
         .onTrue(
             new InstantCommand(
-                () -> (
+                () -> {
                   if (driverB.rightBumper().getAsBoolean()) {
                     if (superstructureController.superstructureReachedTarget()
-                    && superstructureController.getSuperstructureState() == SuperstructureState.) {
-
+                        && superstructureController.getSuperstructureState()
+                            == SuperstructureState.NET) {
+                      clawRollersController.setVoltageTarget(
+                          ClawRollersController.ClawState.EJECT_TOP);
+                    } else if (superstructureController.getSuperstructureState()
+                        != SuperstructureState.NET) {
+                      superstructureController.setSuperstructureState(SuperstructureState.NET);
                     }
+                  } else {
+                    clawRollersController.setVoltageTarget(
+                        ClawRollersController.ClawState.EJECT_L1);
                   }
-                )));      
+                }));
     // // auto align
     // driverA
     //     .b()

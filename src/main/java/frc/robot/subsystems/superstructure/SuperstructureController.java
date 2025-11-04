@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.subsystems.intake.IntakeController.IntakeState;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
 import frc.robot.subsystems.superstructure.arm.ArmConstants;
@@ -39,8 +38,11 @@ public class SuperstructureController extends SubsystemBase {
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     L1_LEFT(
-        SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.LEFT, ArmDirection.BOTH));
+        SuperstructurePose.fromTargetStates(ElevatorTarget.L1, ArmTarget.LEFT, ArmDirection.BOTH)),
     // TODO: add more states and document them her
+    NET(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.ALGAE_SCORE_NET, ArmTarget.STRAIGHT, ArmDirection.BOTH));
 
     private final SuperstructurePose targetPose;
 
