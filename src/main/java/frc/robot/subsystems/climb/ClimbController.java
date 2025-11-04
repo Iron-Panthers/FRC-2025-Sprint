@@ -18,9 +18,7 @@ public class ClimbController extends SubsystemBase {
     IDLE,
     /** State for intaking the cage */
     INTAKE,
-    /**
-     * Pose for flicking out the coral from the climb mech (if it is in the robot)
-     */
+    /** Pose for flicking out the coral from the climb mech (if it is in the robot) */
     CLEAR,
     /** The actual action of climbing */
     CLIMB;
@@ -76,10 +74,8 @@ public class ClimbController extends SubsystemBase {
             () -> {
               climbPivot.setPositionTarget(ClimbPivotTarget.CLEAR);
             },
-            () -> {
-            },
-            (e) -> {
-            },
+            () -> {},
+            (e) -> {},
             climbPivot::reachedTarget),
 
         // Then just go back up to stow

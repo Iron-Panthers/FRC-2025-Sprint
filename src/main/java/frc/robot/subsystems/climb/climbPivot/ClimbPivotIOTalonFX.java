@@ -23,7 +23,7 @@ public class ClimbPivotIOTalonFX extends GenericSuperstructureIOTalonFX implemen
             .withCANCoderID(CLIMB_PIVOT_CONFIG.canCoderID())
             .withCANCoderDirection(CANCODER_DIRECTION)
             .withCANCoderOffset(CLIMB_PIVOT_CONFIG.canCoderOffset())
-            .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
+            .withLowerExtensionLimit(LOWWER_EXTENSION_LIMIT));
 
     setSlot0(
         GAINS.kP(),
@@ -41,5 +41,4 @@ public class ClimbPivotIOTalonFX extends GenericSuperstructureIOTalonFX implemen
 
   @AutoLogOutput(key = "Superstructure/Climb/Climb Pivot/ModdedRotations")
   public double moddedRotations;
-
 }

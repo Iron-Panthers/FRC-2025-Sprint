@@ -50,8 +50,9 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
   // set position for intake in a cage, a button to climb up or down
   public ClimbPivot(ClimbPivotIO io) {
     super("Climb Pivot", io);
-    inductionSensor = new DigitalInput(INDUCTION_PORT_NUMBER); // TODO: figure out general sensor things -- maybe
-                                                               // dedicated subsystem
+    inductionSensor =
+        new DigitalInput(INDUCTION_PORT_NUMBER); // TODO: figure out general sensor things -- maybe
+    // dedicated subsystem
     setPositionTarget(ClimbPivotTarget.STOW);
     setControlMode(ControlMode.STOP);
   }

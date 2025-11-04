@@ -42,7 +42,8 @@ public class SuperstructureController extends SubsystemBase {
             ElevatorTarget.ALGAE_INTAKE_REEF_L3, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH));
+            ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+    ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
     // TODO: add more states and document them here
 
     private final SuperstructurePose targetPose;
