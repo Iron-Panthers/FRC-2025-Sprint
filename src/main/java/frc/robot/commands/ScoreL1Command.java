@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.IntakeController.IntakeState;
+import frc.robot.subsystems.l1_pivot.L1PivotConstants;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotController.L1PivotState;
 
@@ -21,8 +22,8 @@ public class ScoreL1Command extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         l1PivotController.setTargetStateCommand(L1PivotState.STOW),
-        intakeController.setTargetCommand(IntakeState.L1),
-        new WaitCommand(.2),
+        intakeController.setTargetStateCommand(IntakeState.L1),
+        new WaitCommand(L1PivotConstants.L1_SCORE_TIME_OFFSET),
         l1PivotController.setTargetStateCommand(L1PivotState.SCORE_L1),
         new WaitCommand(.5),
         l1PivotController.setTargetStateCommand(L1PivotState.STOW));
