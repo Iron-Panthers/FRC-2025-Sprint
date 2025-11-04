@@ -43,7 +43,9 @@ public abstract class GenericSuperstructure<G extends GenericSuperstructure.Posi
         superstructureIO.runPosition(positionTarget.getPosition());
       }
       case POSITION_MANUAL -> {
-        positionTargetManual.ifPresent(superstructureIO::runPosition);
+        if (positionTargetManual.isPresent()) {
+          superstructureIO.runPosition(positionTargetManual.get());
+        }
       }
       case STOP -> {
         superstructureIO.stop();
@@ -55,6 +57,8 @@ public abstract class GenericSuperstructure<G extends GenericSuperstructure.Posi
     Logger.recordOutput("Superstructure/" + name + "/Reached target", reachedTarget());
     Logger.recordOutput(
         "Superstructure/" + name + "/Target Position", positionTarget.getPosition());
+    Logger.recordOutput(
+        "Superstructure/" + name + "/Target Position Manual", positionTargetManual.orElse(0.0));
   }
 
   public G getPositionTarget() {
@@ -102,7 +106,12 @@ public abstract class GenericSuperstructure<G extends GenericSuperstructure.Posi
    * @return whether the subsystem has reached its position target
    */
   public boolean reachedTarget() {
-    return Math.abs(inputs.positionRotations - (positionTarget.getPosition()))
-        <= positionTarget.getEpsilon();
+    double targetPosition =
+        switch (controlMode) {
+          case POSITION -> positionTarget.getPosition();
+          case POSITION_MANUAL -> positionTargetManual.orElse(0d);
+          case STOP -> inputs.positionRotations;
+        };
+    return Math.abs(inputs.positionRotations - targetPosition) <= positionTarget.getEpsilon();
   }
 }

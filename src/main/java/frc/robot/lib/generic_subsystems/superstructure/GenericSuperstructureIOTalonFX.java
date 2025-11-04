@@ -33,7 +33,7 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
 
   // zeroing stuff
   private final double zeroingVolts;
-  private final double zeroingOffset;
+  protected final double zeroingOffset;
   private final double zeroingVoltageThreshold;
 
   protected final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
@@ -57,15 +57,21 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     config.Voltage.withPeakForwardVoltage(superstructureConfig.upperVoltLimit);
-    config.Voltage.withPeakReverseVoltage(superstructureConfig.lowerExtensionLimit);
+    config.Voltage.withPeakReverseVoltage(superstructureConfig.lowerVoltLimit);
     config.Feedback.withSensorToMechanismRatio(superstructureConfig.reduction);
 
-    config.SoftwareLimitSwitch.withReverseSoftLimitEnable(true);
-    config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
-        superstructureConfig.lowerExtensionLimit);
-    config.SoftwareLimitSwitch.withReverseSoftLimitEnable(true);
-    config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
-        superstructureConfig.upperExtensionLimit);
+    if (superstructureConfig.lowerExtensionLimitEnabled) {
+      config.SoftwareLimitSwitch.withReverseSoftLimitEnable(
+          superstructureConfig.lowerExtensionLimitEnabled);
+      config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
+          superstructureConfig.lowerExtensionLimit);
+    }
+    if (superstructureConfig.upperExtensionLimitEnabled) {
+      config.SoftwareLimitSwitch.withReverseSoftLimitEnable(
+          superstructureConfig.upperExtensionLimitEnabled);
+      config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
+          superstructureConfig.upperExtensionLimit);
+    }
 
     talon = new TalonFX(superstructureConfig.id);
 
@@ -77,7 +83,8 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
               new CANcoderConfiguration()
                   .withMagnetSensor(
                       new MagnetSensorConfigs()
-                          .withAbsoluteSensorDiscontinuityPoint(0.5)
+                          .withAbsoluteSensorDiscontinuityPoint(
+                              superstructureConfig.sensorDiscontinuityPoint)
                           .withSensorDirection(superstructureConfig.canCoderDirection)
                           .withMagnetOffset(superstructureConfig.canCoderOffset)));
       config.Feedback.withRemoteCANcoder(canCoder);
