@@ -6,7 +6,7 @@ public class ClawRollers extends GenericRollers<ClawRollers.ClawRollersTarget> {
   public enum ClawRollersTarget implements GenericRollers.VoltageTarget {
     IDLE(0),
     INTAKE(-8),
-    HOLD(-2.5),
+    HOLD(-1.75),
     EJECT_TOP(8),
     EJECT_L3(2),
     EJECT_L1(2),
