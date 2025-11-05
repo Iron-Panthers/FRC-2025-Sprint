@@ -49,7 +49,7 @@ public class SuperstructureController extends SubsystemBase {
     /** Picking up algae from the ground */
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+            ElevatorTarget.INTAKE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
     /** Scoring from barge to the right */
     BARGE_RIGHT(
         SuperstructurePose.fromTargetStates(
@@ -632,9 +632,14 @@ public class SuperstructureController extends SubsystemBase {
    * @return The physical constraints of the superstructure
    */
   public SuperstructureConstraints getSuperstructureConstraints() {
-    Distance minElevatorHeight = getMinElevatorHeight();
+    // HACK: TEMPORARILY RETURNS NO CONSTRAINTS FOR MADTOWN -- THIS COMPLETELY DISABLES THE GOOD
+    // COMPLEX LOGIC
+    Distance minElevatorHeight = Units.Inches.of(0);
+    // Distance minElevatorHeight = getMinElevatorHeight();
     Distance maxElevatorHeight = Units.Inches.of(ElevatorConstants.UPPER_EXTENSION_LIMIT);
-    Pair<Angle, Angle> armAngleConstraints = getArmAngleConstraints();
+    Pair<Angle, Angle> armAngleConstraints =
+        new Pair<>(Units.Degrees.of(-90), Units.Degrees.of(270));
+    // Pair<Angle, Angle> armAngleConstraints = getArmAngleConstraints();
     Angle minArmAngle = armAngleConstraints.getFirst();
     Angle maxArmAngle = armAngleConstraints.getSecond();
 
