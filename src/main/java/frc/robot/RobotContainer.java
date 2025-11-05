@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
+import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -52,11 +53,9 @@ import frc.robot.subsystems.superstructure.SuperstructureController.Superstructu
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
-import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -351,10 +350,10 @@ public class RobotContainer {
         .whileTrue(
             (new ApproachReef(() -> levelOffsets, true, swerve)
                     .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
-                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1))
                 .andThen(new WaitCommand(1))
                 .andThen(
-                    intakeController.setTargetCommand(
+                    intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
     // auto align
     driverA
@@ -362,10 +361,10 @@ public class RobotContainer {
         .whileTrue(
             (new ApproachReef(() -> levelOffsets, false, swerve)
                     .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
-                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1))
                 .andThen(new WaitCommand(1))
                 .andThen(
-                    intakeController.setTargetCommand(
+                    intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
   }
 

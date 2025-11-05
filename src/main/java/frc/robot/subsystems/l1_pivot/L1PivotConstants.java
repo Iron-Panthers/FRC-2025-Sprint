@@ -54,8 +54,11 @@ public class L1PivotConstants {
 
   // ZEROING CONSTANTS
   public static final double ZEROING_VOLTS = 1;
-  public static final double ZEROING_OFFSET = .397; // offset in rotations
+  public static final double ZEROING_OFFSET = .2019; // offset in rotations
   public static final double ZEROING_VOLTAGE_THRESHOLD = 3.5;
+
+  // TIMING CONSTANTS
+  public static final double L1_SCORE_TIME_OFFSET = 0.1;
 
   // L1 PIVOT POSITION CONSTANTS
   public static final Transform3d ELEVATOR_TO_L1_PIVOT_TRANSFORM =
