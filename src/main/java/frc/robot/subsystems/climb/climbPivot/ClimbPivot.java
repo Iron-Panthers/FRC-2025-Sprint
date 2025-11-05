@@ -16,13 +16,13 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
     BOTTOM(0.07),
 
     /** "Top" is apex of climb */
-    TOP(0.307),
+    TOP(0.28),
 
     /** To get coral out */
-    CLEAR(-0.15),
+    CLEAR(0.05),
 
     /** When not climbing */
-    STOW(0.25);
+    STOW(0.1);
 
     private double position = 0;
     private static final double EPSILON = ClimbPivotConstants.POSITION_TARGET_EPSILON;

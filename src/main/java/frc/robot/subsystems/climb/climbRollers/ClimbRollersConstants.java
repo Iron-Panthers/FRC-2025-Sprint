@@ -18,9 +18,9 @@ public class ClimbRollersConstants {
       };
   public static final boolean INVERTED =
       switch (Constants.getRobotType()) {
-        case COMP -> false;
-        case SIM -> false;
-        default -> false;
+        case COMP -> true;
+        case SIM -> true;
+        default -> true;
       };
   public static final boolean BRAKE =
       switch (Constants.getRobotType()) {
