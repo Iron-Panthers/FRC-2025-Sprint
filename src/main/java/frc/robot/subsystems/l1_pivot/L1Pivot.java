@@ -13,7 +13,8 @@ public class L1Pivot extends GenericSuperstructure<L1Pivot.L1PivotTarget>
     implements LoggableMechanism3d {
   public enum L1PivotTarget implements GenericSuperstructure.PositionTarget {
     L1_SCORE(116.28),
-    STOW(140);
+    STOW(140),
+    CLIMB(0);
 
     private double position;
     private static final double EPSILON = L1PivotConstants.POSITION_TARGET_EPSILON;

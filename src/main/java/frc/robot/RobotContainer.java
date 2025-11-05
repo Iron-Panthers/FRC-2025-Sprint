@@ -289,9 +289,12 @@ public class RobotContainer {
     // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
     // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-
+    
+    driverA.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.INTAKE)
+      .alongWith(superstructureController.setTargetSuperstructureState(SuperstructureController.SuperstructureState.CLIMB))
+      .alongWith(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE))
+      .alongWith(l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
     driverA.x().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
-    driverA.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.INTAKE));
 
     // driverB
     //     .leftTrigger()

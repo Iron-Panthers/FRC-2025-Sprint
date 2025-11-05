@@ -17,6 +17,8 @@ public class L1PivotController extends SubsystemBase {
     STOW,
     /** Going down to push the coral out */
     SCORE_L1,
+    /** Going to the climb position */
+    CLIMB,
     /** Zeroing the subsystem */
     ZEROING
   }
@@ -39,6 +41,9 @@ public class L1PivotController extends SubsystemBase {
       }
       case SCORE_L1 -> {
         l1Pivot.setPositionTarget(L1PivotTarget.L1_SCORE);
+      }
+      case CLIMB -> {
+        l1Pivot.setPositionTarget(L1PivotTarget.CLIMB);
       }
       case ZEROING -> {
         l1Pivot.setZeroing(true);

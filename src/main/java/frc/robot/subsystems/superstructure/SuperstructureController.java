@@ -10,7 +10,10 @@ import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
 import frc.robot.subsystems.superstructure.arm.ArmConstants;
@@ -41,8 +44,11 @@ public class SuperstructureController extends SubsystemBase {
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L3, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     GROUND_ALGAE(
-        SuperstructurePose.fromTargetStates(
+      SuperstructurePose.fromTargetStates(
             ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+    CLIMB(
+      SuperstructurePose.fromTargetStates(ElevatorTarget.CLIMB, ArmTarget.CLIMB, ArmDirection.BOTH)),
+    
     ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
     // TODO: add more states and document them here
 
@@ -191,6 +197,20 @@ public class SuperstructureController extends SubsystemBase {
    */
   public void setSuperstructureState(SuperstructureState state) {
     this.superstructureState = state;
+  }
+
+    public Command setTargetSuperstructureState(SuperstructureState state) {
+    return new InstantCommand(
+            () -> {
+              this.superstructureState = state;
+            },
+            this)
+        .withTimeout(.02)
+        .andThen(new WaitUntilCommand(this::superstructureReachedTarget));
+  }
+
+  public boolean superstructureReachedTarget() {
+    return elevator.reachedTarget() && arm.reachedTarget();
   }
 
   /**

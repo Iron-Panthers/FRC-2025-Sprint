@@ -28,7 +28,9 @@ public class IntakeController extends SubsystemBase {
     /** L1 state -- going to the L1 scoring state but not ejecting yet */
     L1,
     /** Pass state -- going to the pass position for the grabber to get the coral */
-    PASS;
+    PASS,
+    /** Climb state -- both at zero for climbing */
+    CLIMB;
   }
 
   private IntakeState targetState = IntakeState.IDLE;
