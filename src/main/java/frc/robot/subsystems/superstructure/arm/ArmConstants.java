@@ -13,21 +13,21 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
 public class ArmConstants {
   public static final ArmConfig ARM_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new ArmConfig(CAN.at(8, "Arm"), CAN.at(28, "Arm Encoder"), 0, 1);
+        case COMP -> new ArmConfig(CAN.at(35, "Arm"), CAN.at(45, "Arm Encoder"), 0.8114, 1);
         case SIM -> new ArmConfig(CAN.at(62, "Arm"), CAN.at(63, "Arm Encoder"), 0, 25.0 / 3);
         default -> new ArmConfig(0, 0, 0, 1);
       };
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(0.1, 0, 0, 0, 10.8965, 0, 0.35);
+        case COMP -> new PIDGains(12, 0, 0, 0, 5.405, 0.2844, 0.23);
         case SIM -> new PIDGains(50, 0, 0, 0, 8 / 0.8722, 0, 0.35);
         default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(7.5, 10); // 3, 10
+        case COMP -> new MotionMagicConfig(3, 6); // 3, 10
         case SIM -> new MotionMagicConfig(7.5, 10); // 3, 10
         default -> new MotionMagicConfig(0, 0);
       };
@@ -44,7 +44,7 @@ public class ArmConstants {
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
 
   public static final SensorDirectionValue CANCODER_DIRECTION =
-      SensorDirectionValue.Clockwise_Positive;
+      SensorDirectionValue.CounterClockwise_Positive;
 
   public static final double POSITION_TARGET_EPSILON = 0.01;
 

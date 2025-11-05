@@ -18,8 +18,8 @@ public class IntakeSensors {
   public IntakeSensors(IntakeSensorIO intakeSensorIO1, IntakeSensorIO intakeSensorIO2) {
     this.intakeSensorIO1 = intakeSensorIO1;
     this.intakeSensorIO2 = intakeSensorIO2;
-    this.filter1 = LinearFilter.movingAverage(20);
-    this.filter2 = LinearFilter.movingAverage(20);
+    this.filter1 = LinearFilter.movingAverage(40);
+    this.filter2 = LinearFilter.movingAverage(40);
   }
 
   public void periodic() {
