@@ -11,8 +11,8 @@ import java.util.Optional;
 public class ClimbPivotConstants {
   public static final ClimbPivotConfig CLIMB_PIVOT_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new ClimbPivotConfig(CAN.at(37, "Climb Pivot Motor"), 1, 40, 0.3215);
-        case SIM -> new ClimbPivotConfig(37, 2.5, 45, 0.201);
+        case COMP -> new ClimbPivotConfig(CAN.at(36, "Climb Pivot Motor"), 1, 40, 0.3215);
+        case SIM -> new ClimbPivotConfig(40, 2.5, 45, 0.201);
         default -> new ClimbPivotConfig(0, 1, 0, 0d);
       };
 
@@ -50,7 +50,6 @@ public class ClimbPivotConstants {
 
   // SOFT LIMITS
   public static final double LOWWER_EXTENSION_LIMIT = 0.05d;
-
 
   // CURRENT LIMITS
   public static final double UPPER_VOLT_LIMIT = 12;

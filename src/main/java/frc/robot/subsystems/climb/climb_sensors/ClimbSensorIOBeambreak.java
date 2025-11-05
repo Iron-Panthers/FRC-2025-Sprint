@@ -1,11 +1,7 @@
 package frc.robot.subsystems.climb.climb_sensors;
 
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.hardware.CANrange;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.climb.climb_sensors.ClimbSensorIO.ClimbSensorIOInputs;
-import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIO.IntakeSensorIOInputs;
 
 public class ClimbSensorIOBeambreak implements ClimbSensorIO {
   private final DigitalInput beambreak;
@@ -18,7 +14,7 @@ public class ClimbSensorIOBeambreak implements ClimbSensorIO {
 
   @Override
   public void updateInputs(ClimbSensorIOInputs inputs) {
-   inputs.connected = true;
-   inputs.triggered = beambreak.get() ^ sensorInverted;
+    inputs.connected = true;
+    inputs.triggered = beambreak.get() ^ sensorInverted;
   }
 }

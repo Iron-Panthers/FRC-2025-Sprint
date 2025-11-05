@@ -6,7 +6,7 @@ import frc.robot.Constants;
 public class ClimbRollersConstants {
   public static final int ID =
       switch (Constants.getRobotType()) {
-        case COMP -> 26;
+        case COMP -> 38;
         case SIM -> 26;
         default -> 0;
       };

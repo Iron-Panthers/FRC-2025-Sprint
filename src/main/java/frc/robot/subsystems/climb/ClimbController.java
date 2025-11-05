@@ -9,6 +9,7 @@ import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructure.Con
 import frc.robot.subsystems.climb.climbPivot.ClimbPivot;
 import frc.robot.subsystems.climb.climbPivot.ClimbPivot.ClimbPivotTarget;
 import frc.robot.subsystems.climb.climbRollers.ClimbRollers;
+import frc.robot.subsystems.climb.climb_sensors.ClimbSensors;
 import org.littletonrobotics.junction.Logger;
 
 public class ClimbController extends SubsystemBase {
@@ -28,11 +29,15 @@ public class ClimbController extends SubsystemBase {
 
   private final ClimbPivot climbPivot;
 
+  private final ClimbSensors climbSensors;
+
   private ClimbState targetState = ClimbState.IDLE;
 
-  public ClimbController(ClimbRollers climbRollers, ClimbPivot climbPivot) {
+  public ClimbController(
+      ClimbRollers climbRollers, ClimbPivot climbPivot, ClimbSensors climbSensors) {
     this.climbRollers = climbRollers;
     this.climbPivot = climbPivot;
+    this.climbSensors = climbSensors;
   }
 
   @Override
@@ -45,6 +50,9 @@ public class ClimbController extends SubsystemBase {
         climbPivot.setPositionTarget(ClimbPivotTarget.STOW);
       }
       case INTAKE -> {
+        if (climbSensors.sensorsTriggered()) {
+          setTargetState(ClimbState.CLIMB);
+        }
         climbRollers.setVoltageTarget(ClimbRollers.Target.INTAKE);
         climbPivot.setPositionTarget(ClimbPivotTarget.STOW);
       }
@@ -53,7 +61,6 @@ public class ClimbController extends SubsystemBase {
         climbPivot.setPositionTarget(ClimbPivotTarget.CLEAR);
       }
       case CLIMB -> {
-        // TODO: need an if statement that checks if we are actually ready to climb
         climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
         climbPivot.setPositionTarget(ClimbPivotTarget.TOP);
       }
@@ -62,6 +69,7 @@ public class ClimbController extends SubsystemBase {
     // periodics
     climbPivot.periodic();
     climbRollers.periodic();
+    climbSensors.periodic();
 
     Logger.recordOutput("Climb/TargetState", targetState);
   }

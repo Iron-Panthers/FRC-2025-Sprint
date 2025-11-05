@@ -27,9 +27,13 @@ import frc.robot.subsystems.climb.ClimbController;
 import frc.robot.subsystems.climb.climbPivot.ClimbPivot;
 import frc.robot.subsystems.climb.climbPivot.ClimbPivotIO;
 import frc.robot.subsystems.climb.climbPivot.ClimbPivotIOSim;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivotIOTalonFX;
 import frc.robot.subsystems.climb.climbRollers.ClimbRollers;
 import frc.robot.subsystems.climb.climbRollers.ClimbRollersIO;
 import frc.robot.subsystems.climb.climbRollers.ClimbRollersIOSim;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollersIOTalonFX;
+import frc.robot.subsystems.climb.climb_sensors.ClimbSensorIOBeambreak;
+import frc.robot.subsystems.climb.climb_sensors.ClimbSensors;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
@@ -47,15 +51,12 @@ import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.superstructure.SuperstructureController;
-import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
-import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -114,6 +115,7 @@ public class RobotContainer {
   private ClimbController climbController;
   private ClimbPivot climbPivot;
   private ClimbRollers climbRollers;
+  private ClimbSensors climbSensors;
 
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
@@ -138,8 +140,11 @@ public class RobotContainer {
           //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
           //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
-          elevator = new Elevator(new ElevatorIOTalonFX());
-          arm = new Arm(new ArmIOTalonFX());
+          // elevator = new Elevator(new ElevatorIOTalonFX());
+          // arm = new Arm(new ArmIOTalonFX());
+          climbPivot = new ClimbPivot(new ClimbPivotIOTalonFX());
+          climbRollers = new ClimbRollers(new ClimbRollersIOTalonFX());
+          climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -204,11 +209,15 @@ public class RobotContainer {
     if (climbRollers == null) {
       climbRollers = new ClimbRollers(new ClimbRollersIO() {});
     }
+    if (climbSensors == null) {
+      climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak() {});
+    }
 
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
     }
-    climbController = new ClimbController(climbRollers, climbPivot);
+    climbController = new ClimbController(climbRollers, climbPivot, climbSensors);
+
     if (clawRollers == null) {
       clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
@@ -276,27 +285,31 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
-    driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    // driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
+    // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
-    driverB
-        .leftTrigger()
-        .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
-    driverB
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    superstructureController.setSuperstructureState(
-                        SuperstructureState.GROUND_ALGAE)));
-    driverB
-        .x()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
+    driverA.x().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
+    driverA.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.INTAKE));
+
+    // driverB
+    //     .leftTrigger()
+    //     .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
+    // driverB
+    //     .b()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 superstructureController.setSuperstructureState(
+    //                     SuperstructureState.GROUND_ALGAE)));
+    // driverB
+    //     .x()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //
+    // superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
     // // auto align
     // driverA
     //     .x()
