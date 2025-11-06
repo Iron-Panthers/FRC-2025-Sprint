@@ -44,11 +44,12 @@ public class SuperstructureController extends SubsystemBase {
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L3, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
     GROUND_ALGAE(
-      SuperstructurePose.fromTargetStates(
+        SuperstructurePose.fromTargetStates(
             ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
     CLIMB(
-      SuperstructurePose.fromTargetStates(ElevatorTarget.CLIMB, ArmTarget.CLIMB, ArmDirection.BOTH)),
-    
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.CLIMB, ArmTarget.CLIMB, ArmDirection.BOTH)),
+
     ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
     // TODO: add more states and document them here
 
@@ -199,7 +200,7 @@ public class SuperstructureController extends SubsystemBase {
     this.superstructureState = state;
   }
 
-    public Command setTargetSuperstructureState(SuperstructureState state) {
+  public Command setTargetSuperstructureState(SuperstructureState state) {
     return new InstantCommand(
             () -> {
               this.superstructureState = state;

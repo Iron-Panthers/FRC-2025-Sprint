@@ -38,30 +38,39 @@ import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOSim;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOTalonFX;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIO;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOSim;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsConstants;
 import frc.robot.subsystems.l1_pivot.L1Pivot;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotIO;
 import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
+import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.superstructure.SuperstructureController;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
+import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.GyroIOSim;
 import frc.robot.subsystems.swerve.ModuleIO;
+import frc.robot.subsystems.swerve.ModuleIOTalonFXReal;
 import frc.robot.subsystems.swerve.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
@@ -121,27 +130,27 @@ public class RobotContainer {
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
-          // swerve =
-          //     new Drive(
-          //         new GyroIOPigeon2(),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[0]),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
           // vision = new Vision(new VisionIOPhotonvision(1), new VisionIOPhotonvision(2));
           // rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
-          // l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
-          // intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
-          // intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
+          l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
 
-          // intakeSensors =
-          //     new IntakeSensors(
-          //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
-          //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
+          intakeSensors =
+              new IntakeSensors(
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
-          // elevator = new Elevator(new ElevatorIOTalonFX());
-          // arm = new Arm(new ArmIOTalonFX());
+          elevator = new Elevator(new ElevatorIOTalonFX());
+          arm = new Arm(new ArmIOTalonFX());
           climbPivot = new ClimbPivot(new ClimbPivotIOTalonFX());
           climbRollers = new ClimbRollers(new ClimbRollersIOTalonFX());
           climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak());
@@ -289,12 +298,19 @@ public class RobotContainer {
     // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
     // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    
-    driverA.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.INTAKE)
-      .alongWith(superstructureController.setTargetSuperstructureState(SuperstructureController.SuperstructureState.CLIMB))
-      .alongWith(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE))
-      .alongWith(l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
-    driverA.x().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
+
+    driverB
+        .b()
+        .onTrue(
+            climbController
+                .setTargetCommand(ClimbController.ClimbState.INTAKE)
+                .alongWith(
+                    superstructureController.setTargetSuperstructureState(
+                        SuperstructureController.SuperstructureState.CLIMB))
+                .alongWith(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE))
+                .alongWith(
+                    l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
+    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
 
     // driverB
     //     .leftTrigger()

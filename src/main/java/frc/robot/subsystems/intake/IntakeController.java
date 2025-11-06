@@ -95,6 +95,10 @@ public class IntakeController extends SubsystemBase {
           intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);
         }
       }
+      case CLIMB -> {
+        intakeRollers.setVoltageTarget(IntakeRollers.Target.IDLE);
+        intakePivot.setPositionTarget(IntakePivotTarget.CLIMB);
+      }
     }
 
     intakeRollers.periodic();

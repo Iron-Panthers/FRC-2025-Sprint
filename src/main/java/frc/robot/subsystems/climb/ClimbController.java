@@ -50,9 +50,6 @@ public class ClimbController extends SubsystemBase {
         climbPivot.setPositionTarget(ClimbPivotTarget.STOW);
       }
       case INTAKE -> {
-        if (climbSensors.sensorsTriggered()) {
-          setTargetState(ClimbState.CLIMB);
-        }
         climbRollers.setVoltageTarget(ClimbRollers.Target.INTAKE);
         climbPivot.setPositionTarget(ClimbPivotTarget.STOW);
       }
