@@ -52,9 +52,11 @@ import frc.robot.subsystems.superstructure.SuperstructureController.Superstructu
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -266,30 +268,30 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    // driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
+    // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
     // driverA
     //     .leftTrigger()
     //     .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
 
-    driverA
+    driverB
         .povDown()
         .onTrue(
             new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
                 .alongWith(
                     superstructureController.setSuperstructureStateCommand(
                         SuperstructureState.GROUND_ALGAE)));
-    driverA
+    driverB
         .povRight()
         .onTrue(
             new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
                 .alongWith(
                     superstructureController.setSuperstructureStateCommand(
                         SuperstructureState.L2_ALGAE)));
-    driverA
+    driverB
         .povLeft()
         .onTrue(
             new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
@@ -297,15 +299,24 @@ public class RobotContainer {
                     superstructureController.setSuperstructureStateCommand(
                         SuperstructureState.L3_ALGAE)));
 
-    driverA
+    driverB
         .povUp()
         .onTrue(
             superstructureController.setSuperstructureStateCommand(
                 SuperstructureState.BARGE_RIGHT));
 
-    driverA
-        .a()
+    driverB
+        .rightTrigger()
         .onTrue(new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.EJECT_TOP)));
+
+    driverB
+        .leftBumper()
+        .onTrue(superstructureController.setSuperstructureStateCommand(SuperstructureState.STOW));
+
+    driverB
+        .a()
+        .onTrue(
+            superstructureController.setSuperstructureStateCommand(SuperstructureState.ZEROING));
 
     // // auto align
     // driverA

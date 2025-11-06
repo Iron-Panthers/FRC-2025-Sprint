@@ -64,7 +64,7 @@ public class ElevatorConstants {
   // ZEROING CONSTANTS
   public static final double ZEROING_VOLTS = -2;
 
-  public static final double ZEROING_OFFSET = 0; // offset in inches
+  public static final double ZEROING_OFFSET = -0.30; // offset in inches
 
   public static final double ZEROING_VOLTAGE_THRESHOLD =
       switch (Constants.getRobotType()) {
