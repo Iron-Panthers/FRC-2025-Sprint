@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.Arm.ArmTarget;
@@ -31,25 +32,30 @@ public class SuperstructureController extends SubsystemBase {
    * or configuration of the superstructure (Arm and Elevator)
    */
   public enum SuperstructureState {
+    /** The stow mode (elevator down, arm up) */
     STOW(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.BOTTOM, ArmTarget.TOP, ArmDirection.BOTH)),
-    TOP(
-        SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
-    NET(
-        SuperstructurePose.fromTargetStates(
-            ElevatorTarget.ALGAE_SCORE_NET, ArmTarget.TOP, ArmDirection.BOTH));
+    /** The highest point it can go */
+    TOP(SuperstructurePose.fromTargetStates(ElevatorTarget.TOP, ArmTarget.TOP, ArmDirection.BOTH)),
+    /** Picking up L2 algae from the reef */
     L2_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L2, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    /** Picking up L2 algae from the reef */
     L3_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L3, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
+    /** Picking up algae from the ground */
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.L1, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH));
-    // TODO: add more states and document them here
+            ElevatorTarget.INTAKE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+    /** Scoring from barge to the right */
+    BARGE_RIGHT(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.TOP, ArmTarget.BARGE_RIGHT, ArmDirection.BOTH)),
+    /** Zeroing the subystem -- elevator down, pivot up (much like stow) */
+    ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
 
     private final SuperstructurePose targetPose;
 
@@ -190,6 +196,15 @@ public class SuperstructureController extends SubsystemBase {
   }
 
   /**
+   * Wether or not the superstructure has reached its target state
+   *
+   * @return true if the superstructure has reached its target state
+   */
+  public boolean superstructureReachedTargetState() {
+    return arm.reachedTarget() && elevator.reachedTarget();
+  }
+
+  /**
    * Set the current target state of the superstructure
    *
    * @param state
@@ -210,6 +225,19 @@ public class SuperstructureController extends SubsystemBase {
 
   public boolean superstructureReachedTarget() {
     return elevator.reachedTarget() && arm.reachedTarget();
+  }
+
+  /**
+   * Returns a command the sets the superstructure state and waits until the superstructure reaches
+   * the target state
+   *
+   * @param state
+   */
+  public Command setSuperstructureStateCommand(SuperstructureState state) {
+    return new InstantCommand(() -> setSuperstructureState(state), this)
+        .andThen(
+            new WaitCommand(.02)
+                .andThen(new WaitUntilCommand(this::superstructureReachedTargetState)));
   }
 
   /**
@@ -618,9 +646,14 @@ public class SuperstructureController extends SubsystemBase {
    * @return The physical constraints of the superstructure
    */
   public SuperstructureConstraints getSuperstructureConstraints() {
-    Distance minElevatorHeight = getMinElevatorHeight();
+    // HACK: TEMPORARILY RETURNS NO CONSTRAINTS FOR MADTOWN -- THIS COMPLETELY DISABLES THE GOOD
+    // COMPLEX LOGIC
+    Distance minElevatorHeight = Units.Inches.of(0);
+    // Distance minElevatorHeight = getMinElevatorHeight();
     Distance maxElevatorHeight = Units.Inches.of(ElevatorConstants.UPPER_EXTENSION_LIMIT);
-    Pair<Angle, Angle> armAngleConstraints = getArmAngleConstraints();
+    Pair<Angle, Angle> armAngleConstraints =
+        new Pair<>(Units.Degrees.of(-90), Units.Degrees.of(270));
+    // Pair<Angle, Angle> armAngleConstraints = getArmAngleConstraints();
     Angle minArmAngle = armAngleConstraints.getFirst();
     Angle maxArmAngle = armAngleConstraints.getSecond();
 

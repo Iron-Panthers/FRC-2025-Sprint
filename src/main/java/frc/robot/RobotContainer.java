@@ -21,25 +21,34 @@ import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.claw.ClawRollers;
 import frc.robot.subsystems.claw.ClawRollersController;
+import frc.robot.subsystems.claw.ClawRollersController.ClawState;
 import frc.robot.subsystems.claw.ClawRollersIO;
 import frc.robot.subsystems.claw.ClawRollersIOSim;
+import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOSim;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOTalonFX;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIO;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOSim;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsConstants;
 import frc.robot.subsystems.l1_pivot.L1Pivot;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotIO;
 import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
+import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
+import frc.robot.subsystems.rgb.RGBIOCANdle;
 import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
@@ -51,11 +60,14 @@ import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
+import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.GyroIOSim;
 import frc.robot.subsystems.swerve.ModuleIO;
+import frc.robot.subsystems.swerve.ModuleIOTalonFXReal;
 import frc.robot.subsystems.swerve.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonvision;
 import frc.robot.subsystems.vision.VisionIOPhotonvisionSim;
 import java.util.function.BooleanSupplier;
 import org.ironmaple.simulation.SimulatedArena;
@@ -107,27 +119,28 @@ public class RobotContainer {
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
-          // swerve =
-          //     new Drive(
-          //         new GyroIOPigeon2(),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[0]),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
-          //         new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
-          // vision = new Vision(new VisionIOPhotonvision(1), new VisionIOPhotonvision(2));
-          // rgb = new RGB(new RGBIOCANdle());
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
+          vision = new Vision(new VisionIOPhotonvision(1), new VisionIOPhotonvision(2));
+          rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
-          // l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
-          // intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
-          // intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
+          l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
 
-          // intakeSensors =
-          //     new IntakeSensors(
-          //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
-          //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
+          intakeSensors =
+              new IntakeSensors(
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
           elevator = new Elevator(new ElevatorIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
+          clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -190,6 +203,7 @@ public class RobotContainer {
     if (clawRollers == null) {
       clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
+    clawRollersController = new ClawRollersController(clawRollers);
 
     if (intakeRollers == null) {
       intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
@@ -254,10 +268,10 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
-    driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    // driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
+    // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
+    // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
+    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
     // intake
     driverB
@@ -331,10 +345,10 @@ public class RobotContainer {
         .whileTrue(
             (new ApproachReef(() -> levelOffsets, true, swerve)
                     .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
-                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1))
                 .andThen(new WaitCommand(1))
                 .andThen(
-                    intakeController.setTargetCommand(
+                    intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
     // auto align
     driverA
@@ -342,10 +356,10 @@ public class RobotContainer {
         .whileTrue(
             (new ApproachReef(() -> levelOffsets, false, swerve)
                     .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
-                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1))
                 .andThen(new WaitCommand(1))
                 .andThen(
-                    intakeController.setTargetCommand(
+                    intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
   }
 

@@ -5,9 +5,9 @@ import frc.robot.lib.generic_subsystems.rollers.GenericRollers;
 public class ClawRollers extends GenericRollers<ClawRollers.ClawRollersTarget> {
   public enum ClawRollersTarget implements GenericRollers.VoltageTarget {
     IDLE(0),
-    INTAKE(4),
-    HOLD(0),
-    EJECT_TOP(-8),
+    INTAKE(-8),
+    HOLD(-1.75),
+    EJECT_TOP(8),
     EJECT_L3(2),
     EJECT_L1(2),
     EJECT_L2(2.4);

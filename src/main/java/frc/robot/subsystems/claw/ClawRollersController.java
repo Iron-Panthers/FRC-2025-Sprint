@@ -25,7 +25,7 @@ public class ClawRollersController extends SubsystemBase {
     clawRollers.setVoltageTarget(ClawRollersTarget.HOLD);
   }
 
-  public void setVoltageTarget(ClawState targetState) {
+  public void setClawTarget(ClawState targetState) {
     this.targetState = targetState;
   }
 
@@ -50,6 +50,9 @@ public class ClawRollersController extends SubsystemBase {
         }
         case INTAKE -> {
           clawRollers.setVoltageTarget(ClawRollersTarget.INTAKE);
+          if (clawRollers.getFilteredCurrent() > ClawRollersConstants.INTAKE_CURRENT_THRESHOLD) {
+            setClawTarget(ClawState.HOLD);
+          }
         }
         case IDLE -> {
           clawRollers.setVoltageTarget(ClawRollersTarget.IDLE);
@@ -62,5 +65,6 @@ public class ClawRollersController extends SubsystemBase {
     clawRollers.periodic();
 
     Logger.recordOutput("ClawRollers/targetState", targetState);
+    Logger.recordOutput("ClawRollers/Filtered Supply Current", clawRollers.getFilteredCurrent());
   }
 }
