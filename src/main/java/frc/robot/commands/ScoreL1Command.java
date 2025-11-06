@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.IntakeController.IntakeState;
+import frc.robot.subsystems.l1_pivot.L1PivotConstants;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotController.L1PivotState;
 
@@ -19,13 +20,12 @@ public class ScoreL1Command extends SequentialCommandGroup {
   public ScoreL1Command(IntakeController intakeController, L1PivotController l1PivotController) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    if (intakeController.getTargetState() == IntakeController.IntakeState.HOLD) {
-      addCommands(
-          l1PivotController.setTargetStateCommand(L1PivotState.STOW),
-          intakeController.setTargetCommand(IntakeState.L1),
-          new WaitCommand(.5),
-          l1PivotController.setTargetStateCommand(L1PivotState.SCORE_L1),
-          l1PivotController.setTargetStateCommand(L1PivotState.STOW));
-    }
+    addCommands(
+        l1PivotController.setTargetStateCommand(L1PivotState.STOW),
+        intakeController.setTargetStateCommand(IntakeState.L1),
+        new WaitCommand(L1PivotConstants.L1_SCORE_TIME_OFFSET),
+        l1PivotController.setTargetStateCommand(L1PivotState.SCORE_L1),
+        new WaitCommand(.5),
+        l1PivotController.setTargetStateCommand(L1PivotState.STOW));
   }
 }

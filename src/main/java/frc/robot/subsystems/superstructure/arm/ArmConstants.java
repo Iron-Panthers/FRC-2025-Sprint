@@ -20,7 +20,7 @@ public class ArmConstants {
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(12, 0, 0, 0, 5.405, 0.2844, 0.23);
+        case COMP -> new PIDGains(30, 0, 0, 0, 5.405, 0.2844, 0.23);
         case SIM -> new PIDGains(50, 0, 0, 0, 8 / 0.8722, 0, 0.35);
         default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
       };

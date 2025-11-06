@@ -10,6 +10,7 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> {
     BOTTOM(-90),
     STRAIGHT(0),
     GROUND_ALGAE(-20),
+    BARGE_RIGHT(55),
     LEFT(180);
 
     private double position;
@@ -49,8 +50,13 @@ public class Arm extends GenericSuperstructure<Arm.ArmTarget> {
    * @return whether the subsystem has reached its position target
    */
   public boolean reachedTarget() {
-    return Math.abs(super.getPosition() - (super.getPositionTarget().getPosition() / 360d))
-        <= super.getPositionTarget().getEpsilon();
+    double targetPosition =
+        switch (controlMode) {
+          case POSITION -> positionTarget.getPosition() / 360d;
+          case POSITION_MANUAL -> super.positionTargetManual.orElse(0d) / 360d;
+          case STOP -> inputs.positionRotations;
+        };
+    return Math.abs(inputs.positionRotations - targetPosition) <= positionTarget.getEpsilon();
   }
 
   /** Returns the position of the arm in DEGREES */
