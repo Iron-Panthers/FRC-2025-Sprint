@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
+import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -248,6 +249,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    configureAlgaeButtons();
+    configureOverrideButtons();
+    configureMultiUseButtons();
+    configureL1Buttons();
     // -----Driver Controls-----
     swerve.setDefaultCommand(
         swerve
@@ -268,77 +273,7 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    // driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
-    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
-    // intake
-    driverB
-        .leftTrigger()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  intakeController.setTargetState(IntakeController.IntakeState.INTAKE);
-                }));
-
-    // outtake
-    driverB
-        .rightTrigger()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  if (driverB.rightBumper().getAsBoolean()) {
-                    if (superstructureController.superstructureReachedTarget()
-                        && superstructureController.getSuperstructureState()
-                            == SuperstructureState.NET) {
-                      clawRollersController.setVoltageTarget(
-                          ClawRollersController.ClawState.EJECT_TOP);
-                    } else if (superstructureController.getSuperstructureState()
-                        != SuperstructureState.NET) {
-                      superstructureController.setSuperstructureState(SuperstructureState.NET);
-                    }
-                  } else {
-                    clawRollersController.setVoltageTarget(
-                        ClawRollersController.ClawState.EJECT_L1);
-                  }
-                }));
-    // // auto align
-    // driverA
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 clawRollersController.setVoltageTarget(
-    //                     ClawRollersController.ClawState.EJECT_TOP)));
-    // driverA
-    //     .y()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 clawRollersController.setVoltageTarget(
-    //                     ClawRollersController.ClawState.INTAKE)));
-
-    // driverB
-    //     .a()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
-    // driverB
-    //     .b()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    // superstructureController.setSuperstructureState(SuperstructureState.STOW)));
-    // driverB
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
     // auto align
     driverA
         .leftBumper()
@@ -361,6 +296,77 @@ public class RobotContainer {
                 .andThen(
                     intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
+  }
+
+  private void configureL1Buttons() {
+    driverA.x().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
+    driverA.y().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.IDLE));
+    driverB
+        .leftTrigger()
+        .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.FORCE_INTAKE));
+    driverB
+        .leftTrigger()
+        .onFalse(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
+    driverB.rightTrigger().onTrue(new ScoreL1Command(intakeController, l1PivotController));
+  }
+
+  private void configureMultiUseButtons() {
+    // outtake
+
+  }
+
+  private void configureOverrideButtons() {
+    driverB
+        .a()
+        .onTrue(
+            superstructureController.setSuperstructureStateCommand(SuperstructureState.ZEROING));
+    driverB
+        .rightBumper()
+        .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.HOLD));
+    driverB
+        .leftBumper()
+        .onTrue(superstructureController.setSuperstructureStateCommand(SuperstructureState.TOP));
+  }
+
+  private void configureAlgaeButtons() {
+    driverB
+        .povDown()
+        .onTrue(
+            new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
+                .alongWith(
+                    superstructureController.setSuperstructureStateCommand(
+                        SuperstructureState.GROUND_ALGAE)));
+    driverB
+        .povRight()
+        .onTrue(
+            new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
+                .alongWith(
+                    superstructureController.setSuperstructureStateCommand(
+                        SuperstructureState.L2_ALGAE)));
+    driverB
+        .povLeft()
+        .onTrue(
+            new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
+                .alongWith(
+                    superstructureController.setSuperstructureStateCommand(
+                        SuperstructureState.L3_ALGAE)));
+
+    driverB
+        .povUp()
+        .onTrue(
+            superstructureController.setSuperstructureStateCommand(
+                SuperstructureState.BARGE_RIGHT));
+
+    driverB
+        .rightBumper()
+        .onTrue(superstructureController.setSuperstructureStateCommand(SuperstructureState.STOW));
+    driverA
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    clawRollersController.setClawTarget(
+                        ClawRollersController.ClawState.EJECT_TOP)));
   }
 
   private void configureAutos() {
