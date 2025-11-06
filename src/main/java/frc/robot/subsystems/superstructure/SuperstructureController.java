@@ -213,6 +213,20 @@ public class SuperstructureController extends SubsystemBase {
     this.superstructureState = state;
   }
 
+  public Command setTargetSuperstructureState(SuperstructureState state) {
+    return new InstantCommand(
+            () -> {
+              this.superstructureState = state;
+            },
+            this)
+        .withTimeout(.02)
+        .andThen(new WaitUntilCommand(this::superstructureReachedTarget));
+  }
+
+  public boolean superstructureReachedTarget() {
+    return elevator.reachedTarget() && arm.reachedTarget();
+  }
+
   /**
    * Returns a command the sets the superstructure state and waits until the superstructure reaches
    * the target state
