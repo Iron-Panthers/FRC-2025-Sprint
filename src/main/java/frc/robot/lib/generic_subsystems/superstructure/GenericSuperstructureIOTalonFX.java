@@ -67,9 +67,9 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
           superstructureConfig.lowerExtensionLimit);
     }
     if (superstructureConfig.upperExtensionLimitEnabled) {
-      config.SoftwareLimitSwitch.withReverseSoftLimitEnable(
+      config.SoftwareLimitSwitch.withForwardSoftLimitEnable(
           superstructureConfig.upperExtensionLimitEnabled);
-      config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
+      config.SoftwareLimitSwitch.withForwardSoftLimitThreshold(
           superstructureConfig.upperExtensionLimit);
     }
 

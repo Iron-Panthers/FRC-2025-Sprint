@@ -50,10 +50,12 @@ public class SuperstructureController extends SubsystemBase {
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.INTAKE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
-    /** Scoring from barge to the right */
     BARGE_RIGHT(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.TOP, ArmTarget.BARGE_RIGHT, ArmDirection.BOTH)),
+    CLIMB(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.CLIMB, ArmTarget.CLIMB, ArmDirection.BOTH)),
     /** Zeroing the subystem -- elevator down, pivot up (much like stow) */
     ZEROING(new SuperstructurePose(Units.Inches.of(0), Units.Degrees.of(90), ArmDirection.BOTH));
 

@@ -15,7 +15,8 @@ public class IntakePivot extends GenericSuperstructure<IntakePivot.IntakePivotTa
     // deleting it
     STOW(94),
     L1(94),
-    PASS(94);
+    PASS(94),
+    CLIMB(0);
 
     private double position;
     private static final double EPSILON = IntakePivotConstants.POSITION_TARGET_EPSILON;
