@@ -26,6 +26,17 @@ import frc.robot.subsystems.claw.ClawRollersController.ClawState;
 import frc.robot.subsystems.claw.ClawRollersIO;
 import frc.robot.subsystems.claw.ClawRollersIOSim;
 import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
+import frc.robot.subsystems.climb.ClimbController;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivot;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivotIO;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivotIOSim;
+import frc.robot.subsystems.climb.climbPivot.ClimbPivotIOTalonFX;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollers;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollersIO;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollersIOSim;
+import frc.robot.subsystems.climb.climbRollers.ClimbRollersIOTalonFX;
+import frc.robot.subsystems.climb.climb_sensors.ClimbSensorIOBeambreak;
+import frc.robot.subsystems.climb.climb_sensors.ClimbSensors;
 import frc.robot.subsystems.intake.IntakeController;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
@@ -47,7 +58,6 @@ import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
 import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
-import frc.robot.subsystems.rgb.RGBIOCANdle;
 import frc.robot.subsystems.superstructure.SuperstructureController;
 import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
 import frc.robot.subsystems.superstructure.arm.Arm;
@@ -116,6 +126,11 @@ public class RobotContainer {
   private L1PivotController l1PivotController;
   private L1Pivot l1Pivot;
 
+  private ClimbController climbController;
+  private ClimbPivot climbPivot;
+  private ClimbRollers climbRollers;
+  private ClimbSensors climbSensors;
+
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -145,6 +160,9 @@ public class RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
           clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
+          climbPivot = new ClimbPivot(new ClimbPivotIOTalonFX());
+          climbRollers = new ClimbRollers(new ClimbRollersIOTalonFX());
+          climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -168,6 +186,8 @@ public class RobotContainer {
                       "arducam-5", 2, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
+          climbPivot = new ClimbPivot(new ClimbPivotIOSim());
+          climbRollers = new ClimbRollers(new ClimbRollersIOSim());
 
           intakeRollers = new IntakeRollers(new IntakeRollersIOSim());
           intakePivot = new IntakePivot(new IntakePivotIOSim());
@@ -202,10 +222,22 @@ public class RobotContainer {
       canWatchdog = new CANWatchdog(new CANWatchdogIO() {}, rgb);
     }
 
-    // RGB
+    if (climbPivot == null) {
+      climbPivot = new ClimbPivot(new ClimbPivotIO() {});
+    }
+
+    if (climbRollers == null) {
+      climbRollers = new ClimbRollers(new ClimbRollersIO() {});
+    }
+    if (climbSensors == null) {
+      climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak() {});
+    }
+
     if (rgb == null) {
       rgb = new RGB(new RGBIO() {});
     }
+    climbController = new ClimbController(climbRollers, climbPivot, climbSensors);
+
     if (clawRollers == null) {
       clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
@@ -278,6 +310,20 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+
+    driverB
+        .b()
+        .onTrue(
+            climbController
+                .setTargetCommand(ClimbController.ClimbState.INTAKE)
+                .alongWith(
+                    superstructureController.setTargetSuperstructureState(
+                        SuperstructureController.SuperstructureState.CLIMB))
+                .alongWith(
+                    intakeController.setTargetStateCommand(IntakeController.IntakeState.CLIMB))
+                .alongWith(
+                    l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
+    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
 
     // auto align
     driverA
