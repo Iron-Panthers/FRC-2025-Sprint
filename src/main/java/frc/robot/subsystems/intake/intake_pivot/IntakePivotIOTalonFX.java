@@ -53,7 +53,7 @@ public class IntakePivotIOTalonFX extends GenericSuperstructureIOTalonFX impleme
     //         - (talon.getPosition().getValueAsDouble()
     //             // + 0.1
     //             - ((talon.getPosition().getValueAsDouble()) % (1 / 2.25)));
-    // // - 0.1; // calculates how much the fricking encoder is off by (so sad🥲)
+    // // - 0.1; // calculates how much the fricking encoder is off by (so sad)
     super.runPosition(position);
   }
 }
