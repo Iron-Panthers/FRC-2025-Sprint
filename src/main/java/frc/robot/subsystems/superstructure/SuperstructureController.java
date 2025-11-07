@@ -50,6 +50,9 @@ public class SuperstructureController extends SubsystemBase {
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.INTAKE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+    BARGE_RIGHT(
+        SuperstructurePose.fromTargetStates(
+            ElevatorTarget.TOP, ArmTarget.BARGE_RIGHT, ArmDirection.BOTH)),
     CLIMB(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.CLIMB, ArmTarget.CLIMB, ArmDirection.BOTH)),

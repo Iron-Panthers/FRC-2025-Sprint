@@ -58,7 +58,6 @@ import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
 import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
-import frc.robot.subsystems.rgb.RGBIOCANdle;
 import frc.robot.subsystems.superstructure.SuperstructureController;
 import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
 import frc.robot.subsystems.superstructure.arm.Arm;
@@ -144,7 +143,6 @@ public class RobotContainer {
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
           vision = new Vision(new VisionIOPhotonvision(1), new VisionIOPhotonvision(2));
-          rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
           l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
           intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
@@ -307,18 +305,20 @@ public class RobotContainer {
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
-    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
     driverB
         .b()
-            climbController
         .onTrue(
-                .alongWith(
+            climbController
                 .setTargetCommand(ClimbController.ClimbState.INTAKE)
-                .alongWith(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE))
+                .alongWith(
                     superstructureController.setTargetSuperstructureState(
                         SuperstructureController.SuperstructureState.CLIMB))
                 .alongWith(
+                    intakeController.setTargetStateCommand(IntakeController.IntakeState.CLIMB))
+                .alongWith(
                     l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
+    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
+
     // auto align
     driverA
         .leftBumper()
