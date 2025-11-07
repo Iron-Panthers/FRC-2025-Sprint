@@ -17,14 +17,14 @@ public class ClimbPivotConstants {
 
   public static final PIDGains GAINS =
       switch (Constants.getRobotType()) {
-        case COMP -> new PIDGains(260, 0, 0, 0, 33, 0, 0);
+        case COMP -> new PIDGains(1000, 0, 0, 0, 30, 0, 0.1);
         case SIM -> new PIDGains(600, 0, 0, 0, 66.5, 5.714, 0);
         default -> new PIDGains(0, 0, 0, 0, 0, 0, 0);
       };
 
   public static final MotionMagicConfig MOTION_MAGIC_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new MotionMagicConfig(5, .17, 0);
+        case COMP -> new MotionMagicConfig(0.5, 0.3, 0);
         case SIM -> new MotionMagicConfig(2, 1, 0);
         default -> new MotionMagicConfig(0, 0, 0);
       };

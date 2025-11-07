@@ -16,7 +16,7 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
     BOTTOM(0.05),
 
     /** "Top" is apex of climb */
-    TOP(0.28),
+    TOP(0.275),
 
     /** To get coral out */
     CLEAR(0.05),
