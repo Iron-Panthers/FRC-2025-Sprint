@@ -146,7 +146,6 @@ public class RobotContainer {
               new Vision(
                   new VisionIOPhotonvision("arducam-5", 1),
                   new VisionIOPhotonvision("arducam-4", 2));
-          rgb = new RGB(new RGBIOCANdle());
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
           l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
           intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
