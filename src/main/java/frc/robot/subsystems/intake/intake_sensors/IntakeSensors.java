@@ -38,12 +38,23 @@ public class IntakeSensors {
    * Sensor 2 is never triggered by itself if sensor1 is triggered but not sensor2, it returns 6 if
    * sensor1 is not triggered but sensor2 is, it returns 7 if both are triggered, it retruns 13;
    */
-  public int sensorsTriggered() {
+  public int filteredSensorsTriggered() {
     int output = 0;
     if (filteredDistance1 < 0.055) {
       output += 6;
     }
     if (filteredDistance2 < 0.055) {
+      output += 7;
+    }
+    return output;
+  }
+
+  public int sensorsTriggered() {
+    int output = 0;
+    if (inputs1.isDetected) {
+      output += 6;
+    }
+    if (inputs2.isDetected) {
       output += 7;
     }
     return output;

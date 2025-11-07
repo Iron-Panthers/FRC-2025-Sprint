@@ -6,5 +6,6 @@ public class IntakeSensorIOSim implements IntakeSensorIO {
   public void updateInputs(IntakeSensorIOInputs inputs) {
     inputs.distance = 0;
     inputs.connected = false;
+    inputs.isDetected = false;
   }
 }

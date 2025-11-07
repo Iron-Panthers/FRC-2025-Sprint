@@ -13,7 +13,8 @@ public class IntakeSensorIOCANRange implements IntakeSensorIO {
 
     canRange = new CANrange(id);
     CANrangeConfiguration config = new CANrangeConfiguration();
-    config.ProximityParams.ProximityThreshold = 0.04;
+    config.ProximityParams.ProximityThreshold = 0.045;
+    config.ProximityParams.MinSignalStrengthForValidMeasurement = 10000;
     canRange.getConfigurator().apply(config);
 
     // // FIXME: do we really need this?
@@ -24,5 +25,6 @@ public class IntakeSensorIOCANRange implements IntakeSensorIO {
   public void updateInputs(IntakeSensorIOInputs inputs) {
     inputs.distance = canRange.getDistance().getValueAsDouble();
     inputs.connected = canRange.isConnected();
+    inputs.isDetected = canRange.getIsDetected().getValue();
   }
 }

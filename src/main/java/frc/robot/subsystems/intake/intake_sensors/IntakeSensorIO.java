@@ -7,6 +7,7 @@ public interface IntakeSensorIO {
   class IntakeSensorIOInputs {
     public boolean connected = false;
     public double distance = 0.0;
+    public boolean isDetected = false;
   }
 
   default void updateInputs(IntakeSensorIOInputs inputs) {}
