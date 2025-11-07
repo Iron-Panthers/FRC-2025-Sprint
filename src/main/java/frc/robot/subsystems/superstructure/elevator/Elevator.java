@@ -18,8 +18,8 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     ALGAE_SCORE_NET(30),
     TOP(57),
     INTAKE(4),
-    ALGAE_INTAKE_REEF_L3(35),
-    ALGAE_INTAKE_REEF_L2(25),
+    ALGAE_INTAKE_REEF_L3(37),
+    ALGAE_INTAKE_REEF_L2(20.5),
     CLIMB(5),
     SAFE_MIDWAY(11.5);
     // CHANGE VALUES WHEN CAD FINISHES

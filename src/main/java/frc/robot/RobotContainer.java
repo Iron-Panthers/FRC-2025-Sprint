@@ -15,14 +15,17 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
+import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.claw.ClawRollers;
 import frc.robot.subsystems.claw.ClawRollersController;
+import frc.robot.subsystems.claw.ClawRollersController.ClawState;
 import frc.robot.subsystems.claw.ClawRollersIO;
 import frc.robot.subsystems.claw.ClawRollersIOSim;
+import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
 import frc.robot.subsystems.climb.ClimbController;
 import frc.robot.subsystems.climb.climbPivot.ClimbPivot;
 import frc.robot.subsystems.climb.climbPivot.ClimbPivotIO;
@@ -57,6 +60,7 @@ import frc.robot.subsystems.rgb.RGB;
 import frc.robot.subsystems.rgb.RGBIO;
 import frc.robot.subsystems.rgb.RGBIOCANdle;
 import frc.robot.subsystems.superstructure.SuperstructureController;
+import frc.robot.subsystems.superstructure.SuperstructureController.SuperstructureState;
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
@@ -153,6 +157,7 @@ public class RobotContainer {
 
           elevator = new Elevator(new ElevatorIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
+          clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
           climbPivot = new ClimbPivot(new ClimbPivotIOTalonFX());
           climbRollers = new ClimbRollers(new ClimbRollersIOTalonFX());
           climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak());
@@ -232,6 +237,7 @@ public class RobotContainer {
     if (clawRollers == null) {
       clawRollers = new ClawRollers(new ClawRollersIO() {});
     }
+    clawRollersController = new ClawRollersController(clawRollers);
 
     if (intakeRollers == null) {
       intakeRollers = new IntakeRollers(new IntakeRollersIO() {});
@@ -276,6 +282,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    configureAlgaeButtons();
+    configureOverrideButtons();
+    configureMultiUseButtons();
+    configureL1Buttons();
     // -----Driver Controls-----
     swerve.setDefaultCommand(
         swerve
@@ -296,87 +306,29 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    // driverA.b().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.L1));
-    // driverA.x().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.INTAKE));
-    // driverA.y().onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE));
-    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
+    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
     driverB
         .b()
-        .onTrue(
             climbController
-                .setTargetCommand(ClimbController.ClimbState.INTAKE)
+        .onTrue(
                 .alongWith(
+                .setTargetCommand(ClimbController.ClimbState.INTAKE)
+                .alongWith(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE))
                     superstructureController.setTargetSuperstructureState(
                         SuperstructureController.SuperstructureState.CLIMB))
-                .alongWith(intakeController.setTargetCommand(IntakeController.IntakeState.IDLE))
                 .alongWith(
                     l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
-    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
-
-    // driverB
-    //     .leftTrigger()
-    //     .onTrue(intakeController.setTargetCommand(IntakeController.IntakeState.FORCE_INTAKE));
-    // driverB
-    //     .b()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 superstructureController.setSuperstructureState(
-    //                     SuperstructureState.GROUND_ALGAE)));
-    // driverB
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
-    // // auto align
-    // driverA
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 clawRollersController.setVoltageTarget(
-    //                     ClawRollersController.ClawState.EJECT_TOP)));
-    // driverA
-    //     .y()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 clawRollersController.setVoltageTarget(
-    //                     ClawRollersController.ClawState.INTAKE)));
-
-    // driverB
-    //     .a()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
-    // driverB
-    //     .b()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    // superstructureController.setSuperstructureState(SuperstructureState.STOW)));
-    // driverB
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
     // auto align
     driverA
         .leftBumper()
         .whileTrue(
             (new ApproachReef(() -> levelOffsets, true, swerve)
                     .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
-                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1))
                 .andThen(new WaitCommand(1))
                 .andThen(
-                    intakeController.setTargetCommand(
+                    intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
     // auto align
     driverA
@@ -384,11 +336,82 @@ public class RobotContainer {
         .whileTrue(
             (new ApproachReef(() -> levelOffsets, false, swerve)
                     .alongWith(new InstantCommand(() -> swerve.clearHeadingControl())))
-                .andThen(intakeController.setTargetCommand(IntakeController.IntakeState.L1))
+                .andThen(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1))
                 .andThen(new WaitCommand(1))
                 .andThen(
-                    intakeController.setTargetCommand(
+                    intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
+  }
+
+  private void configureL1Buttons() {
+    driverA.x().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
+    driverA.y().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.IDLE));
+    driverB
+        .leftTrigger()
+        .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.FORCE_INTAKE));
+    driverB
+        .leftTrigger()
+        .onFalse(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
+    driverB.rightTrigger().onTrue(new ScoreL1Command(intakeController, l1PivotController));
+  }
+
+  private void configureMultiUseButtons() {
+    // outtake
+
+  }
+
+  private void configureOverrideButtons() {
+    driverB
+        .a()
+        .onTrue(
+            superstructureController.setSuperstructureStateCommand(SuperstructureState.ZEROING));
+    driverB
+        .rightBumper()
+        .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.HOLD));
+    driverB
+        .leftBumper()
+        .onTrue(superstructureController.setSuperstructureStateCommand(SuperstructureState.TOP));
+  }
+
+  private void configureAlgaeButtons() {
+    driverB
+        .povDown()
+        .onTrue(
+            new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
+                .alongWith(
+                    superstructureController.setSuperstructureStateCommand(
+                        SuperstructureState.GROUND_ALGAE)));
+    driverB
+        .povRight()
+        .onTrue(
+            new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
+                .alongWith(
+                    superstructureController.setSuperstructureStateCommand(
+                        SuperstructureState.L2_ALGAE)));
+    driverB
+        .povLeft()
+        .onTrue(
+            new InstantCommand(() -> clawRollersController.setClawTarget(ClawState.INTAKE))
+                .alongWith(
+                    superstructureController.setSuperstructureStateCommand(
+                        SuperstructureState.L3_ALGAE)));
+
+    driverB
+        .povUp()
+        .onTrue(
+            superstructureController.setSuperstructureStateCommand(
+                SuperstructureState.BARGE_RIGHT));
+
+    driverB
+        .rightBumper()
+        .onTrue(superstructureController.setSuperstructureStateCommand(SuperstructureState.STOW));
+    driverA
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    clawRollersController.setClawTarget(
+                        ClawRollersController.ClawState.EJECT_TOP)));
   }
 
   private void configureAutos() {

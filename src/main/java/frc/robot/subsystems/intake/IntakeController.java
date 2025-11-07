@@ -85,9 +85,6 @@ public class IntakeController extends SubsystemBase {
       case L1 -> {
         intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);
         intakePivot.setPositionTarget(IntakePivotTarget.L1);
-        // if (intakeReachedTarget()) {
-        // intakeRollers.setVoltageTarget(IntakeRollers.Target.EJECT);
-        // }
       }
       case PASS -> {
         intakePivot.setPositionTarget(IntakePivotTarget.PASS);
@@ -137,7 +134,7 @@ public class IntakeController extends SubsystemBase {
    *     phase. - Cleans up with no specific actions upon command termination. - Ends when the
    *     intake system reaches the specified target state.
    */
-  public Command setTargetCommand(IntakeState target) {
+  public Command setTargetStateCommand(IntakeState target) {
     return new InstantCommand(
             () -> {
               this.targetState = target;
@@ -145,5 +142,9 @@ public class IntakeController extends SubsystemBase {
             this)
         .withTimeout(.02)
         .andThen(new WaitUntilCommand(this::intakeReachedTarget));
+  }
+
+  public boolean intakeSensorsTriggered() {
+    return intakeSensors.sensorsTriggered() > 0;
   }
 }

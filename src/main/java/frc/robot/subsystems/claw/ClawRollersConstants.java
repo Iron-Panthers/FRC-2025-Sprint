@@ -5,7 +5,7 @@ import frc.robot.Constants;
 public class ClawRollersConstants {
   public static final int ID =
       switch (Constants.getRobotType()) {
-        case COMP -> 26; // TODO CHANGE
+        case COMP -> 34; // TODO CHANGE
         case SIM -> 26; // TODO CHANGE
         default -> 0;
       };
@@ -18,7 +18,7 @@ public class ClawRollersConstants {
   // TODO: change to InvertedValue
   public static final boolean INVERTED =
       switch (Constants.getRobotType()) {
-        case COMP -> false; // TODO CHANGE
+        case COMP -> true; // TODO CHANGE
         case SIM -> false; // TODO CHANGE
         default -> false;
       };
@@ -38,6 +38,8 @@ public class ClawRollersConstants {
         case COMP, SIM -> 3d * Math.PI;
         default -> 1;
       };
+
+  public static final double INTAKE_CURRENT_THRESHOLD = 20;
 
   public static final double MOI = 0.0003 * 4; // MAYBE CHANGE?
 }
