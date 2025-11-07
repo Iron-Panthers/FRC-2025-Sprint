@@ -3,13 +3,16 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
@@ -21,12 +24,13 @@ import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.claw.ClawRollers;
+import frc.robot.subsystems.claw.ClawRollers.ClawRollersTarget;
 import frc.robot.subsystems.claw.ClawRollersController;
 import frc.robot.subsystems.claw.ClawRollersController.ClawState;
 import frc.robot.subsystems.claw.ClawRollersIO;
 import frc.robot.subsystems.claw.ClawRollersIOSim;
-import frc.robot.subsystems.claw.ClawRollersIOTalonFX;
 import frc.robot.subsystems.intake.IntakeController;
+import frc.robot.subsystems.intake.IntakeController.IntakeState;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOSim;
@@ -53,11 +57,9 @@ import frc.robot.subsystems.superstructure.SuperstructureController.Superstructu
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
-import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -139,9 +141,8 @@ public class RobotContainer {
                   new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
                   new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
-          elevator = new Elevator(new ElevatorIOTalonFX());
-          arm = new Arm(new ArmIOTalonFX());
-          clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
+          // elevator = new Elevator(new ElevatorIOTalonFX());
+          // arm = new Arm(new ArmIOTalonFX());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -245,7 +246,28 @@ public class RobotContainer {
 
   /** Use this method to define the named commands for all of the autos */
   private void nameCommands() {
-    // Register Command Names in this method
+    // Register Command Names
+    NamedCommands.registerCommand(
+        "Score_L1",
+        new SequentialCommandGroup(
+                new FunctionalCommand(
+                    () -> intakeController.setTargetStateCommand(IntakeState.L1),
+                    () -> {},
+                    (e) -> {},
+                    () -> intakeController.intakeReachedTarget(),
+                    intakeController))
+            .withTimeout(2.6));
+    NamedCommands.registerCommand(
+        "Eject",
+        new InstantCommand(() -> clawRollers.setVoltageTarget(ClawRollersTarget.EJECT_TOP)));
+    NamedCommands.registerCommand(
+        "Eject_L1",
+        new SequentialCommandGroup(intakeController.setTargetStateCommand(IntakeState.EJECT)));
+    NamedCommands.registerCommand("Zero", swerve.zeroGyroCommand());
+    // NamedCommands.registerCommand(
+    //     "L2_Algae",
+    //     new InstantCommand(() ->
+    // superstructureController.setSuperstructureStateCommand(SuperstructureState.L2_ALGAE)));
   }
 
   private void configureBindings() {
@@ -273,7 +295,64 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
+    driverA.b().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1));
+    driverA.x().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
+    driverA.y().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.IDLE));
+    driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
+    driverB
+        .leftTrigger()
+        .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.FORCE_INTAKE));
+    // driverB
+    //     .b()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 superstructureController.setSuperstructureState(
+    //                     SuperstructureState.GROUND_ALGAE)));
+    // driverB
+    //     .x()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //
+    // superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
+    // // auto align
+    // driverA
+    //     .x()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 clawRollersController.setVoltageTarget(
+    //                     ClawRollersController.ClawState.EJECT_TOP)));
+    // driverA
+    //     .y()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 clawRollersController.setVoltageTarget(
+    //                     ClawRollersController.ClawState.INTAKE)));
+
+    // driverB
+    //     .a()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //
+    // superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
+    // driverB
+    //     .b()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    // superstructureController.setSuperstructureState(SuperstructureState.STOW)));
+    // driverB
+    //     .x()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //
+    // superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
     // auto align
     driverA
         .leftBumper()
@@ -411,9 +490,8 @@ public class RobotContainer {
   }
 
   public Command getAutoCommand() {
-    return AutoBuilder.buildAuto("R L4 (3) (EDC)"); // HACK: Replace once we get auto logging
+    return autoChooser.get();
   }
-
   // runs when auto starts
   public void autoInit() {
     // Smart zero the robot
