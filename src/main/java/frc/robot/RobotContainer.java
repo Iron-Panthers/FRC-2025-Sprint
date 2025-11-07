@@ -142,7 +142,10 @@ public class RobotContainer {
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[1]),
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFXReal(DriveConstants.MODULE_CONFIGS[3]));
-          vision = new Vision(new VisionIOPhotonvision(1), new VisionIOPhotonvision(2));
+          vision =
+              new Vision(
+                  new VisionIOPhotonvision("arducam-5", 1),
+                  new VisionIOPhotonvision("arducam-4", 2));
           canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
           l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
           intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
@@ -176,8 +179,10 @@ public class RobotContainer {
                       DriveConstants.MODULE_CONFIGS[3], driveSimulation.getModules()[3]));
           vision =
               new Vision(
-                  new VisionIOPhotonvisionSim(1, driveSimulation::getSimulatedDriveTrainPose),
-                  new VisionIOPhotonvisionSim(2, driveSimulation::getSimulatedDriveTrainPose));
+                  new VisionIOPhotonvisionSim(
+                      "arducam-4", 1, driveSimulation::getSimulatedDriveTrainPose),
+                  new VisionIOPhotonvisionSim(
+                      "arducam-5", 2, driveSimulation::getSimulatedDriveTrainPose));
 
           SimulatedArena.getInstance().resetFieldForAuto();
           climbPivot = new ClimbPivot(new ClimbPivotIOSim());
