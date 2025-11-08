@@ -17,7 +17,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
     ALGAE_SCORE_PROCESSOR(5),
     ALGAE_SCORE_NET(30),
     TOP(57),
-    INTAKE(4),
+    GROUND_ALGAE(7),
     ALGAE_INTAKE_REEF_L3(37),
     ALGAE_INTAKE_REEF_L2(20.5),
     CLIMB(5),
@@ -54,7 +54,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
 
   public Elevator(ElevatorIO io) {
     super("Elevator", io);
-    setPositionTarget(ElevatorTarget.INTAKE);
+    setPositionTarget(ElevatorTarget.GROUND_ALGAE);
     setControlMode(ControlMode.STOP);
 
     // setup the linear filter

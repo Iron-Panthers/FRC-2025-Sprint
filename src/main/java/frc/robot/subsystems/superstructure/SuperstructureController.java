@@ -49,7 +49,7 @@ public class SuperstructureController extends SubsystemBase {
     /** Picking up algae from the ground */
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.INTAKE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+            ElevatorTarget.GROUND_ALGAE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
     BARGE_RIGHT(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.TOP, ArmTarget.BARGE_RIGHT, ArmDirection.BOTH)),
