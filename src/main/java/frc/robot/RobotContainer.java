@@ -3,6 +3,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -25,6 +27,7 @@ import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIOComp;
 import frc.robot.subsystems.claw.ClawRollers;
+import frc.robot.subsystems.claw.ClawRollers.ClawRollersTarget;
 import frc.robot.subsystems.claw.ClawRollersController;
 import frc.robot.subsystems.claw.ClawRollersController.ClawState;
 import frc.robot.subsystems.claw.ClawRollersIO;
@@ -42,6 +45,7 @@ import frc.robot.subsystems.climb.climbRollers.ClimbRollersIOTalonFX;
 import frc.robot.subsystems.climb.climb_sensors.ClimbSensorIOBeambreak;
 import frc.robot.subsystems.climb.climb_sensors.ClimbSensors;
 import frc.robot.subsystems.intake.IntakeController;
+import frc.robot.subsystems.intake.IntakeController.IntakeState;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOSim;
@@ -285,7 +289,28 @@ public class RobotContainer {
 
   /** Use this method to define the named commands for all of the autos */
   private void nameCommands() {
-    // Register Command Names in this method
+    // Register Command Names
+    NamedCommands.registerCommand(
+        "Score_L1",
+        new SequentialCommandGroup(
+                new FunctionalCommand(
+                    () -> intakeController.setTargetStateCommand(IntakeState.L1),
+                    () -> {},
+                    (e) -> {},
+                    () -> intakeController.intakeReachedTarget(),
+                    intakeController))
+            .withTimeout(2.6));
+    NamedCommands.registerCommand(
+        "Eject",
+        new InstantCommand(() -> clawRollers.setVoltageTarget(ClawRollersTarget.EJECT_TOP)));
+    NamedCommands.registerCommand(
+        "Eject_L1",
+        new SequentialCommandGroup(intakeController.setTargetStateCommand(IntakeState.EJECT)));
+    NamedCommands.registerCommand("Zero", swerve.zeroGyroCommand());
+    // NamedCommands.registerCommand(
+    //     "L2_Algae",
+    //     new InstantCommand(() ->
+    // superstructureController.setSuperstructureStateCommand(SuperstructureState.L2_ALGAE)));
   }
 
   private void configureBindings() {
@@ -313,8 +338,6 @@ public class RobotContainer {
             .withName("Drive Teleop"));
 
     driverA.start().onTrue(swerve.zeroGyroCommand());
-
-    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
     // auto align
     driverA
@@ -483,9 +506,8 @@ public class RobotContainer {
   }
 
   public Command getAutoCommand() {
-    return AutoBuilder.buildAuto("R L4 (3) (EDC)"); // HACK: Replace once we get auto logging
+    return autoChooser.get();
   }
-
   // runs when auto starts
   public void autoInit() {
     // Smart zero the robot

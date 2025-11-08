@@ -46,8 +46,8 @@ public class ClimbPivotConstants {
   public record MotionMagicConfig(double acceleration, double cruiseVelocity, double jerk) {}
 
   // SOFT LIMITS
-  public static final double LOWWER_EXTENSION_LIMIT = 0.05d;
-  public static final double UPPER_EXTENSION_LIMIT = 0.283d;
+  public static final double LOWWER_EXTENSION_LIMIT = -0.01d;
+  public static final double UPPER_EXTENSION_LIMIT = 0.297d;
 
   // CURRENT LIMITS
   public static final double UPPER_VOLT_LIMIT = 12;

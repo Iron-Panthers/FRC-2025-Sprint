@@ -13,16 +13,16 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
   public enum ClimbPivotTarget implements GenericSuperstructure.PositionTarget {
 
     /** "Bottom" is ready to ram into cage */
-    BOTTOM(0.05),
+    BOTTOM(0.0),
 
     /** "Top" is apex of climb */
-    TOP(0.275),
+    TOP(0.294),
 
     /** To get coral out */
-    CLEAR(0.05),
+    CLEAR(0.0),
 
     /** When not climbing */
-    STOW(0.05);
+    STOW(0);
 
     private double position = 0;
     private static final double EPSILON = ClimbPivotConstants.POSITION_TARGET_EPSILON;
