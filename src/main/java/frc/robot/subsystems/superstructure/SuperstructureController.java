@@ -188,6 +188,8 @@ public class SuperstructureController extends SubsystemBase {
   /** The current target state of the superstructure */
   private SuperstructureState superstructureState = SuperstructureState.STOW;
 
+  // private SuperstructureState savedState = superstructureState;
+
   /**
    * Get the current target state of the superstructure
    *
@@ -212,7 +214,15 @@ public class SuperstructureController extends SubsystemBase {
    * @param state
    */
   public void setSuperstructureState(SuperstructureState state) {
+    // if (superstructureState == SuperstructureState.BARGE_RIGHT) {
+    //   this.superstructureState = SuperstructureState.TOP;
+    //   savedState = state;
+    // } else if (state == SuperstructureState.BARGE_RIGHT) {
+    //   this.superstructureState = SuperstructureState.TOP;
+    //   savedState = state;
+    // } else {
     this.superstructureState = state;
+    // }
   }
 
   public Command setTargetSuperstructureState(SuperstructureState state) {

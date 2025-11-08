@@ -29,6 +29,7 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
   private final StatusSignal<AngularVelocity> velocityRPS;
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Temperature> temp;
 
   // zeroing stuff
@@ -98,23 +99,26 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
     velocityRPS = talon.getVelocity();
     appliedVolts = talon.getMotorVoltage();
     supplyCurrent = talon.getSupplyCurrent();
+    statorCurrent = talon.getStatorCurrent();
     temp = talon.getDeviceTemp();
+
     positionRotations = talon.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50, positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp);
+        50, positionRotations, velocityRPS, appliedVolts, supplyCurrent, statorCurrent, temp);
   }
 
   @Override
   public void updateInputs(GenericSuperstructureIOInputs inputs) {
     inputs.connected =
         BaseStatusSignal.refreshAll(
-                positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
+                positionRotations, velocityRPS, appliedVolts, supplyCurrent, statorCurrent, temp)
             .isOK();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.velocityRotPerSec = velocityRPS.getValueAsDouble();
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = supplyCurrent.getValueAsDouble();
+    inputs.statorCurrent = statorCurrent.getValueAsDouble();
     inputs.tempCelsius = temp.getValueAsDouble();
   }
 

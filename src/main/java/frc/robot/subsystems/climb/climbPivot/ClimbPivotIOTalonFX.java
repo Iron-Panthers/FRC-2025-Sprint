@@ -6,6 +6,8 @@ import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureConf
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureIOTalonFX;
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import com.ctre.phoenix6.controls.VoltageOut;
+
 public class ClimbPivotIOTalonFX extends GenericSuperstructureIOTalonFX implements ClimbPivotIO {
 
   public ClimbPivotIOTalonFX() {
@@ -42,4 +44,8 @@ public class ClimbPivotIOTalonFX extends GenericSuperstructureIOTalonFX implemen
 
   @AutoLogOutput(key = "Superstructure/Climb/Climb Pivot/ModdedRotations")
   public double moddedRotations;
+  @Override
+  public void stop(){
+    talon.setControl(new VoltageOut(0.4));
+  }
 }

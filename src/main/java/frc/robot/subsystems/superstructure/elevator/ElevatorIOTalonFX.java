@@ -19,6 +19,7 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
   private final StatusSignal<AngularVelocity> velocityRPS2;
   private final StatusSignal<Voltage> appliedVolts2;
   private final StatusSignal<Current> supplyCurrent2;
+  private final StatusSignal<Current> statorCurrent2;
   private final StatusSignal<Temperature> temp2;
 
   protected TalonFX talon2;
@@ -47,11 +48,12 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
     velocityRPS2 = talon2.getVelocity();
     appliedVolts2 = talon2.getMotorVoltage();
     supplyCurrent2 = talon2.getSupplyCurrent();
+    statorCurrent2 = talon2.getStatorCurrent();
     temp2 = talon2.getDeviceTemp();
     positionRotations2 = talon2.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50, positionRotations2, velocityRPS2, appliedVolts2, supplyCurrent2, temp2);
+        50, positionRotations2, velocityRPS2, appliedVolts2, supplyCurrent2, statorCurrent2, temp2);
 
     setSlot0(
         GAINS.kP(),
@@ -77,6 +79,7 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
     inputs.velocityRotPerSec2 = velocityRPS2.getValueAsDouble();
     inputs.appliedVolts2 = appliedVolts2.getValueAsDouble();
     inputs.supplyCurrentAmps2 = supplyCurrent2.getValueAsDouble();
+    inputs.statorCurrent2 = statorCurrent2.getValueAsDouble();
     inputs.tempCelsius2 = temp2.getValueAsDouble();
   }
 

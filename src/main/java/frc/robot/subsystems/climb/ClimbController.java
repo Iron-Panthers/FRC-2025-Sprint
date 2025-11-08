@@ -60,16 +60,16 @@ public class ClimbController extends SubsystemBase {
         climbPivot.setPositionTarget(ClimbPivotTarget.CLEAR);
       }
       case CLIMB -> {
-        if (climbPivot.getPosition() > ClimbPivotTarget.TOP.getPosition()){
+        if (climbPivot.getPosition() > ClimbPivotTarget.TOP.getPosition()) {
           setTargetState(ClimbState.STOP);
         }
         climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
         climbPivot.setPositionTarget(ClimbPivotTarget.TOP);
       }
-      case STOP -> {
-        climbPivot.setControlMode(ControlMode.STOP);
-        climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
-      }
+        case STOP -> {
+          climbPivot.setControlMode(ControlMode.STOP);
+          climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
+        }
     }
 
     // periodics
