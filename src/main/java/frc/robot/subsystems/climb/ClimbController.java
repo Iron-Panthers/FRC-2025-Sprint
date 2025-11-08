@@ -22,7 +22,9 @@ public class ClimbController extends SubsystemBase {
     /** Pose for flicking out the coral from the climb mech (if it is in the robot) */
     CLEAR,
     /** The actual action of climbing */
-    CLIMB;
+    CLIMB,
+    /** No voltage */
+    STOP;
   }
 
   private final ClimbRollers climbRollers;
@@ -58,8 +60,15 @@ public class ClimbController extends SubsystemBase {
         climbPivot.setPositionTarget(ClimbPivotTarget.CLEAR);
       }
       case CLIMB -> {
+        if (climbPivot.getPosition() > ClimbPivotTarget.TOP.getPosition()){
+          setTargetState(ClimbState.STOP);
+        }
         climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
         climbPivot.setPositionTarget(ClimbPivotTarget.TOP);
+      }
+      case STOP -> {
+        climbPivot.setControlMode(ControlMode.STOP);
+        climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
       }
     }
 
