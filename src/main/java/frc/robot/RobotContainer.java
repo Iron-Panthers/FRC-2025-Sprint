@@ -71,9 +71,11 @@ import frc.robot.subsystems.superstructure.SuperstructureController.Superstructu
 import frc.robot.subsystems.superstructure.arm.Arm;
 import frc.robot.subsystems.superstructure.arm.ArmIO;
 import frc.robot.subsystems.superstructure.arm.ArmIOSim;
+import frc.robot.subsystems.superstructure.arm.ArmIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -337,65 +339,6 @@ public class RobotContainer {
 
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
-    // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-    driverA.b().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.L1));
-    driverA.x().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
-    driverA.y().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.IDLE));
-    driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-
-    driverB
-        .leftTrigger()
-        .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.FORCE_INTAKE));
-    // driverB
-    //     .b()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 superstructureController.setSuperstructureState(
-    //                     SuperstructureState.GROUND_ALGAE)));
-    // driverB
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L2_ALGAE)));
-    // // auto align
-    // driverA
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 clawRollersController.setVoltageTarget(
-    //                     ClawRollersController.ClawState.EJECT_TOP)));
-    // driverA
-    //     .y()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 clawRollersController.setVoltageTarget(
-    //                     ClawRollersController.ClawState.INTAKE)));
-
-    // driverB
-    //     .a()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L1_LEFT)));
-    // driverB
-    //     .b()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    // superstructureController.setSuperstructureState(SuperstructureState.STOW)));
-    // driverB
-    //     .x()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //
-    // superstructureController.setSuperstructureState(SuperstructureState.L1_RIGHT)));
     // auto align
     driverA
         .leftBumper()
