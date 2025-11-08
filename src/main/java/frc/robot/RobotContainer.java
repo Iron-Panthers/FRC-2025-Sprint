@@ -4,14 +4,18 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
@@ -289,6 +293,8 @@ public class RobotContainer {
     configureOverrideButtons();
     configureMultiUseButtons();
     configureL1Buttons();
+    configureClimbButtons();
+
     // -----Driver Controls-----
     swerve.setDefaultCommand(
         swerve
@@ -309,20 +315,6 @@ public class RobotContainer {
     driverA.start().onTrue(swerve.zeroGyroCommand());
 
     // driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
-
-    driverB
-        .b()
-        .onTrue(
-            climbController
-                .setTargetCommand(ClimbController.ClimbState.INTAKE)
-                .alongWith(
-                    superstructureController.setTargetSuperstructureState(
-                        SuperstructureController.SuperstructureState.CLIMB))
-                .alongWith(
-                    intakeController.setTargetStateCommand(IntakeController.IntakeState.CLIMB))
-                .alongWith(
-                    l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
-    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
 
     // auto align
     driverA
@@ -346,6 +338,36 @@ public class RobotContainer {
                 .andThen(
                     intakeController.setTargetStateCommand(
                         IntakeController.IntakeState.UPRIGHT_INTAKE)));
+    new Trigger(
+            () -> (Math.abs(driverA.getRightY()) > 0.2) || (Math.abs(driverA.getRightX()) > 0.2))
+        .whileTrue(
+            new FunctionalCommand(
+                () -> {},
+                () ->
+                    swerve.setTargetHeading(
+                        calculateSnapTargetHeading(
+                            new Rotation2d(
+                                Math.atan2(
+                                    MathUtil.applyDeadband(-driverA.getRightX(), 0.1),
+                                    MathUtil.applyDeadband(-driverA.getRightY(), 0.1))))),
+                interrupted -> {},
+                () -> false));
+  }
+
+  private void configureClimbButtons() {
+    driverB
+        .b()
+        .onTrue(
+            climbController
+                .setTargetCommand(ClimbController.ClimbState.INTAKE)
+                .alongWith(
+                    superstructureController.setTargetSuperstructureState(
+                        SuperstructureController.SuperstructureState.CLIMB))
+                .alongWith(
+                    intakeController.setTargetStateCommand(IntakeController.IntakeState.CLIMB))
+                .alongWith(
+                    l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
+    driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
   }
 
   private void configureL1Buttons() {
@@ -492,6 +514,24 @@ public class RobotContainer {
     double a = ((currentAngle - newAngle) % 360 + 360) % 360;
     double b = ((currentAngle - newAngle) % 360 + 360) % 360;
     return a < b ? a : -b;
+  }
+
+  public static Rotation2d calculateSnapTargetHeading(Rotation2d targetHeading) {
+
+    targetHeading = targetHeading.rotateBy(Rotation2d.kPi); // because back of robot
+
+    // TODO: Maybe make this *** mathematica ***
+    double closest = DriveConstants.REEF_SNAP_ANGLES[0];
+    for (double snap : DriveConstants.REEF_SNAP_ANGLES) {
+
+      if (Math.abs(relativeAngularDifference(targetHeading.getDegrees(), snap))
+          < Math.abs(relativeAngularDifference(targetHeading.getDegrees(), closest))) {
+
+        closest = snap;
+      }
+    }
+
+    return new Rotation2d(Math.toRadians(closest));
   }
 
   public void updateSimulation() {
