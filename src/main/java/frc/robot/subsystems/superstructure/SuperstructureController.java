@@ -42,7 +42,7 @@ public class SuperstructureController extends SubsystemBase {
     L2_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L2, ArmTarget.STRAIGHT, ArmDirection.BOTH)),
-    /** Picking up L2 algae from the reef */
+    /** Picking up L3 algae from the reef */
     L3_ALGAE(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.ALGAE_INTAKE_REEF_L3, ArmTarget.STRAIGHT, ArmDirection.BOTH)),

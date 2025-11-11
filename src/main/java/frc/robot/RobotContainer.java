@@ -264,10 +264,18 @@ public class RobotContainer {
         "Eject_L1",
         new SequentialCommandGroup(intakeController.setTargetStateCommand(IntakeState.EJECT)));
     NamedCommands.registerCommand("Zero", swerve.zeroGyroCommand());
-    // NamedCommands.registerCommand(
-    //     "L2_Algae",
-    //     new InstantCommand(() ->
-    // superstructureController.setSuperstructureStateCommand(SuperstructureState.L2_ALGAE)));
+    NamedCommands.registerCommand(
+        "L2_Algae",
+        new InstantCommand(
+            () ->
+                superstructureController.setSuperstructureStateCommand(
+                    SuperstructureState.L2_ALGAE)));
+    NamedCommands.registerCommand(
+        "Barge_right",
+        new InstantCommand(
+            () ->
+                superstructureController.setSuperstructureStateCommand(
+                    SuperstructureState.BARGE_RIGHT)));
   }
 
   private void configureBindings() {
