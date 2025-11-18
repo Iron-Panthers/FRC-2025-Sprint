@@ -8,6 +8,7 @@ public class RGBConstants {
       switch (Constants.getRobotType()) {
         case COMP -> new RGBConfig(34, 220);
         case SIM -> new RGBConfig(0, 0);
+        default -> new RGBConfig(34, 220);
       };
 
   public static final class Colors {

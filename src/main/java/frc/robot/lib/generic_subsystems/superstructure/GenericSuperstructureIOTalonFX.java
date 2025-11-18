@@ -29,11 +29,12 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
   private final StatusSignal<AngularVelocity> velocityRPS;
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Temperature> temp;
 
   // zeroing stuff
   private final double zeroingVolts;
-  private final double zeroingOffset;
+  protected final double zeroingOffset;
   private final double zeroingVoltageThreshold;
 
   protected final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
@@ -57,15 +58,21 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     config.Voltage.withPeakForwardVoltage(superstructureConfig.upperVoltLimit);
-    config.Voltage.withPeakReverseVoltage(superstructureConfig.lowerExtensionLimit);
+    config.Voltage.withPeakReverseVoltage(superstructureConfig.lowerVoltLimit);
     config.Feedback.withSensorToMechanismRatio(superstructureConfig.reduction);
 
-    config.SoftwareLimitSwitch.withReverseSoftLimitEnable(true);
-    config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
-        superstructureConfig.lowerExtensionLimit);
-    config.SoftwareLimitSwitch.withReverseSoftLimitEnable(true);
-    config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
-        superstructureConfig.upperExtensionLimit);
+    if (superstructureConfig.lowerExtensionLimitEnabled) {
+      config.SoftwareLimitSwitch.withReverseSoftLimitEnable(
+          superstructureConfig.lowerExtensionLimitEnabled);
+      config.SoftwareLimitSwitch.withReverseSoftLimitThreshold(
+          superstructureConfig.lowerExtensionLimit);
+    }
+    if (superstructureConfig.upperExtensionLimitEnabled) {
+      config.SoftwareLimitSwitch.withForwardSoftLimitEnable(
+          superstructureConfig.upperExtensionLimitEnabled);
+      config.SoftwareLimitSwitch.withForwardSoftLimitThreshold(
+          superstructureConfig.upperExtensionLimit);
+    }
 
     talon = new TalonFX(superstructureConfig.id);
 
@@ -77,7 +84,8 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
               new CANcoderConfiguration()
                   .withMagnetSensor(
                       new MagnetSensorConfigs()
-                          .withAbsoluteSensorDiscontinuityPoint(0.5)
+                          .withAbsoluteSensorDiscontinuityPoint(
+                              superstructureConfig.sensorDiscontinuityPoint)
                           .withSensorDirection(superstructureConfig.canCoderDirection)
                           .withMagnetOffset(superstructureConfig.canCoderOffset)));
       config.Feedback.withRemoteCANcoder(canCoder);
@@ -91,23 +99,26 @@ public abstract class GenericSuperstructureIOTalonFX implements GenericSuperstru
     velocityRPS = talon.getVelocity();
     appliedVolts = talon.getMotorVoltage();
     supplyCurrent = talon.getSupplyCurrent();
+    statorCurrent = talon.getStatorCurrent();
     temp = talon.getDeviceTemp();
+
     positionRotations = talon.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50, positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp);
+        50, positionRotations, velocityRPS, appliedVolts, supplyCurrent, statorCurrent, temp);
   }
 
   @Override
   public void updateInputs(GenericSuperstructureIOInputs inputs) {
     inputs.connected =
         BaseStatusSignal.refreshAll(
-                positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
+                positionRotations, velocityRPS, appliedVolts, supplyCurrent, statorCurrent, temp)
             .isOK();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.velocityRotPerSec = velocityRPS.getValueAsDouble();
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = supplyCurrent.getValueAsDouble();
+    inputs.statorCurrent = statorCurrent.getValueAsDouble();
     inputs.tempCelsius = temp.getValueAsDouble();
   }
 
