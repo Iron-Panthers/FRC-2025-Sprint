@@ -19,7 +19,6 @@ public class ObjectDetection extends SubsystemBase {
   }
 
   public Rotation2d getRotation() {
-
     return new Rotation2d(inputs.xErr);
   }
   // Pass in a value so that the drive class rotates that many values; purpose is so that when a
