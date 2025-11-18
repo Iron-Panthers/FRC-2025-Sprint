@@ -22,7 +22,10 @@ public class ClimbController extends SubsystemBase {
     /** Pose for flicking out the coral from the climb mech (if it is in the robot) */
     CLEAR,
     /** The actual action of climbing */
-    CLIMB;
+    CLIMB,
+    /** No voltage */
+    STOP_INTAKE,
+    STOP_CLIMB;
   }
 
   private final ClimbRollers climbRollers;
@@ -47,7 +50,7 @@ public class ClimbController extends SubsystemBase {
     switch (targetState) {
       case IDLE -> {
         climbRollers.setVoltageTarget(ClimbRollers.Target.IDLE);
-        climbPivot.setPositionTarget(ClimbPivotTarget.STOW);
+        climbPivot.setPositionTarget(ClimbPivotTarget.BOTTOM);
       }
       case INTAKE -> {
         climbRollers.setVoltageTarget(ClimbRollers.Target.INTAKE);
@@ -61,12 +64,29 @@ public class ClimbController extends SubsystemBase {
         climbRollers.setVoltageTarget(ClimbRollers.Target.HOLD);
         climbPivot.setPositionTarget(ClimbPivotTarget.TOP);
       }
+      case STOP_INTAKE -> {
+        climbPivot.setControlMode(ControlMode.STOP);
+        climbRollers.setVoltageTarget(ClimbRollers.Target.INTAKE);
+      }
+      case STOP_CLIMB -> {
+        climbPivot.setControlMode(ControlMode.STOP);
+        climbRollers.setVoltageTarget(ClimbRollers.Target.IDLE);
+      }
     }
 
     // periodics
     climbPivot.periodic();
     climbRollers.periodic();
     climbSensors.periodic();
+    if (climbPivot.getPosition() > ClimbPivotTarget.TOP.getPosition()) {
+      setTargetState(ClimbState.STOP_CLIMB);
+    }
+    if (climbPivot.reachedTarget()
+        && targetState != ClimbState.STOP_INTAKE
+        && targetState != ClimbState.STOP_CLIMB) {
+      setTargetState(
+          targetState == ClimbState.INTAKE ? ClimbState.STOP_INTAKE : ClimbState.STOP_CLIMB);
+    }
 
     Logger.recordOutput("Climb/TargetState", targetState);
   }

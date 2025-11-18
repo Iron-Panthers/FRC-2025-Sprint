@@ -70,4 +70,14 @@ public class ClimbPivotIOSim extends GenericSuperstructureIOSim implements Climb
   public void setOffset() {
     climbPivotSim.setState(0, 0);
   }
+
+  @Override
+  public void runVolts(double volts) {
+    climbPivotSim.setInputVoltage(volts);
+  }
+
+  @Override
+  public void stop() {
+    // talon.setControl(new VoltageOut(0.4));
+  }
 }

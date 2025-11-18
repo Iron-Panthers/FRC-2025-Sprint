@@ -6,11 +6,10 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import frc.robot.Constants;
 import frc.robot.subsystems.canWatchdog.CANWatchdogConstants.CAN;
 
-// TODO: Edit allllllllllllllllllllllllllllllllllllllllll of these constants (yet again) (I think)
 public class ClimbPivotConstants {
   public static final ClimbPivotConfig CLIMB_PIVOT_CONFIG =
       switch (Constants.getRobotType()) {
-        case COMP -> new ClimbPivotConfig(CAN.at(36, "Climb Pivot Motor"), 1, 40, -0.331055);
+        case COMP -> new ClimbPivotConfig(CAN.at(36, "Climb Pivot Motor"), 1, 40, -0.3224);
         case SIM -> new ClimbPivotConfig(40, 2.5, 45, 0.201);
         default -> new ClimbPivotConfig(0, 1, 0, 0d);
       };
@@ -41,13 +40,12 @@ public class ClimbPivotConstants {
   public static final SensorDirectionValue CANCODER_DIRECTION =
       SensorDirectionValue.CounterClockwise_Positive;
 
-  public static final double POSITION_TARGET_EPSILON = 0.03;
+  public static final double POSITION_TARGET_EPSILON = 0.005;
 
   public record MotionMagicConfig(double acceleration, double cruiseVelocity, double jerk) {}
 
   // SOFT LIMITS
-  public static final double LOWWER_EXTENSION_LIMIT = -0.01d;
-  public static final double UPPER_EXTENSION_LIMIT = 0.297d;
+  public static final double LOWWER_EXTENSION_LIMIT = -0.04d;
 
   // CURRENT LIMITS
   public static final double UPPER_VOLT_LIMIT = 12;

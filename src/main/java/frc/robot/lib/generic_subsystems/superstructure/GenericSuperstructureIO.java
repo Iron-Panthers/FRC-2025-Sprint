@@ -11,6 +11,7 @@ public interface GenericSuperstructureIO {
     public double velocityRotPerSec = 0;
     public double appliedVolts = 0;
     public double supplyCurrentAmps = 0;
+    public double statorCurrent = 0;
     public double tempCelsius = 0;
     public boolean zeroing = false;
   }
@@ -22,6 +23,7 @@ public interface GenericSuperstructureIO {
     public double velocityRotPerSec2 = 0;
     public double appliedVolts2 = 0;
     public double supplyCurrentAmps2 = 0;
+    public double statorCurrent2 = 0;
     public double tempCelsius2 = 0;
   }
 

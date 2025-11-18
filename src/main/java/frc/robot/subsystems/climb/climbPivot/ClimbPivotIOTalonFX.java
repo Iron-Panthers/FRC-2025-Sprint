@@ -2,6 +2,7 @@ package frc.robot.subsystems.climb.climbPivot;
 
 import static frc.robot.subsystems.climb.climbPivot.ClimbPivotConstants.*;
 
+import com.ctre.phoenix6.controls.VoltageOut;
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureConfiguration;
 import frc.robot.lib.generic_subsystems.superstructure.GenericSuperstructureIOTalonFX;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -23,8 +24,7 @@ public class ClimbPivotIOTalonFX extends GenericSuperstructureIOTalonFX implemen
             .withCANCoderID(CLIMB_PIVOT_CONFIG.canCoderID())
             .withCANCoderDirection(CANCODER_DIRECTION)
             .withCANCoderOffset(CLIMB_PIVOT_CONFIG.canCoderOffset())
-            .withLowerExtensionLimit(LOWWER_EXTENSION_LIMIT)
-            .withUpperExtensionLimit(UPPER_EXTENSION_LIMIT));
+            .withLowerExtensionLimit(LOWWER_EXTENSION_LIMIT));
 
     setSlot0(
         GAINS.kP(),
@@ -42,4 +42,11 @@ public class ClimbPivotIOTalonFX extends GenericSuperstructureIOTalonFX implemen
 
   @AutoLogOutput(key = "Superstructure/Climb/Climb Pivot/ModdedRotations")
   public double moddedRotations;
+
+  @Override
+  public void stop() {}
+
+  public void runVolts(double volts) {
+    talon.setControl(new VoltageOut(volts));
+  }
 }

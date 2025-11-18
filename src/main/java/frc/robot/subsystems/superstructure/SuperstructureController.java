@@ -49,7 +49,7 @@ public class SuperstructureController extends SubsystemBase {
     /** Picking up algae from the ground */
     GROUND_ALGAE(
         SuperstructurePose.fromTargetStates(
-            ElevatorTarget.INTAKE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
+            ElevatorTarget.GROUND_ALGAE, ArmTarget.GROUND_ALGAE, ArmDirection.BOTH)),
     BARGE_RIGHT(
         SuperstructurePose.fromTargetStates(
             ElevatorTarget.TOP, ArmTarget.BARGE_RIGHT, ArmDirection.BOTH)),
@@ -188,6 +188,8 @@ public class SuperstructureController extends SubsystemBase {
   /** The current target state of the superstructure */
   private SuperstructureState superstructureState = SuperstructureState.STOW;
 
+  // private SuperstructureState savedState = superstructureState;
+
   /**
    * Get the current target state of the superstructure
    *
@@ -212,7 +214,15 @@ public class SuperstructureController extends SubsystemBase {
    * @param state
    */
   public void setSuperstructureState(SuperstructureState state) {
+    // if (superstructureState == SuperstructureState.BARGE_RIGHT) {
+    //   this.superstructureState = SuperstructureState.TOP;
+    //   savedState = state;
+    // } else if (state == SuperstructureState.BARGE_RIGHT) {
+    //   this.superstructureState = SuperstructureState.TOP;
+    //   savedState = state;
+    // } else {
     this.superstructureState = state;
+    // }
   }
 
   public Command setTargetSuperstructureState(SuperstructureState state) {

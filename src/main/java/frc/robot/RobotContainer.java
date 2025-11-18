@@ -391,6 +391,7 @@ public class RobotContainer {
                 .alongWith(
                     l1PivotController.setTargetStateCommand(L1PivotController.L1PivotState.CLIMB)));
     driverB.y().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.CLIMB));
+    driverB.x().onTrue(climbController.setTargetCommand(ClimbController.ClimbState.IDLE));
   }
 
   private void configureL1Buttons() {
