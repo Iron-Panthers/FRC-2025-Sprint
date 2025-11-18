@@ -14,7 +14,6 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
 
     /** "Bottom" is ready to ram into cage */
     BOTTOM(0.0),
-
     /** "Top" is apex of climb */
     TOP(0.308),
 
@@ -22,7 +21,7 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
     CLEAR(0.0),
 
     /** When not climbing */
-    STOW(0);
+    STOW(-0.028);
 
     private double position = 0;
     private static final double EPSILON = ClimbPivotConstants.POSITION_TARGET_EPSILON;
@@ -42,6 +41,7 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
 
   // induction sensor
   private DigitalInput inductionSensor; // FIXME: check with engi about sensor
+  private ClimbPivotIO pivotIO;
 
   // run into the cage - sensor triggers - flash leds to tell driver - button
   // presses : reels it in
@@ -50,6 +50,7 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
   // set position for intake in a cage, a button to climb up or down
   public ClimbPivot(ClimbPivotIO io) {
     super("Climb Pivot", io);
+    this.pivotIO = io;
     inductionSensor =
         new DigitalInput(INDUCTION_PORT_NUMBER); // TODO: figure out general sensor things -- maybe
     // dedicated subsystem
@@ -65,6 +66,9 @@ public class ClimbPivot extends GenericSuperstructure<ClimbPivot.ClimbPivotTarge
   @Override
   public void periodic() {
     super.periodic();
+    if (controlMode == ControlMode.STOP) {
+      pivotIO.runVolts(positionTarget == ClimbPivotTarget.TOP ? 0.4 : 0);
+    }
 
     // send message to the LEDs
     RGBMessages.CLIMB.setIsExpired(!hitCage());

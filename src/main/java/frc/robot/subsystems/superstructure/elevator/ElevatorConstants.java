@@ -59,7 +59,7 @@ public class ElevatorConstants {
 
   // public static final int ZEROING_CURRENT_LIMIT = 20;
 
-  public static final double UPPER_EXTENSION_LIMIT = 59;
+  public static final double UPPER_EXTENSION_LIMIT = 64;
 
   // ZEROING CONSTANTS
   public static final double ZEROING_VOLTS = -2;
