@@ -1,9 +1,8 @@
 package frc.robot.subsystems.objectDetection;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface ObjectDetectionIO {
   @AutoLog
