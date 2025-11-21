@@ -26,7 +26,7 @@ public class ApproachObjectCommand extends SequentialCommandGroup {
             }) {
           @Override
           public void end(boolean interrupted) {
-            swerve.clearHeadingControl();
+            swerve.clearTargetPositionController();
           }
         });
   }
