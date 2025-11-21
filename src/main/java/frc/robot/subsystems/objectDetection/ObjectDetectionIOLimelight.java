@@ -12,5 +12,6 @@ public class ObjectDetectionIOLimelight implements ObjectDetectionIO {
   public void updateInputs(ObjectDetectionIOInputs inputs) {
     inputs.xErr = Units.Degrees.of(table.getEntry("tx").getDouble(0));
     inputs.yErr = Units.Degrees.of(table.getEntry("ty").getDouble(0));
+    inputs.targetArea = Units.Percent.of(table.getEntry("ta").getDouble(0));
   }
 }

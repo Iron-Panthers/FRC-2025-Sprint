@@ -4,30 +4,24 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.intake.IntakeController;
+import frc.robot.subsystems.intake.IntakeController.IntakeState;
 import frc.robot.subsystems.objectDetection.ObjectDetection;
 import frc.robot.subsystems.swerve.Drive;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ApproachObjectCommand extends SequentialCommandGroup {
-  /** Creates a new ApproachObjectCommand. */
-  public ApproachObjectCommand(Drive swerve, ObjectDetection objectDetection) {
+public class IntakeObjectCommand extends SequentialCommandGroup {
+  /** Creates a new IntakeObjectCommand. */
+  public IntakeObjectCommand(
+      Drive swerve, ObjectDetection objectDetection, IntakeController intakeController) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new RunCommand(
-            () -> {
-              if (objectDetection.coralInVision()) {
-                swerve.setTargetPosition(objectDetection.getTargetPosition());
-              }
-            }) {
-          @Override
-          public void end(boolean interrupted) {
-            swerve.clearHeadingControl();
-          }
-        });
+        intakeController.setTargetStateCommand(IntakeState.INTAKE),
+        new ApproachObjectCommand(swerve, objectDetection)
+            .until(() -> intakeController.getTargetState() == IntakeState.HOLD));
   }
 }

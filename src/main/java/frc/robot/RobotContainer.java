@@ -14,15 +14,15 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.ApproachObjectCommand;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
-import frc.robot.commands.ScoreL1Command;
+import frc.robot.commands.IntakeObjectCommand;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -46,16 +46,21 @@ import frc.robot.subsystems.intake.IntakeController.IntakeState;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivot;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIO;
 import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOSim;
+import frc.robot.subsystems.intake.intake_pivot.IntakePivotIOTalonFX;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollers;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIO;
 import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOSim;
+import frc.robot.subsystems.intake.intake_rollers.IntakeRollersIOTalonFX;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIO;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOCANRange;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensorIOSim;
 import frc.robot.subsystems.intake.intake_sensors.IntakeSensors;
+import frc.robot.subsystems.intake.intake_sensors.IntakeSensorsConstants;
 import frc.robot.subsystems.l1_pivot.L1Pivot;
 import frc.robot.subsystems.l1_pivot.L1PivotController;
 import frc.robot.subsystems.l1_pivot.L1PivotIO;
 import frc.robot.subsystems.l1_pivot.L1PivotIOSim;
+import frc.robot.subsystems.l1_pivot.L1PivotIOTalonFX;
 import frc.robot.subsystems.objectDetection.ObjectDetection;
 import frc.robot.subsystems.objectDetection.ObjectDetectionIOLimelight;
 import frc.robot.subsystems.objectDetection.ObjectDetectionIOSim;
@@ -148,14 +153,14 @@ public class RobotContainer {
           //         new VisionIOPhotonvision("arducam-5", 1),
           //         new VisionIOPhotonvision("arducam-4", 2));
           // canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
-          // l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
-          // intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
-          // intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
+          l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
+          intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
+          intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
 
-          // intakeSensors =
-          //     new IntakeSensors(
-          //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
-          //         new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
+          intakeSensors =
+              new IntakeSensors(
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
+                  new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
           // elevator = new Elevator(new ElevatorIOTalonFX());
           // arm = new Arm(new ArmIOTalonFX());
@@ -339,7 +344,23 @@ public class RobotContainer {
 
     driverA.a().onTrue(new InstantCommand(() -> swerve.smartZeroGyro()));
 
-    driverB.leftTrigger().whileTrue(new ApproachObjectCommand(swerve, objectDetection));
+    // align to the object
+    driverB
+        .leftTrigger()
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  if (objectDetection.coralInVision()) {
+                    swerve.setTargetHeading(objectDetection.getTargetRotation());
+                  }
+                },
+                objectDetection,
+                swerve));
+
+    // approach the object
+    driverB
+        .rightTrigger()
+        .whileTrue(new IntakeObjectCommand(swerve, objectDetection, intakeController));
 
     // auto align
     driverA
@@ -405,7 +426,7 @@ public class RobotContainer {
     driverB
         .leftTrigger()
         .onFalse(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
-    driverB.rightTrigger().onTrue(new ScoreL1Command(intakeController, l1PivotController));
+    // driverB.rightTrigger().onTrue(new ScoreL1Command(intakeController, l1PivotController));
   }
 
   private void configureMultiUseButtons() {
