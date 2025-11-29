@@ -23,6 +23,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
 import frc.robot.commands.IntakeObjectCommand;
+import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -346,7 +347,7 @@ public class RobotContainer {
 
     // align to the object
     driverB
-        .leftTrigger()
+        .leftBumper()
         .whileTrue(
             new RunCommand(
                 () -> {
@@ -359,7 +360,7 @@ public class RobotContainer {
 
     // approach the object
     driverB
-        .rightTrigger()
+        .rightBumper()
         .whileTrue(new IntakeObjectCommand(swerve, objectDetection, intakeController));
 
     // auto align
@@ -420,13 +421,14 @@ public class RobotContainer {
   private void configureL1Buttons() {
     driverA.x().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
     driverA.y().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.IDLE));
-    driverB
-        .leftTrigger()
-        .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.FORCE_INTAKE));
-    driverB
-        .leftTrigger()
-        .onFalse(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
-    // driverB.rightTrigger().onTrue(new ScoreL1Command(intakeController, l1PivotController));
+    // driverB
+    //     .leftTrigger()
+    //
+    // .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.FORCE_INTAKE));
+    // driverB
+    //     .leftTrigger()
+    //     .onFalse(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
+    driverB.leftTrigger().onTrue(new ScoreL1Command(intakeController, l1PivotController));
   }
 
   private void configureMultiUseButtons() {

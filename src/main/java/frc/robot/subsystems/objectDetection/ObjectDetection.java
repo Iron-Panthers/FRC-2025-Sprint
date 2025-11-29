@@ -24,6 +24,7 @@ public class ObjectDetection extends SubsystemBase {
   @Override
   public void periodic() {
     objectDetectionIO.updateInputs(inputs);
+    Logger.processInputs("Object Detection", inputs);
 
     Logger.recordOutput("Object Detection/Error Horizontal", inputs.xErr);
     Logger.recordOutput("Object Detection/Error Vertical", inputs.yErr);
