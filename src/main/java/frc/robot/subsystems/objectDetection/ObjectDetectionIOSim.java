@@ -48,8 +48,7 @@ public class ObjectDetectionIOSim implements ObjectDetectionIO {
       double dx = rotatedPosition.getX();
       double dy = rotatedPosition.getY();
       // Assume coral is at height 0
-      double dz =
-          0.0 - ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.z().in(Units.Meters);
+      double dz = 0.0 - ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.z().in(Units.Meters);
 
       // Camera pitch is measured from straight down (90° from horizontal)
       // So actual pitch from horizontal = pitchAngle - 90°
@@ -76,7 +75,7 @@ public class ObjectDetectionIOSim implements ObjectDetectionIO {
         if (totalDistance < closestDistance) {
           closestDistance = totalDistance;
           closestCoral = coral;
-          bestTx = horizontalAngle;
+          bestTx = -horizontalAngle;
           bestTy = verticalAngle;
         }
       }
@@ -104,12 +103,15 @@ public class ObjectDetectionIOSim implements ObjectDetectionIO {
     Transform2d cameraTransform =
         new Transform2d(
             new Translation2d(
-                ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.y().in(Units.Meters), // forward/backward -> X
-                ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.x().in(Units.Meters)  // left/right -> Y
-            ),
+                ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS
+                    .y()
+                    .in(Units.Meters), // forward/backward -> X
+                ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS
+                    .x()
+                    .in(Units.Meters) // left/right -> Y
+                ),
             Rotation2d.fromDegrees(
-                ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.yawAngle().in(Units.Degrees) + 180.0)
-        );
+                ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.yawAngle().in(Units.Degrees)));
     return robotPose.plus(cameraTransform);
   }
 }

@@ -56,30 +56,26 @@ public class ObjectDetection extends SubsystemBase {
     return RobotState.getInstance()
         .getEstimatedPose()
         .getRotation()
-        .minus(new Rotation2d(angleToTarget).plus(new Rotation2d(Math.PI)));
+        .minus(new Rotation2d(angleToTarget));
   }
 
   public Pose2d getTargetPosition() {
     if (!coralInVision()) {
       return RobotState.getInstance().getEstimatedPose();
     }
-    Pose2d currentPose2d =
-        RobotState.getInstance()
-            .getEstimatedPose()
-            .plus(
-                new Transform2d(
-                    new Translation2d(),
-                    new Rotation2d(Units.Degrees.of(180)))); // the intake is on the back side
 
-    // adjust for coral offset
-    Pose2d finalPose =
-        currentPose2d.plus(
-            new Transform2d(
-                new Translation2d(getCoralDistanceY(), getCoralDistanceX()), new Rotation2d()));
+    Translation2d translation =
+        new Translation2d(getCoralDistanceY(), getCoralDistanceX().times(-1));
 
-    finalPose = new Pose2d(finalPose.getTranslation(), getTargetRotation());
+    Transform2d targetPoseRelative = new Transform2d(translation, new Rotation2d());
+    Logger.recordOutput("Object Detect/Target position relative", targetPoseRelative);
 
-    return finalPose;
+    Pose2d targetPose = RobotState.getInstance().getEstimatedPose().plus(targetPoseRelative);
+    Logger.recordOutput("Object Detect/Target pose intermediary", targetPose);
+
+    targetPose = new Pose2d(targetPose.getTranslation(), getTargetRotation());
+
+    return targetPose;
   }
 
   public Angle getAngleToTarget() {
@@ -94,15 +90,21 @@ public class ObjectDetection extends SubsystemBase {
 
   public Distance getCoralDistanceY() {
     Angle targetPitch = inputs.yErr;
+    Angle targetYaw = inputs.xErr;
 
-    // t_y = c_z * tan(c_pitch + t_pitch) - c_y
     double distanceY =
-        ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.z().in(Units.Meters)
-                * Math.tan(
+        Math.cos(
                     ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS
-                        .pitchAngle()
-                        .plus(targetPitch)
+                        .yawAngle()
+                        .plus(targetYaw)
                         .in(Units.Radians))
+                * (ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.z().in(Units.Meters)
+                    * Math.tan(
+                        ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS
+                            .pitchAngle()
+                            .plus(targetPitch)
+                            .in(Units.Radians))
+                    / Math.cos(targetYaw.in(Units.Radians)))
             - ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.y().in(Units.Meters);
     return Units.Meters.of(distanceY);
   }
@@ -111,15 +113,20 @@ public class ObjectDetection extends SubsystemBase {
     Angle targetPitch = inputs.yErr;
     Angle targetYaw = inputs.xErr;
 
-    // t_x = (c_y + distanceY) * tan(t_yaw) + c_x
     double distanceX =
-        (ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.y().in(Units.Meters)
-                    + getCoralDistanceY().in(Units.Meters))
-                * Math.tan(
-                    targetYaw
-                        .plus(ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.yawAngle())
+        (Math.sin(
+                    ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS
+                        .yawAngle()
+                        .plus(targetYaw)
                         .in(Units.Radians))
-            + ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.x().in(Units.Meters);
+                * (ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.z().in(Units.Meters)
+                    * Math.tan(
+                        ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS
+                            .pitchAngle()
+                            .plus(targetPitch)
+                            .in(Units.Radians))
+                    / Math.cos(targetYaw.in(Units.Radians)))
+            - ObjectDetectionConstants.CAMERA_POSITION_CONSTANTS.x().in(Units.Meters));
     return Units.Meters.of(distanceX);
   }
 }
