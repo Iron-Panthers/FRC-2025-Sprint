@@ -17,7 +17,7 @@ public class IntakePivotConstants {
             // Reduction between sensor and mechansim
             CAN.at(30, "Intake Pivot"),
             CAN.at(31, "Intake Pivot Encoder"),
-            -0.08226,
+            -0.01444,
             2.25); // (36/16
           // is the reduction for the encoder)
         case SIM -> new IntakePivotConfig(
