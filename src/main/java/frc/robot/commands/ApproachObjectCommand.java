@@ -27,7 +27,7 @@ public class ApproachObjectCommand extends SequentialCommandGroup {
     addCommands(
         new FunctionalCommand(
             () -> {
-              if (objectDetection.coralInVision()) {
+              if (objectDetection.bothCoralsInVision()) {
                 swerve.setTargetPosition(objectDetection.getTargetPosition());
               }
             },
