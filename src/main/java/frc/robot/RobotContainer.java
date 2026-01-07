@@ -23,7 +23,6 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.ApproachReef;
 import frc.robot.commands.ApproachReef.LevelOffsets;
 import frc.robot.commands.IntakeObjectCommand;
-import frc.robot.commands.ScoreL1Command;
 import frc.robot.commands.VibrateHIDCommand;
 import frc.robot.subsystems.canWatchdog.CANWatchdog;
 import frc.robot.subsystems.canWatchdog.CANWatchdogIO;
@@ -358,7 +357,7 @@ public class RobotContainer {
                 objectDetection,
                 swerve));
 
-    // approach the object and intake
+    // approach the object
     driverB
         .rightTrigger()
         .whileTrue(new IntakeObjectCommand(swerve, objectDetection, intakeController));
@@ -427,7 +426,7 @@ public class RobotContainer {
     driverB
         .leftTrigger()
         .onFalse(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
-    driverB.leftBumper().onTrue(new ScoreL1Command(intakeController, l1PivotController));
+    // driverB.rightTrigger().onTrue(new ScoreL1Command(intakeController, l1PivotController));
   }
 
   private void configureMultiUseButtons() {
@@ -443,9 +442,9 @@ public class RobotContainer {
     driverB
         .rightBumper()
         .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.HOLD));
-    // driverB
-    //     .leftBumper()
-    //     .onTrue(superstructureController.setSuperstructureStateCommand(SuperstructureState.TOP));
+    driverB
+        .leftBumper()
+        .onTrue(superstructureController.setSuperstructureStateCommand(SuperstructureState.TOP));
   }
 
   private void configureAlgaeButtons() {
