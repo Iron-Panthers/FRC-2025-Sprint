@@ -15,14 +15,4 @@ public interface ObjectDetectionIO {
   }
 
   default void updateInputs(ObjectDetectionIOInputs inputs) {}
-
-  @AutoLog
-  public static class ObjectDetectionIOInputsTwo {
-    public boolean connected = false;
-    public Angle xErr = Units.Degrees.of(0);
-    public Angle yErr = Units.Degrees.of(0);
-    public Dimensionless targetArea = Units.Percent.of(0);
-  }
-
-  default void updateInputs(ObjectDetectionIOInputsTwo inputs) {}
 }

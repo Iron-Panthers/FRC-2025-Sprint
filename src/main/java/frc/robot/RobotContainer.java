@@ -351,7 +351,7 @@ public class RobotContainer {
         .whileTrue(
             new RunCommand(
                 () -> {
-                  if (objectDetection.bothCoralsInVision()) {
+                  if (objectDetection.coralInVision()) {
                     swerve.setTargetHeading(objectDetection.getTargetRotation());
                   }
                 },
