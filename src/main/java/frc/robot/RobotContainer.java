@@ -168,7 +168,7 @@ public class RobotContainer {
           // climbPivot = new ClimbPivot(new ClimbPivotIOTalonFX());
           // climbRollers = new ClimbRollers(new ClimbRollersIOTalonFX());
           // climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak());
-          objectDetection = new ObjectDetection(new ObjectDetectionIOLimelight());
+          objectDetection = new ObjectDetection(new ObjectDetectionIOLimelight("limelight"));
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();

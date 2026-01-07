@@ -12,13 +12,16 @@ import frc.robot.RobotState;
 import org.littletonrobotics.junction.Logger;
 
 public class ObjectDetection extends SubsystemBase {
-  private ObjectDetectionIO objectDetectionIO;
-  private final ObjectDetectionIOInputsAutoLogged inputs;
+  private ObjectDetectionIO[] objectDetectionIOs;
+  private final ObjectDetectionIOInputsAutoLogged[] inputs;
   // make a velocity algorithm (maybe)
 
-  public ObjectDetection(ObjectDetectionIO objectDetectionIO) {
-    this.objectDetectionIO = objectDetectionIO;
-    inputs = new ObjectDetectionIOInputsAutoLogged();
+  public ObjectDetection(ObjectDetectionIO... objectDetectionIOs) {
+    this.objectDetectionIOs = objectDetectionIOs;
+    inputs = ObjectDetectionIOInputsAutoLogged[objectDetectionIOs.length]; //TODO: MAybe oingaerigiweofnaweopifkndpesnt work
+    for(int i = 0; i < objectDetectionIOs.length; i++){
+      inputs[i] = new ObjectDetectionIOInputsAutoLogged();
+    }
   }
 
   @Override
@@ -39,7 +42,8 @@ public class ObjectDetection extends SubsystemBase {
 
   /** whether or not we currently see a coral */
   public boolean coralInVision() {
-    return inputs.targetArea.compareTo(ObjectDetectionConstants.TARGET_AREA_THRESHOLD) >= 0;
+    return inputs[0].targetArea.compareTo(ObjectDetectionConstants.TARGET_AREA_THRESHOLD) >= 0 
+    || inputs[1].targetArea.compareTo(ObjectDetectionConstants.TARGET_AREA_THRESHOLD) >= 0;
   }
 
   public int whichCamera() {
@@ -116,11 +120,16 @@ public class ObjectDetection extends SubsystemBase {
   }
 
   // Switch between cameras
-  int i = 0;
+  public int findCameraIndex(){
+    if (getCoralDistanceY(0).magnitude() < getCoralDistanceY(1).magnitude()){
+      return 0;
+    }
+    return 1;
+  }
 
   public Distance getCoralDistanceY(int i) {
-    Angle targetPitch = inputs.yErr;
-    Angle targetYaw = inputs.xErr;
+    Angle targetPitch = inputs[i].yErr;
+    Angle targetYaw = inputs[i].xErr;
 
     double distanceY =
         Math.cos(
@@ -140,8 +149,8 @@ public class ObjectDetection extends SubsystemBase {
   }
 
   public Distance getCoralDistanceX(int i) {
-    Angle targetPitch = inputs.yErr;
-    Angle targetYaw = inputs.xErr;
+    Angle targetPitch = inputs[i].yErr;
+    Angle targetYaw = inputs[i].xErr;
 
     double distanceX =
         (Math.sin(

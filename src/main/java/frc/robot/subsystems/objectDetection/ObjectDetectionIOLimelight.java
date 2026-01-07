@@ -5,9 +5,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
 
 public class ObjectDetectionIOLimelight implements ObjectDetectionIO {
-  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  private NetworkTable table;
 
-  public ObjectDetectionIOLimelight() {}
+  public ObjectDetectionIOLimelight(String name) {
+    table = NetworkTableInstance.getDefault().getTable(name);
+  }
 
   public void updateInputs(ObjectDetectionIOInputs inputs) {
     inputs.xErr = Units.Degrees.of(table.getEntry("tx").getDouble(0));
