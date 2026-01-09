@@ -277,7 +277,7 @@ public class RobotContainer {
     clawRollersController = new ClawRollersController(clawRollers);
 
     if (objectDetection == null) {
-      objectDetection = new ObjectDetection(new ObjectDetectionIOLimelight());
+      objectDetection = new ObjectDetection(new ObjectDetectionIOLimelight(null));
     }
 
     nameCommands();
@@ -351,7 +351,8 @@ public class RobotContainer {
             new RunCommand(
                 () -> {
                   if (objectDetection.coralInVision()) {
-                    swerve.setTargetHeading(objectDetection.getTargetRotation());
+                    swerve.setTargetHeading(
+                        objectDetection.getTargetRotation(objectDetection.whichCamera()));
                   }
                 },
                 objectDetection,

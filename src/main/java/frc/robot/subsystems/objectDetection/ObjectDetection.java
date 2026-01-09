@@ -18,32 +18,40 @@ public class ObjectDetection extends SubsystemBase {
 
   public ObjectDetection(ObjectDetectionIO... objectDetectionIOs) {
     this.objectDetectionIOs = objectDetectionIOs;
-    inputs = ObjectDetectionIOInputsAutoLogged[objectDetectionIOs.length]; //TODO: MAybe oingaerigiweofnaweopifkndpesnt work
-    for(int i = 0; i < objectDetectionIOs.length; i++){
+    inputs =
+        new ObjectDetectionIOInputsAutoLogged
+            [objectDetectionIOs.length]; // TODO: MAybe oingaerigiweofnaweopifkndpesnt work //"New"
+    for (int i = 0; i < objectDetectionIOs.length; i++) {
       inputs[i] = new ObjectDetectionIOInputsAutoLogged();
     }
   }
 
   @Override
   public void periodic() {
-    // Camera one
-    objectDetectionIO.updateInputs(inputs);
-    Logger.processInputs("Object Detection", inputs);
+    for (int i = 0; i < inputs.length; i++) {
 
-    Logger.recordOutput("Object Detection/Error Horizontal", inputs.xErr);
-    Logger.recordOutput("Object Detection/Error Vertical", inputs.yErr);
-    Logger.recordOutput("Object Detection/Dy", getCoralDistanceY(i));
-    Logger.recordOutput("Object Detection/Dx", getCoralDistanceX(i));
-    Logger.recordOutput("Object Detection/Target Heading", getTargetRotation());
-    Logger.recordOutput("Object Detection/Angle to target", getAngleToTarget());
-    Logger.recordOutput("Object Detection/Target position", getTargetPosition());
-    Logger.recordOutput("Object Detection/Detected coral", coralInVision());
+      objectDetectionIOs[i].updateInputs(inputs[i]);
+      Logger.processInputs("Object Detection", inputs[i]);
+
+      Logger.recordOutput("Object Detection/Error Horizontal", inputs[i].xErr);
+      Logger.recordOutput("Object Detection/Error Vertical", inputs[i].yErr);
+      Logger.recordOutput("Object Detection/Dy", getCoralDistanceY(i));
+      Logger.recordOutput("Object Detection/Dx", getCoralDistanceX(i));
+      Logger.recordOutput("Object Detection/Target Heading", getTargetRotation(i));
+      Logger.recordOutput("Object Detection/Angle to target", getAngleToTarget(i));
+      Logger.recordOutput("Object Detection/Target position", getTargetPosition(i));
+      Logger.recordOutput("Object Detection/Detected coral", coralInVision(i));
+    }
   }
 
   /** whether or not we currently see a coral */
   public boolean coralInVision() {
-    return inputs[0].targetArea.compareTo(ObjectDetectionConstants.TARGET_AREA_THRESHOLD) >= 0 
-    || inputs[1].targetArea.compareTo(ObjectDetectionConstants.TARGET_AREA_THRESHOLD) >= 0;
+    return coralInVision(0) || coralInVision(1);
+  }
+
+  public boolean coralInVision(int cameraNum) {
+    return inputs[cameraNum].targetArea.compareTo(ObjectDetectionConstants.TARGET_AREA_THRESHOLD)
+        >= 0;
   }
 
   public int whichCamera() {
@@ -51,23 +59,22 @@ public class ObjectDetection extends SubsystemBase {
     double dxOne = 0;
     double dyTwo = 0;
     double dxTwo = 0;
-    if (coralInVision()) {
-      dyOne = getCoralDistanceY(i).in(Units.Meters);
-      dxOne = getCoralDistanceX(i).in(Units.Meters);
+    if (coralInVision(0)) {
+      dyOne = getCoralDistanceY(0).in(Units.Meters);
+      dxOne = getCoralDistanceX(0).in(Units.Meters);
     }
-    ;
+    if (coralInVision(1)) {
+      dyTwo = getCoralDistanceY(1).in(Units.Meters);
+      dxTwo = getCoralDistanceX(1).in(Units.Meters);
+    }
 
     if (Math.sqrt(dxOne * dxOne + dyOne * dyOne) < Math.sqrt(dxTwo * dxTwo + dyTwo * dyTwo)) {
-      return 1;
+      return 0;
     }
     if (Math.sqrt(dxOne * dxOne + dyOne * dyOne) > Math.sqrt(dxTwo * dxTwo + dyTwo * dyTwo)) {
-      return 2;
+      return 1;
     }
     return -1;
-  }
-
-  public boolean bothCoralsInVision() {
-    return (!coralInVision());
   }
 
   /**
@@ -75,13 +82,13 @@ public class ObjectDetection extends SubsystemBase {
    *
    * @return
    */
-  public Rotation2d getTargetRotation() {
-    if (!coralInVision()
-        && !coralInVision()) { // if we don't see a coral, just return the current robot heading
+  public Rotation2d getTargetRotation(int cameraNum) {
+    if (!coralInVision(
+        cameraNum)) { // if we don't see a coral, just return the current robot heading
       return RobotState.getInstance().getEstimatedPose().getRotation();
     }
 
-    Angle angleToTarget = getAngleToTarget();
+    Angle angleToTarget = getAngleToTarget(cameraNum);
 
     return RobotState.getInstance()
         .getEstimatedPose()
@@ -89,14 +96,14 @@ public class ObjectDetection extends SubsystemBase {
         .minus(new Rotation2d(angleToTarget));
   }
 
-  public Pose2d getTargetPosition() {
-    if (!coralInVision()
-        && !coralInVision()) { // if we don't see a coral, just return the current robot heading
+  public Pose2d getTargetPosition(int cameraNum) {
+    if (!coralInVision(
+        cameraNum)) { // if we don't see a coral, just return the current robot heading
       return RobotState.getInstance().getEstimatedPose();
     }
 
     Translation2d translation =
-        new Translation2d(getCoralDistanceY(i), getCoralDistanceX(i).times(-1));
+        new Translation2d(getCoralDistanceY(cameraNum), getCoralDistanceX(cameraNum).times(-1));
 
     Transform2d targetPoseRelative = new Transform2d(translation, new Rotation2d());
     Logger.recordOutput("Object Detect/Target position relative", targetPoseRelative);
@@ -104,15 +111,15 @@ public class ObjectDetection extends SubsystemBase {
     Pose2d targetPose = RobotState.getInstance().getEstimatedPose().plus(targetPoseRelative);
     Logger.recordOutput("Object Detect/Target pose intermediary", targetPose);
 
-    targetPose = new Pose2d(targetPose.getTranslation(), getTargetRotation());
+    targetPose = new Pose2d(targetPose.getTranslation(), getTargetRotation(cameraNum));
 
     return targetPose;
   }
 
-  public Angle getAngleToTarget() {
+  public Angle getAngleToTarget(int cameraNum) {
 
-    double distanceY = getCoralDistanceY(i).in(Units.Meters);
-    double distanceX = getCoralDistanceX(i).in(Units.Meters);
+    double distanceY = getCoralDistanceY(cameraNum).in(Units.Meters);
+    double distanceX = getCoralDistanceX(cameraNum).in(Units.Meters);
 
     // arctan(t_x / t_y)
     Angle angleToTarget = Units.Radians.of(Math.atan2(distanceX, distanceY)); // radians
@@ -120,8 +127,8 @@ public class ObjectDetection extends SubsystemBase {
   }
 
   // Switch between cameras
-  public int findCameraIndex(){
-    if (getCoralDistanceY(0).magnitude() < getCoralDistanceY(1).magnitude()){
+  public int findCameraIndex() {
+    if (getCoralDistanceY(0).magnitude() < getCoralDistanceY(1).magnitude()) {
       return 0;
     }
     return 1;
