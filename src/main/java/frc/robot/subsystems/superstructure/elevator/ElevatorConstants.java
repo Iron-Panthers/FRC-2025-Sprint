@@ -2,6 +2,8 @@ package frc.robot.subsystems.superstructure.elevator;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -43,7 +45,7 @@ public class ElevatorConstants {
 
   public static final InvertedValue MOTOR_DIRECTION = InvertedValue.CounterClockwise_Positive;
 
-  public static final boolean OPPOSE_MOTOR = true;
+  public static final MotorAlignmentValue OPPOSE_MOTOR = MotorAlignmentValue.Opposed;
 
   public static final double POSITION_TARGET_EPSILON = 1;
 
