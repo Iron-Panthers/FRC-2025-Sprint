@@ -154,7 +154,7 @@ public class RobotContainer {
               new Vision(
                   new VisionIOPhotonvision("arducam-5", 1),
                   new VisionIOPhotonvision("arducam-4", 2));
-          canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
+          // canWatchdog = new CANWatchdog(new CANWatchdogIOComp(), rgb);
           l1Pivot = new L1Pivot(new L1PivotIOTalonFX());
           intakeRollers = new IntakeRollers(new IntakeRollersIOTalonFX());
           intakePivot = new IntakePivot(new IntakePivotIOTalonFX());
@@ -164,12 +164,12 @@ public class RobotContainer {
                   new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_1),
                   new IntakeSensorIOCANRange(IntakeSensorsConstants.PORT_ID_2));
 
-          elevator = new Elevator(new ElevatorIOTalonFX());
-          arm = new Arm(new ArmIOTalonFX());
-          clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
-          climbPivot = new ClimbPivot(new ClimbPivotIOTalonFX());
-          climbRollers = new ClimbRollers(new ClimbRollersIOTalonFX());
-          climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak());
+          // elevator = new Elevator(new ElevatorIOTalonFX());
+          // arm = new Arm(new ArmIOTalonFX());
+          // clawRollers = new ClawRollers(new ClawRollersIOTalonFX());
+          // climbPivot = new ClimbPivot(new ClimbPivotIOTalonFX());
+          // climbRollers = new ClimbRollers(new ClimbRollersIOTalonFX());
+          // climbSensors = new ClimbSensors(new ClimbSensorIOBeambreak());
         }
         case SIM -> {
           SwerveDriveSimulation driveSimulation = RobotSimState.getInstance().getDriveSimulation();
@@ -405,7 +405,7 @@ public class RobotContainer {
 
   private void configureL1Buttons() {
     driverA.x().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.INTAKE));
-    driverA.y().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.IDLE));
+    driverA.y().onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.HOLD));
     driverB
         .leftTrigger()
         .onTrue(intakeController.setTargetStateCommand(IntakeController.IntakeState.FORCE_INTAKE));
